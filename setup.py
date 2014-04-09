@@ -19,7 +19,7 @@ setup(
              'mlz/plot/plot_tree'],
     license='LICENSE.txt',
     description='MLZ: Machine Learning for photo-Z, a photometric redshift PDF estimator',
-    long_description=open('README.txt').read(),
+    long_description=open('README.rst').read(),
     url='http://lcdm.astro.illinois.edu/static/code/mlz/MLZ-1.0/doc/html/index.html',
     install_requires=['mpi4py', 'numpy', 'matplotlib', 'healpy', 'scipy'],
 )
