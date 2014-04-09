@@ -1,0 +1,106 @@
+Run MLZ
+=========
+
+.. include:: colors.rst
+
+Input file
+..............
+
+    A brief explanation on how to run MLZ. The main code is included as a executable and can be called directly or
+    its directory, its content can be viewed :ref:`here <run-file>`
+
+    A self-explanatory view of the :ref:`input-file` is helpful to look at before running the code. This file can be
+    used as a template for other files, the parameters can be checked in advance by setting ``CheckOnly`` to
+    :blue:`yes`.
+
+    Note that the names of the variables are :blue:`case insensitive` but all of them need to be present.
+
+
+Prepare data
+..............
+
+    Both the training file and test file :red:`must` have the attributes (magnitudes, colors,
+    etc.) and (optimally) their errors. If errors are not present assume a very small value is used. For now ascii files
+    and numpy files (.npy) are valid. Spectroscopic redshifts must be included on the training file,
+    if present on the test file they can be used for testing the performance of MLZ, although it is not required.
+
+
+    Add the :red:`full path` relative to the working directory of these file to the input file and define a output
+    folder for the results.
+
+
+    There are 3 very important variables on the input file to specify the columns and the attributes to use by
+    separating them using comas. Make sure to indicate the spectroscopic redshift by its name in the  ``KeyAtt``
+    variable. Also :red:`always` indicate the name of the error columns by adding the letter ``e`` in front of the
+    name of the attribute (see the :ref:`input-file` for an example)
+
+
+    In the ``Att`` variable, indicate the attributes to use to make a compute photo-z,
+    you can add or remove attributes but make sure they are present on the columns names. Order is not important,
+    :red:`but order in columns name are important`
+
+
+.. _hidden-param:
+Some hidden parameters
+......................
+
+    In order to make the :ref:`input-file` not too busy, there are some hidden parameters in the ``utils/utils_mlz.py``
+    file that are not frequently used and  can be manually modified, among the most important ones:
+
+
+    *   :green:`oobfraction`: fraction of data used for cross-validation, default is 1/3
+    *   :green:`dotrain`: The training of the trees/maps is carried out, default is :blue:`yes`,
+        set it to :blue:`no` if want to use same trees or maps on a separate data set, it can save some time for large
+        training data
+    *   :green:`dotest`: The test phase is carried out, default is :blue:`yes`, set it to :blue:`no` if only training
+        is desired
+    *   :green:`multiplefiles`: Write a PDF file per core for large runs to avoid communications bottleneck,
+        default is :blue:`no`
+    *   :green:`writepdf`: Write the PDF? default if :blue:`yes`, if not needed can be set to :blue:`no`
+
+
+
+
+Run the code
+.............
+
+    Check the :doc:`run` for a example use of the code on SDSS data including with the distribution.
+
+    To run the code, if using *mpi4py* from the main folder type::
+
+        $ mpirun -n <cores> ./runMLZ <input file>
+
+
+    Where <cores> is the number of processors desired to use and <input file> is the name of the :ref:`input-file`.
+    If not using *mpi4py*, type::
+
+        $ ./runMLZ <input file>
+
+    Or if distribution is build or installed using pip, just type::
+
+        $ runMLZ <input file>
+
+    This will create two folder on the output directory, one named :green:`trees` (or :green:`maps`) where several
+    files for trees or maps are  stored for further analysis  and the other folder named
+    :green:`results` where the main results are stored as well as the parameters used. The .mlz file contains 7 columns
+    (zspec, zmode, zmean, zconf_mode, zcond_mean, error_mode, error_mean) which summarizes the results if no PDF is
+    further needed. The PDF for all the galaxies are also stored in the same folder.
+
+Machine learning approach
+.........................
+
+    MLZ can be used through :ref:`TPZ <tpz2>` or :ref:`SOMz <somz2>` and whichever is used is set on the
+    :ref:`input-file` under the ``PredictionMode`` variable. Whether is a classification or a Regression problem this is
+    set on the ``PredictionClass`` variable. There are some variables common for both approaches and other exclusively
+    used by one of them. For classification labels you can **must** use integers can can use the variable ``MinZ`` and
+    ``MaxZ`` to enclose the range of values. OOB and cross-validation data are computed when the variable ``OobError`` is
+    set to :blue:`yes` and a ranking of variable importance can be computed if the variable ``VarImportance`` is set to
+    :blue:`yes`.
+
+
+
+Preview of results
+...................
+
+    Some routines are provided to preview some results. See the :doc:`run`  and :class:`plotting` for more information
+    and some examples of figures that can be created

@@ -1,0 +1,539 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>runMLZ &mdash; MLZ 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="MLZ 1.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="index.html">
+          <img class="logo" src="_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="runmlz">
+<span id="run-file"></span><h1>runMLZ<a class="headerlink" href="#runmlz" title="Permalink to this headline">¶</a></h1>
+<style> .red {color:#FF6F60} </style>
+<style> .green {color:#60CC93} </style>
+<style> .blue {color:#6396FC} </style>
+<style> .blueit {color:#6396FC; font-style:italic} </style>
+<style> .under {text-decoration:underline} </style>
+<style> .mono {font-family : "Courier new"} </style><blockquote class="pull-quote">
+<div>This is the main file to run MLZ, this read the <a class="reference internal" href="inputfile.html#input-file"><em>Input file template</em></a> and get all the configuration from it. It
+prints the time  spent on all the steps.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Matias Carrasco Kind&#39;</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">random</span> <span class="kn">as</span> <span class="nn">rn</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ml_codes</span> <span class="kn">import</span> <span class="o">*</span>
+    <span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">mlz.ml_codes</span> <span class="kn">import</span> <span class="o">*</span>
+    <span class="kn">from</span> <span class="nn">mlz.utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">SF90</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">ml_codes.somF</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">SF90</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">SF90</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">somF</span>
+
+        <span class="n">SF90</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">setrecursionlimit</span><span class="p">(</span><span class="mi">8000</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">mpi4py</span> <span class="kn">import</span> <span class="n">MPI</span>
+
+    <span class="n">PLL</span> <span class="o">=</span> <span class="s">&#39;MPI&#39;</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">PLL</span> <span class="o">=</span> <span class="s">&#39;SERIAL&#39;</span>
+
+<span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span>
+    <span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">utils_mlz</span><span class="o">.</span><span class="n">print_welcome</span><span class="p">()</span>
+    <span class="n">clock_all</span> <span class="o">=</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">Stopwatch</span><span class="p">()</span>
+<span class="n">Nproc</span> <span class="o">=</span> <span class="n">size</span> <span class="c">#number of processors</span>
+<span class="n">Narg</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">Narg</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">usage</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">join_oob</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">rawA</span><span class="p">,</span> <span class="n">PLL</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">Oraw</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">rawA</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">srank</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Nproc</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span>
+                <span class="n">rawA</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">srank</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">srank</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">Oraw</span> <span class="o">+=</span> <span class="n">rawA</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">rawA</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rank</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Oraw</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.</span>
+
+
+<span class="n">FilePars</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c">#inputs file name</span>
+<span class="c">#READ PARAMETERS</span>
+<span class="n">verbo</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">verbo</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">Pars_in</span> <span class="o">=</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">read_dt_pars</span><span class="p">(</span><span class="n">FilePars</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbo</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">varimportance</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">ooberror</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span>
+<span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">checkonly</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;********************************&#39;</span><span class="p">)</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;* Check Mode only for testing  *&#39;</span><span class="p">)</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;********************************&#39;</span><span class="p">)</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&quot;Starting with &quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="s">&quot; processors&quot;</span><span class="p">)</span>
+    <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+    <span class="n">local_clock</span> <span class="o">=</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">Stopwatch</span><span class="p">(</span><span class="s">&#39;no&#39;</span><span class="p">)</span>
+
+<span class="n">Pmode</span> <span class="o">=</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">predictionmode</span>
+<span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;TPZ_C&#39;</span><span class="p">:</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">predictionclass</span> <span class="o">=</span> <span class="s">&#39;Class&#39;</span>
+
+<span class="n">Cmode</span> <span class="o">=</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">predictionclass</span>
+<span class="c">#READ TRAIN AND TEST FILES</span>
+
+<span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">dotrain</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span>
+    <span class="n">Train</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">catalog</span><span class="p">(</span><span class="n">Pars_in</span><span class="p">,</span> <span class="n">cat_type</span><span class="o">=</span><span class="s">&#39;train&#39;</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">nrandom</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">Train</span><span class="o">.</span><span class="n">make_random</span><span class="p">(</span><span class="n">ntimes</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">nrandom</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">nrandom</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span> <span class="n">Train</span><span class="o">.</span><span class="n">load_random</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>  <span class="c">##&lt;&gt;##</span>
+
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;-&gt; NUMBER OF GALAXIES IN TRAIN CATALOG : &#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">Train</span><span class="o">.</span><span class="n">cat</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">print_mode</span><span class="p">(</span><span class="n">Pmode</span><span class="p">)</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">print_mode</span><span class="p">(</span><span class="n">Cmode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">SF90</span> <span class="ow">and</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;SOM&#39;</span><span class="p">:</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;******************************************************&#39;</span><span class="p">)</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;* Fortran module somF not found, using python module *&#39;</span><span class="p">)</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;*   try: f2py -c -m somF som.f90 to compile it       *&#39;</span><span class="p">)</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;******************************************************&#39;</span><span class="p">)</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">importancefile</span> <span class="o">==</span> <span class="s">&#39;none&#39;</span><span class="p">:</span>
+        <span class="n">Pars_in</span><span class="o">.</span><span class="n">importance</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">att</span><span class="p">))</span>
+        <span class="n">Pars_in</span><span class="o">.</span><span class="n">importance_all</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">att</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Pars_in</span><span class="o">.</span><span class="n">importance</span> <span class="o">=</span> <span class="n">loadtxt</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">importancefile</span><span class="p">)</span>
+        <span class="n">Pars_in</span><span class="o">.</span><span class="n">importance_all</span> <span class="o">=</span> <span class="n">loadtxt</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">importancefile</span><span class="p">)</span>
+
+    <span class="c">#TRAIN FIRST</span>
+    <span class="n">ntot</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">nrandom</span> <span class="o">*</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">ntrees</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;Total trees (maps) : &#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ntot</span><span class="p">))</span>
+    <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">get_limits</span><span class="p">(</span><span class="n">ntot</span><span class="p">,</span> <span class="n">Nproc</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">Nproc</span><span class="p">):</span>
+            <span class="n">Xs_0</span><span class="p">,</span> <span class="n">Xs_1</span> <span class="o">=</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">get_limits</span><span class="p">(</span><span class="n">ntot</span><span class="p">,</span> <span class="n">Nproc</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="n">Xs_0</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">Xs_1</span><span class="p">,</span> <span class="s">&#39; -------------&gt; to core &#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+    <span class="n">zfine</span><span class="p">,</span> <span class="n">zfine2</span><span class="p">,</span> <span class="n">resz</span><span class="p">,</span> <span class="n">resz2</span><span class="p">,</span> <span class="n">wzin</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">get_zbins</span><span class="p">(</span><span class="n">Pars_in</span><span class="p">)</span>
+    <span class="n">zfine2</span> <span class="o">=</span> <span class="n">zfine2</span><span class="p">[</span><span class="n">wzin</span><span class="p">]</span>
+    <span class="n">train_nobj</span> <span class="o">=</span> <span class="n">Train</span><span class="o">.</span><span class="n">nobj</span>
+
+    <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">ooberror</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span>
+        <span class="n">Train</span><span class="o">.</span><span class="n">get_XY</span><span class="p">()</span>
+        <span class="n">train_yvals</span> <span class="o">=</span> <span class="n">Train</span><span class="o">.</span><span class="n">Y</span>
+        <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span><span class="p">:</span>
+            <span class="n">OP0raw</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">Train</span><span class="o">.</span><span class="n">nobj</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zfine</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">Train_S</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">GetPz_short</span><span class="p">(</span><span class="n">Pars_in</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Class&#39;</span><span class="p">:</span>
+            <span class="n">OS1</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">Train</span><span class="o">.</span><span class="n">nobj</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">varimportance</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span><span class="p">:</span>
+            <span class="n">OP0rawV</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">Train</span><span class="o">.</span><span class="n">nobj</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zfine</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">att</span><span class="p">)))</span>
+            <span class="n">Train_SV</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">GetPz_short</span><span class="p">(</span><span class="n">Pars_in</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Class&#39;</span><span class="p">:</span>
+            <span class="n">OS1V</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">Train</span><span class="o">.</span><span class="n">nobj</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">att</span><span class="p">)))</span>
+
+    <span class="k">for</span> <span class="n">kss</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">nrandom</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ir</span> <span class="o">=</span> <span class="n">kss</span> <span class="o">/</span> <span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">ntrees</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ir</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="n">Train</span><span class="o">.</span><span class="n">newcat</span><span class="p">(</span><span class="n">ir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;SOM&#39;</span><span class="p">:</span> <span class="n">DD</span> <span class="o">=</span> <span class="n">Train</span><span class="o">.</span><span class="n">sample_dim</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">natt</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;TPZ&#39;</span><span class="p">:</span> <span class="n">DD</span> <span class="o">=</span> <span class="s">&#39;all&#39;</span>
+        <span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;TPZ_C&#39;</span><span class="p">:</span> <span class="n">DD</span> <span class="o">=</span> <span class="s">&#39;all&#39;</span>
+        <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">ooberror</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span> <span class="n">Train</span><span class="o">.</span><span class="n">oob_data_cat</span><span class="p">()</span>
+
+        <span class="n">Train</span><span class="o">.</span><span class="n">get_XY</span><span class="p">(</span><span class="n">bootstrap</span><span class="o">=</span><span class="s">&#39;yes&#39;</span><span class="p">,</span> <span class="n">curr_at</span><span class="o">=</span><span class="n">DD</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">DD</span> <span class="o">!=</span> <span class="s">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">impp</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">jk</span><span class="p">,</span> <span class="n">ik</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">att</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">DD</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="n">ik</span><span class="p">):</span> <span class="n">impp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">importance_all</span><span class="p">[</span><span class="n">jk</span><span class="p">])</span>
+            <span class="n">Pars_in</span><span class="o">.</span><span class="n">importance</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">impp</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;TPZ&#39;</span><span class="p">:</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="n">TPZ</span><span class="o">.</span><span class="n">Rtree</span><span class="p">(</span><span class="n">Train</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">Train</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">forest</span><span class="o">=</span><span class="s">&#39;yes&#39;</span><span class="p">,</span> <span class="n">minleaf</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">minleaf</span><span class="p">),</span> <span class="n">mstar</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">natt</span><span class="p">),</span>
+                          <span class="n">dict_dim</span><span class="o">=</span><span class="n">DD</span><span class="p">)</span>
+            <span class="n">T</span><span class="o">.</span><span class="n">save_tree</span><span class="p">(</span><span class="n">kss</span><span class="p">,</span> <span class="n">fileout</span><span class="o">=</span><span class="n">Train</span><span class="o">.</span><span class="n">Pars</span><span class="o">.</span><span class="n">treefilename</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">Train</span><span class="o">.</span><span class="n">Pars</span><span class="o">.</span><span class="n">path_output_trees</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;TPZ_C&#39;</span><span class="p">:</span>
+            <span class="n">YC</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">minz</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">maxz</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;int&#39;</span><span class="p">)</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="n">TPZ</span><span class="o">.</span><span class="n">Ctree</span><span class="p">(</span><span class="n">Train</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">Train</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">forest</span><span class="o">=</span><span class="s">&#39;yes&#39;</span><span class="p">,</span> <span class="n">minleaf</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">minleaf</span><span class="p">),</span> <span class="n">mstar</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">natt</span><span class="p">),</span>
+                          <span class="n">dict_dim</span><span class="o">=</span><span class="n">DD</span><span class="p">,</span>
+                          <span class="n">impurity</span><span class="o">=</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">impurityindex</span><span class="p">,</span> <span class="n">nclass</span><span class="o">=</span><span class="n">YC</span><span class="p">)</span>
+            <span class="n">T</span><span class="o">.</span><span class="n">save_tree</span><span class="p">(</span><span class="n">kss</span><span class="p">,</span> <span class="n">fileout</span><span class="o">=</span><span class="n">Train</span><span class="o">.</span><span class="n">Pars</span><span class="o">.</span><span class="n">treefilename</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">Train</span><span class="o">.</span><span class="n">Pars</span><span class="o">.</span><span class="n">path_output_trees</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;SOM&#39;</span><span class="p">:</span>
+            <span class="n">aps</span> <span class="o">=</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">alphastart</span>
+            <span class="n">ape</span> <span class="o">=</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">alphaend</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="n">SOMZ</span><span class="o">.</span><span class="n">SelfMap</span><span class="p">(</span><span class="n">Train</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">Train</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">Ntop</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">ntop</span><span class="p">),</span> <span class="n">topology</span><span class="o">=</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span>
+                             <span class="n">som_type</span><span class="o">=</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">somtype</span><span class="p">,</span>
+                             <span class="n">iterations</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">iterations</span><span class="p">),</span> <span class="n">periodic</span><span class="o">=</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">periodic</span><span class="p">,</span> <span class="n">dict_dim</span><span class="o">=</span><span class="n">DD</span><span class="p">,</span> <span class="n">astart</span><span class="o">=</span><span class="n">aps</span><span class="p">,</span>
+                             <span class="n">aend</span><span class="o">=</span><span class="n">ape</span><span class="p">,</span>
+                             <span class="n">importance</span><span class="o">=</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">importance</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">SF90</span><span class="p">:</span>
+                <span class="n">T</span><span class="o">.</span><span class="n">create_mapF</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">T</span><span class="o">.</span><span class="n">create_map</span><span class="p">()</span>
+            <span class="n">T</span><span class="o">.</span><span class="n">evaluate_map</span><span class="p">(</span><span class="n">inputX</span><span class="o">=</span><span class="n">Train</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">inputY</span><span class="o">=</span><span class="n">Train</span><span class="o">.</span><span class="n">Y</span><span class="p">)</span>
+            <span class="n">T</span><span class="o">.</span><span class="n">save_map</span><span class="p">(</span><span class="n">kss</span><span class="p">,</span> <span class="n">fileout</span><span class="o">=</span><span class="n">Train</span><span class="o">.</span><span class="n">Pars</span><span class="o">.</span><span class="n">somfilename</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">Train</span><span class="o">.</span><span class="n">Pars</span><span class="o">.</span><span class="n">path_output_maps</span><span class="p">)</span>
+
+        <span class="c">#OOB DATA</span>
+        <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">ooberror</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">io</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Train</span><span class="o">.</span><span class="n">Xoob</span><span class="p">)):</span>
+                <span class="n">ij</span> <span class="o">=</span> <span class="n">Train</span><span class="o">.</span><span class="n">oob_index_or</span><span class="p">[</span><span class="n">io</span><span class="p">]</span>
+                <span class="n">tempo</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">get_vals</span><span class="p">(</span><span class="n">Train</span><span class="o">.</span><span class="n">Xoob</span><span class="p">[</span><span class="n">io</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">tempo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mf">1.</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span><span class="p">:</span> <span class="n">OP0raw</span><span class="p">[</span><span class="n">ij</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">Train_S</span><span class="o">.</span><span class="n">get_hist</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Class&#39;</span><span class="p">:</span>
+                        <span class="n">OS1</span><span class="p">[</span><span class="n">ij</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">tempo</span><span class="p">))</span>
+                        <span class="n">OS1</span><span class="p">[</span><span class="n">ij</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span> <span class="o">*</span> <span class="n">array</span><span class="p">(</span><span class="n">tempo</span><span class="p">))</span>
+                        <span class="n">OS1</span><span class="p">[</span><span class="n">ij</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1.</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">varimportance</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ka</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Train</span><span class="o">.</span><span class="n">indx</span><span class="p">)):</span>
+                <span class="n">kname</span> <span class="o">=</span> <span class="n">Train</span><span class="o">.</span><span class="n">cols</span><span class="p">[</span><span class="n">Train</span><span class="o">.</span><span class="n">indx</span><span class="p">[</span><span class="n">ka</span><span class="p">]]</span>
+                <span class="n">k_index</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">att</span><span class="p">)</span> <span class="o">==</span> <span class="n">kname</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">Xoob</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">Train</span><span class="o">.</span><span class="n">Xoob</span><span class="p">)</span>
+                <span class="n">indexp</span> <span class="o">=</span> <span class="n">rn</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Xoob</span><span class="p">)),</span> <span class="nb">len</span><span class="p">(</span><span class="n">Xoob</span><span class="p">))</span>
+                <span class="n">Xoob</span><span class="p">[:,</span> <span class="n">ka</span><span class="p">]</span> <span class="o">=</span> <span class="n">Train</span><span class="o">.</span><span class="n">Xoob</span><span class="p">[</span><span class="n">indexp</span><span class="p">,</span> <span class="n">ka</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">io</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Train</span><span class="o">.</span><span class="n">Xoob</span><span class="p">)):</span>
+                    <span class="n">ij</span> <span class="o">=</span> <span class="n">Train</span><span class="o">.</span><span class="n">oob_index_or</span><span class="p">[</span><span class="n">io</span><span class="p">]</span>
+                    <span class="n">tempo</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">get_vals</span><span class="p">(</span><span class="n">Xoob</span><span class="p">[</span><span class="n">io</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">tempo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mf">1.</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span><span class="p">:</span> <span class="n">OP0rawV</span><span class="p">[</span><span class="n">ij</span><span class="p">,</span> <span class="p">:,</span> <span class="n">k_index</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Train_SV</span><span class="o">.</span><span class="n">get_hist</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Class&#39;</span><span class="p">:</span>
+                            <span class="n">OS1V</span><span class="p">[</span><span class="n">ij</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">k_index</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">tempo</span><span class="p">))</span>
+                            <span class="n">OS1V</span><span class="p">[</span><span class="n">ij</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k_index</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span> <span class="o">*</span> <span class="n">array</span><span class="p">(</span><span class="n">tempo</span><span class="p">))</span>
+                            <span class="n">OS1V</span><span class="p">[</span><span class="n">ij</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">k_index</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1.</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span>
+
+    <span class="k">del</span> <span class="n">T</span>
+    <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+    <span class="k">del</span> <span class="n">Train</span>
+
+    <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">ooberror</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&quot;Cross validation with OOB data&quot;</span><span class="p">)</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span><span class="p">:</span>
+            <span class="n">Oraw</span> <span class="o">=</span> <span class="n">join_oob</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">OP0raw</span><span class="p">,</span> <span class="n">PLL</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">OP0raw</span>
+        <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Class&#39;</span><span class="p">:</span>
+            <span class="n">Oraw</span> <span class="o">=</span> <span class="n">join_oob</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">OS1</span><span class="p">,</span> <span class="n">PLL</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">OS1</span>
+        <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">Z0b2</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">train_nobj</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span><span class="p">:</span>
+                <span class="n">BP0b2</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">train_nobj</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zfine2</span><span class="p">)))</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">train_nobj</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">Oraw</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">0.</span><span class="p">:</span>
+                        <span class="n">z_phot_t</span><span class="p">,</span> <span class="n">pdf_phot_t</span> <span class="o">=</span> <span class="n">Train_S</span><span class="o">.</span><span class="n">get_pdf</span><span class="p">(</span><span class="n">Oraw</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">train_yvals</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                        <span class="n">Z0b2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">z_phot_t</span>
+                        <span class="n">BP0b2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pdf_phot_t</span>
+                <span class="k">del</span> <span class="n">Oraw</span>
+                <span class="n">analysis</span><span class="o">.</span><span class="n">save_single</span><span class="p">(</span><span class="n">Z0b2</span><span class="p">,</span> <span class="n">Pars_in</span><span class="p">,</span> <span class="n">oob</span><span class="o">=</span><span class="s">&#39;yes&#39;</span><span class="p">)</span>
+                <span class="n">analysis</span><span class="o">.</span><span class="n">save_PDF</span><span class="p">(</span><span class="n">zfine2</span><span class="p">,</span> <span class="n">BP0b2</span><span class="p">,</span> <span class="n">Pars_in</span><span class="p">,</span> <span class="n">oob</span><span class="o">=</span><span class="s">&#39;yes&#39;</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">Z0b2</span><span class="p">,</span> <span class="n">BP0b2</span>
+            <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Class&#39;</span><span class="p">:</span>
+                <span class="n">z_0_t</span><span class="p">,</span> <span class="n">z_1_t</span><span class="p">,</span> <span class="n">s_0_t</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">class_stat</span><span class="p">(</span><span class="n">Oraw</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">Oraw</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">Oraw</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">Pars_in</span><span class="p">)</span>
+                <span class="n">Z0b2</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_yvals</span>
+                <span class="n">Z0b2</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_0_t</span>
+                <span class="n">Z0b2</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_1_t</span>
+                <span class="n">Z0b2</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_0_t</span>
+                <span class="k">del</span> <span class="n">Oraw</span>
+                <span class="n">analysis</span><span class="o">.</span><span class="n">save_single</span><span class="p">(</span><span class="n">Z0b2</span><span class="p">,</span> <span class="n">Pars_in</span><span class="p">,</span> <span class="n">oob</span><span class="o">=</span><span class="s">&#39;yes&#39;</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">Z0b2</span>
+
+    <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">varimportance</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&quot;Computing importance ranking&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ka</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">att</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span><span class="p">:</span>
+                <span class="n">Oraw</span> <span class="o">=</span> <span class="n">join_oob</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">OP0rawV</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">ka</span><span class="p">],</span> <span class="n">PLL</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Class&#39;</span><span class="p">:</span>
+                <span class="n">Oraw</span> <span class="o">=</span> <span class="n">join_oob</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">OS1V</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">ka</span><span class="p">],</span> <span class="n">PLL</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">Z0b2</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">train_nobj</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">train_nobj</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">Oraw</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">0.</span><span class="p">:</span>
+                            <span class="n">z_phot_t</span><span class="p">,</span> <span class="n">pdf_phot_t</span> <span class="o">=</span> <span class="n">Train_SV</span><span class="o">.</span><span class="n">get_pdf</span><span class="p">(</span><span class="n">Oraw</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">train_yvals</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                            <span class="n">Z0b2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">z_phot_t</span>
+                    <span class="n">analysis</span><span class="o">.</span><span class="n">save_single</span><span class="p">(</span><span class="n">Z0b2</span><span class="p">,</span> <span class="n">Pars_in</span><span class="p">,</span> <span class="n">oob</span><span class="o">=</span><span class="s">&#39;yes&#39;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">att</span><span class="p">[</span><span class="n">ka</span><span class="p">])</span>
+                    <span class="k">del</span> <span class="n">Z0b2</span>
+                <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Class&#39;</span><span class="p">:</span>
+                    <span class="n">z_0_t</span><span class="p">,</span> <span class="n">z_1_t</span><span class="p">,</span> <span class="n">s_0_t</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">class_stat</span><span class="p">(</span><span class="n">Oraw</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">Oraw</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">Oraw</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">Pars_in</span><span class="p">)</span>
+                    <span class="n">Z0b2</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_yvals</span>
+                    <span class="n">Z0b2</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_0_t</span>
+                    <span class="n">Z0b2</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_1_t</span>
+                    <span class="n">Z0b2</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_0_t</span>
+                    <span class="n">analysis</span><span class="o">.</span><span class="n">save_single</span><span class="p">(</span><span class="n">Z0b2</span><span class="p">,</span> <span class="n">Pars_in</span><span class="p">,</span> <span class="n">oob</span><span class="o">=</span><span class="s">&#39;yes&#39;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">att</span><span class="p">[</span><span class="n">ka</span><span class="p">])</span>
+                    <span class="k">del</span> <span class="n">Z0b2</span>
+        <span class="k">del</span> <span class="n">Oraw</span>
+        <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span><span class="p">:</span> <span class="k">del</span> <span class="n">OP0rawV</span>
+        <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Class&#39;</span><span class="p">:</span> <span class="k">del</span> <span class="n">OS1V</span>
+    <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">ooberror</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span> <span class="k">del</span> <span class="n">train_yvals</span>
+
+    <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;+-+-+-+-+-+-+-+-+-+-+-+-+&#39;</span><span class="p">)</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="n">PLL</span><span class="p">,</span> <span class="s">&#39; time Training&#39;</span><span class="p">)</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;+-+-+-+-+-+-+-+-+-+-+-+-+&#39;</span><span class="p">)</span>
+        <span class="n">local_clock</span><span class="o">.</span><span class="n">elapsed</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">dotest</span> <span class="o">==</span> <span class="s">&#39;no&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&quot;Only training was selected&quot;</span><span class="p">)</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&quot;Check utils/utils_mlz.py &quot;</span><span class="p">)</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c">#------------------------------------------------------------------------</span>
+<span class="c"># NOW TEST</span>
+<span class="n">zfine</span><span class="p">,</span> <span class="n">zfine2</span><span class="p">,</span> <span class="n">resz</span><span class="p">,</span> <span class="n">resz2</span><span class="p">,</span> <span class="n">wzin</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">get_zbins</span><span class="p">(</span><span class="n">Pars_in</span><span class="p">)</span>
+<span class="n">zfine2</span> <span class="o">=</span> <span class="n">zfine2</span><span class="p">[</span><span class="n">wzin</span><span class="p">]</span>
+<span class="n">ntot</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">nrandom</span> <span class="o">*</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">ntrees</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">local_clock</span> <span class="o">=</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">Stopwatch</span><span class="p">(</span><span class="s">&#39;no&#39;</span><span class="p">)</span>
+    <span class="n">cat_temp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">read_catalog</span><span class="p">(</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">path_test</span> <span class="o">+</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">testfile</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="n">Pars_in</span><span class="o">.</span><span class="n">checkonly</span><span class="p">)</span>
+    <span class="n">Ng</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cat_temp</span><span class="p">),</span> <span class="s">&#39;i&#39;</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">cat_temp</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">Ng</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;i&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Bcast</span><span class="p">([</span><span class="n">Ng</span><span class="p">,</span> <span class="n">MPI</span><span class="o">.</span><span class="n">INT</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">s0</span><span class="p">,</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">get_limits</span><span class="p">(</span><span class="n">Ng</span><span class="p">,</span> <span class="n">Nproc</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;-&gt; NUMBER OF GALAXIES IN TEST CATALOG : &#39;</span><span class="p">,</span> <span class="n">Ng</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">Nproc</span><span class="p">):</span>
+        <span class="n">Xs_0</span><span class="p">,</span> <span class="n">Xs_1</span> <span class="o">=</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">get_limits</span><span class="p">(</span><span class="n">Ng</span><span class="p">,</span> <span class="n">Nproc</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="n">Xs_0</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">Xs_1</span><span class="p">,</span> <span class="s">&#39; -------------&gt; to core &#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+<span class="n">Test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">catalog</span><span class="p">(</span><span class="n">Pars_in</span><span class="p">,</span> <span class="n">cat_type</span><span class="o">=</span><span class="s">&#39;test&#39;</span><span class="p">,</span> <span class="n">L1</span><span class="o">=</span><span class="n">s0</span><span class="p">,</span> <span class="n">L2</span><span class="o">=</span><span class="n">s1</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">)</span>
+<span class="n">Test</span><span class="o">.</span><span class="n">get_XY</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">Test</span><span class="o">.</span><span class="n">has_Y</span><span class="p">():</span>
+    <span class="n">yvals</span> <span class="o">=</span> <span class="n">Test</span><span class="o">.</span><span class="n">Y</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">yvals</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">Test</span><span class="o">.</span><span class="n">nobj</span><span class="p">)</span>
+
+<span class="n">test_nobj</span> <span class="o">=</span> <span class="n">Test</span><span class="o">.</span><span class="n">nobj</span>
+
+<span class="n">Z0</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">Test</span><span class="o">.</span><span class="n">nobj</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+
+<span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;TPZ&#39;</span><span class="p">:</span> <span class="n">path1</span> <span class="o">=</span> <span class="n">Test</span><span class="o">.</span><span class="n">Pars</span><span class="o">.</span><span class="n">path_output_trees</span>
+<span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;TPZ_C&#39;</span><span class="p">:</span> <span class="n">path1</span> <span class="o">=</span> <span class="n">Test</span><span class="o">.</span><span class="n">Pars</span><span class="o">.</span><span class="n">path_output_trees</span>
+<span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;SOM&#39;</span><span class="p">:</span> <span class="n">path1</span> <span class="o">=</span> <span class="n">Test</span><span class="o">.</span><span class="n">Pars</span><span class="o">.</span><span class="n">path_output_maps</span>
+
+<span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;TPZ&#39;</span><span class="p">:</span> <span class="n">fileb</span> <span class="o">=</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">treefilename</span>
+<span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;TPZ_C&#39;</span><span class="p">:</span> <span class="n">fileb</span> <span class="o">=</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">treefilename</span>
+<span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;SOM&#39;</span><span class="p">:</span> <span class="n">fileb</span> <span class="o">=</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">somfilename</span>
+
+<span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span><span class="p">:</span>
+    <span class="n">BP0</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">Test</span><span class="o">.</span><span class="n">nobj</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zfine2</span><span class="p">)))</span>
+    <span class="n">BP0raw</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">Test</span><span class="o">.</span><span class="n">nobj</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zfine</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">Test_S</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">GetPz_short</span><span class="p">(</span><span class="n">Pars_in</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Class&#39;</span><span class="p">:</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">Test</span><span class="o">.</span><span class="n">nobj</span><span class="p">)</span>
+    <span class="n">S2</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">Test</span><span class="o">.</span><span class="n">nobj</span><span class="p">)</span>
+    <span class="n">Nv</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">Test</span><span class="o">.</span><span class="n">nobj</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">ntot</span><span class="p">):</span>
+    <span class="n">ff</span> <span class="o">=</span> <span class="s">&#39;_</span><span class="si">%04d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">k</span>
+    <span class="n">filec</span> <span class="o">=</span> <span class="n">path1</span> <span class="o">+</span> <span class="n">fileb</span> <span class="o">+</span> <span class="n">ff</span> <span class="o">+</span> <span class="s">&#39;.npy&#39;</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">filec</span><span class="p">)</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="n">DD</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">dict_dim</span>
+    <span class="k">if</span> <span class="n">Pmode</span> <span class="o">==</span> <span class="s">&#39;SOM&#39;</span><span class="p">:</span> <span class="n">Test</span><span class="o">.</span><span class="n">get_XY</span><span class="p">(</span><span class="n">curr_at</span><span class="o">=</span><span class="n">DD</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">Test</span><span class="o">.</span><span class="n">nobj</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">get_vals</span><span class="p">(</span><span class="n">Test</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mf">1.</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span><span class="p">:</span> <span class="n">BP0raw</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">Test_S</span><span class="o">.</span><span class="n">get_hist</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Class&#39;</span><span class="p">:</span>
+                <span class="n">S1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">temp</span><span class="p">))</span>
+                <span class="n">S2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span> <span class="o">*</span> <span class="n">array</span><span class="p">(</span><span class="n">temp</span><span class="p">))</span>
+                <span class="n">Nv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1.</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">test_nobj</span><span class="p">):</span>
+        <span class="n">z_phot</span><span class="p">,</span> <span class="n">pdf_phot</span> <span class="o">=</span> <span class="n">Test_S</span><span class="o">.</span><span class="n">get_pdf</span><span class="p">(</span><span class="n">BP0raw</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">yvals</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+        <span class="n">Z0</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">z_phot</span>
+        <span class="n">BP0</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pdf_phot</span>
+    <span class="k">del</span> <span class="n">BP0raw</span><span class="p">,</span> <span class="n">yvals</span>
+<span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Class&#39;</span><span class="p">:</span>
+    <span class="n">z_0</span><span class="p">,</span> <span class="n">z_1</span><span class="p">,</span> <span class="n">s_0</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">class_stat</span><span class="p">(</span><span class="n">S1</span><span class="p">,</span> <span class="n">S2</span><span class="p">,</span> <span class="n">Nv</span><span class="p">,</span> <span class="n">Pars_in</span><span class="p">)</span>
+    <span class="n">Z0</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">yvals</span>
+    <span class="n">Z0</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_0</span>
+    <span class="n">Z0</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_1</span>
+    <span class="n">Z0</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_0</span>
+    <span class="k">del</span> <span class="n">S1</span><span class="p">,</span> <span class="n">S2</span><span class="p">,</span> <span class="n">Nv</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+    <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;+-+-+-+-+-+-+-+-+-+-+-+-+&#39;</span><span class="p">)</span>
+    <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="n">PLL</span><span class="p">,</span> <span class="s">&#39; time Testing&#39;</span><span class="p">)</span>
+    <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;+-+-+-+-+-+-+-+-+-+-+-+-+&#39;</span><span class="p">)</span>
+    <span class="n">local_clock</span><span class="o">.</span><span class="n">elapsed</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+<span class="c">####################################</span>
+
+
+<span class="n">s0</span><span class="p">,</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">get_limits</span><span class="p">(</span><span class="n">Ng</span><span class="p">,</span> <span class="n">Nproc</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">BIGZ</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">Ng</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+    <span class="n">BIGZ</span><span class="p">[</span><span class="n">s0</span><span class="p">:</span><span class="n">s1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">Z0</span>
+    <span class="k">for</span> <span class="n">srank</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Nproc</span><span class="p">):</span>
+        <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">get_limits</span><span class="p">(</span><span class="n">Ng</span><span class="p">,</span> <span class="n">Nproc</span><span class="p">,</span> <span class="n">srank</span><span class="p">)</span>
+        <span class="n">size_dat</span> <span class="o">=</span> <span class="n">s1</span> <span class="o">-</span> <span class="n">s0</span>
+        <span class="n">ZT</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">size_dat</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Recv</span><span class="p">(</span><span class="n">ZT</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">srank</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">srank</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">BIGZ</span><span class="p">[</span><span class="n">s0</span><span class="p">:</span><span class="n">s1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">ZT</span>
+        <span class="k">del</span> <span class="n">ZT</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Send</span><span class="p">(</span><span class="n">Z0</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">rank</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">Z0</span>
+<span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">analysis</span><span class="o">.</span><span class="n">save_single</span><span class="p">(</span><span class="n">BIGZ</span><span class="p">,</span> <span class="n">Pars_in</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">BIGZ</span>
+
+<span class="k">if</span> <span class="n">Cmode</span> <span class="o">==</span> <span class="s">&#39;Reg&#39;</span> <span class="ow">and</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">writepdf</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">Pars_in</span><span class="o">.</span><span class="n">multiplefiles</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;************************************&#39;</span><span class="p">)</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;** Writing multiple file for PDFs **&#39;</span><span class="p">)</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;************************************&#39;</span><span class="p">)</span>
+            <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">()</span>
+        <span class="n">path_r</span><span class="p">,</span> <span class="n">filebase_r</span><span class="p">,</span> <span class="n">num_r</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">get_path_new</span><span class="p">(</span><span class="n">Pars_in</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+        <span class="n">analysis</span><span class="o">.</span><span class="n">save_PDF</span><span class="p">(</span><span class="n">zfine2</span><span class="p">,</span> <span class="n">BP0</span><span class="p">,</span> <span class="n">Pars_in</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path_r</span><span class="p">,</span> <span class="n">filebase</span><span class="o">=</span><span class="n">filebase_r</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">num_r</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="s">&#39;yes&#39;</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">get_limits</span><span class="p">(</span><span class="n">Ng</span><span class="p">,</span> <span class="n">Nproc</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">BIGP</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">Ng</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zfine2</span><span class="p">)))</span>
+            <span class="n">BIGP</span><span class="p">[</span><span class="n">s0</span><span class="p">:</span><span class="n">s1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">BP0</span>
+            <span class="k">for</span> <span class="n">srank</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Nproc</span><span class="p">):</span>
+                <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">utils_mlz</span><span class="o">.</span><span class="n">get_limits</span><span class="p">(</span><span class="n">Ng</span><span class="p">,</span> <span class="n">Nproc</span><span class="p">,</span> <span class="n">srank</span><span class="p">)</span>
+                <span class="n">size_dat</span> <span class="o">=</span> <span class="n">s1</span> <span class="o">-</span> <span class="n">s0</span>
+                <span class="n">BPT</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">size_dat</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zfine2</span><span class="p">)))</span>
+                <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Recv</span><span class="p">(</span><span class="n">BPT</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">srank</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">srank</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">BIGP</span><span class="p">[</span><span class="n">s0</span><span class="p">:</span><span class="n">s1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">BPT</span>
+                <span class="k">del</span> <span class="n">BPT</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Send</span><span class="p">(</span><span class="n">BP0</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">rank</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">analysis</span><span class="o">.</span><span class="n">save_PDF</span><span class="p">(</span><span class="n">zfine2</span><span class="p">,</span> <span class="n">BIGP</span><span class="p">,</span> <span class="n">Pars_in</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">BIGP</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;+-+-+-+-+-+-+-+-+&#39;</span><span class="p">)</span>
+    <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="n">PLL</span><span class="p">,</span> <span class="s">&#39; TOTAL TIME&#39;</span><span class="p">)</span>
+    <span class="n">utils_mlz</span><span class="o">.</span><span class="n">printpz</span><span class="p">(</span><span class="s">&#39;+-+-+-+-+-+-+-+-+&#39;</span><span class="p">)</span>
+    <span class="n">clock_all</span><span class="o">.</span><span class="n">elapsed</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">PLL</span> <span class="o">==</span> <span class="s">&#39;MPI&#39;</span><span class="p">:</span> <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Matias Carrasco Kind.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

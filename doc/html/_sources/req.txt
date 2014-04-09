@@ -1,0 +1,45 @@
+Requirements
+============
+
+    The standard requirements for MLZ are the following python libraries:
+
+    - numpy_
+    - scipy_
+    - matplotlib_
+    - mpi4py_ (for parallel running)
+    - healpy_ (for spherical coordinates) **optional but recommended**
+    - f2py_   (a fortran wrapper) **optional but recommended**
+
+Parallel MLZ
+............
+    MLZ can run on a single node but it is **strongly** recommended to install MPI libraries and mpi4py_.
+
+    In order to run in parallel MPI libraries must be present and
+    the mpi4py_ module which can be obtained from http://mpi4py.scipy.org/ .
+    A first you might get it easy by trying::
+
+        [sudo] easy_install install mpi4py
+
+    ot via pip::
+
+        [sudo] pip install mpi4py
+
+    with sudo permissions, or locally using::
+
+        easy_install --user install mpi4py
+    or::
+
+        pip install mpi4py --user
+
+.. External Links
+.. ..............
+
+.. _numpy: http://www.numpy.org/
+.. _scipy: http://www.scipy.org/
+.. _matplotlib:  http://matplotlib.org/
+.. _mpi4py: http://mpi4py.scipy.org/
+.. _Mpi4py: http://mpi4py.scipy.org/
+.. _healpy: http://healpy.readthedocs.org/en/latest/
+.. _f2py: https://code.google.com/p/f2py/
+
+

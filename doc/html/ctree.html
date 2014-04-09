@@ -1,0 +1,149 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Classification Trees Class &mdash; MLZ 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="up" title="TPZ: Trees for Photo-Z" href="tpz.html" />
+    <link rel="next" title="SOMz: Self Organizing Maps and random atlas" href="somz.html" />
+    <link rel="prev" title="Regression Tree Class" href="rtree.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="index.html">
+          <img class="logo" src="_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="rtree.html">Regression Tree Class</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="somz.html">SOMz: Self Organizing Maps and random atlas</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="classification-trees-class">
+<h1>Classification Trees Class<a class="headerlink" href="#classification-trees-class" title="Permalink to this headline">¶</a></h1>
+<blockquote class="pull-quote">
+<div>This is the <a class="reference internal" href="#TPZ.Ctree" title="TPZ.Ctree"><tt class="xref py py-class docutils literal"><span class="pre">TPZ.Ctree</span></tt></a> class in some detail, refer to the source code for mode information and methods.</div></blockquote>
+<span class="target" id="module-TPZ"></span><span class="target" id="module-TPZ"></span><p><em>Module author: Matias Carrasco Kind</em></p>
+<dl class="class">
+<dt id="TPZ.Ctree">
+<em class="property">class </em><tt class="descclassname">TPZ.</tt><tt class="descname">Ctree</tt><big>(</big><em>X</em>, <em>Y</em>, <em>minleaf=4</em>, <em>forest='yes'</em>, <em>mstar=2</em>, <em>dict_dim=''</em>, <em>impurity='entropy'</em>, <em>nclass=array([0</em>, <em>1])</em><big>)</big><a class="headerlink" href="#TPZ.Ctree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a  classification tree class instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>X</strong> (<em>float or int array, 1 row per object</em>) &#8211; Preprocessed attributes array (<em>all</em> columns are considered)</li>
+<li><strong>Y</strong> (<em>int array</em>) &#8211; Attribute to be predicted</li>
+<li><strong>minleaf</strong> (<em>int, def = 4</em>) &#8211; Minimum number of objects on terminal leaf</li>
+<li><strong>forest</strong> (<em>str, &#8216;yes&#8217;/&#8217;no&#8217;</em>) &#8211; Random forest key</li>
+<li><strong>mstar</strong> (<em>int</em>) &#8211; Number of random subsample of attributes if forest is used</li>
+<li><strong>impurity</strong> &#8211; &#8216;entropy&#8217;/&#8217;gini&#8217;/&#8217;classE&#8217; to compute information gain</li>
+<li><strong>nclass</strong> (<em>int array</em>) &#8211; classes array (labels)</li>
+<li><strong>dict_dim</strong> (<em>dict</em>) &#8211; dictionary with attributes names</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="TPZ.Ctree.get_branch">
+<tt class="descname">get_branch</tt><big>(</big><em>line</em><big>)</big><a class="headerlink" href="#TPZ.Ctree.get_branch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="rtree.html#TPZ.Rtree.get_branch" title="TPZ.Rtree.get_branch"><tt class="xref py py-func docutils literal"><span class="pre">Rtree.get_branch()</span></tt></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TPZ.Ctree.get_vals">
+<tt class="descname">get_vals</tt><big>(</big><em>line</em><big>)</big><a class="headerlink" href="#TPZ.Ctree.get_vals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="rtree.html#TPZ.Rtree.get_vals" title="TPZ.Rtree.get_vals"><tt class="xref py py-func docutils literal"><span class="pre">Rtree.get_vals()</span></tt></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TPZ.Ctree.leaves">
+<tt class="descname">leaves</tt><big>(</big><big>)</big><a class="headerlink" href="#TPZ.Ctree.leaves" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="rtree.html#TPZ.Rtree.leaves" title="TPZ.Rtree.leaves"><tt class="xref py py-func docutils literal"><span class="pre">Rtree.leaves()</span></tt></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TPZ.Ctree.leaves_dim">
+<tt class="descname">leaves_dim</tt><big>(</big><big>)</big><a class="headerlink" href="#TPZ.Ctree.leaves_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="rtree.html#TPZ.Rtree.leaves_dim" title="TPZ.Rtree.leaves_dim"><tt class="xref py py-func docutils literal"><span class="pre">Rtree.leaves_dim()</span></tt></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TPZ.Ctree.plot_tree">
+<tt class="descname">plot_tree</tt><big>(</big><em>itn=-1</em>, <em>fileout='TPZ'</em>, <em>path=''</em>, <em>save_png='no'</em><big>)</big><a class="headerlink" href="#TPZ.Ctree.plot_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="rtree.html#TPZ.Rtree.plot_tree" title="TPZ.Rtree.plot_tree"><tt class="xref py py-func docutils literal"><span class="pre">Rtree.plot_tree()</span></tt></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TPZ.Ctree.print_branch">
+<tt class="descname">print_branch</tt><big>(</big><em>branch</em><big>)</big><a class="headerlink" href="#TPZ.Ctree.print_branch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="rtree.html#TPZ.Rtree.print_branch" title="TPZ.Rtree.print_branch"><tt class="xref py py-func docutils literal"><span class="pre">Rtree.print_branch()</span></tt></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TPZ.Ctree.save_tree">
+<tt class="descname">save_tree</tt><big>(</big><em>itn=-1</em>, <em>fileout='TPZ'</em>, <em>path=''</em><big>)</big><a class="headerlink" href="#TPZ.Ctree.save_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="rtree.html#TPZ.Rtree.save_tree" title="TPZ.Rtree.save_tree"><tt class="xref py py-func docutils literal"><span class="pre">Rtree.save_tree()</span></tt></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="rtree.html">Regression Tree Class</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="somz.html">SOMz: Self Organizing Maps and random atlas</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Matias Carrasco Kind.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

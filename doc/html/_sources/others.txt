@@ -1,0 +1,18 @@
+Other routines
+===============
+
+.. include:: colors.rst
+
+.. pull-quote::
+
+    Here we list other modules used by MLZ that help the code to run efficiently. for a more detailed please refer to
+    the source code, these are samples of some important routines used by the code. Check :doc:`run` for an example
+    on how to run MLZ for a SDSS sample of galaxies
+
+.. toctree::
+   :maxdepth: 1
+
+   data
+   utils
+   plotting
+

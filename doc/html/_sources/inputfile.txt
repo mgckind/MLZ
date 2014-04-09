@@ -1,0 +1,15 @@
+.. _input-file:
+
+Input file template
+====================
+
+.. include:: colors.rst
+
+.. pull-quote::
+    This is what the input file of parameters looks like. Everything is in here and it
+    should be used as a template for your data. Note the :red:`blank space` between the variable
+    and its value. This input file is case insensitive and after each run a copy of the
+    input file is saved along with the results
+
+.. literalinclude:: ../mlz/test/SDSS_MGS.inputs
+

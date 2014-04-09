@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Somz module &mdash; MLZ 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="up" title="SOMz: Self Organizing Maps and random atlas" href="somz.html" />
+    <link rel="next" title="Other routines" href="others.html" />
+    <link rel="prev" title="SOMz: Self Organizing Maps and random atlas" href="somz.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="index.html">
+          <img class="logo" src="_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="somz.html">SOMz: Self Organizing Maps and random atlas</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="others.html">Other routines</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="somz-module">
+<h1>Somz module<a class="headerlink" href="#somz-module" title="Permalink to this headline">¶</a></h1>
+<blockquote class="pull-quote">
+<div>This is the <a class="reference internal" href="#module-SOMZ" title="SOMZ"><tt class="xref py py-class docutils literal"><span class="pre">SOMZ</span></tt></a> class in some detail, refer to the source code for mode information and methods.</div></blockquote>
+<span class="target" id="module-SOMZ"></span><span class="target" id="module-SOMZ"></span><p><em>Module author: Matias Carrasco Kind</em></p>
+<dl class="class">
+<dt id="SOMZ.SelfMap">
+<em class="property">class </em><tt class="descclassname">SOMZ.</tt><tt class="descname">SelfMap</tt><big>(</big><em>X</em>, <em>Y</em>, <em>topology='grid'</em>, <em>som_type='online'</em>, <em>Ntop=28</em>, <em>iterations=30</em>, <em>periodic='no'</em>, <em>dict_dim=''</em>, <em>astart=0.8</em>, <em>aend=0.5</em>, <em>importance=None</em><big>)</big><a class="headerlink" href="#SOMZ.SelfMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a som class instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>X</strong> (<em>float</em>) &#8211; Attributes array (all columns used)</li>
+<li><strong>Y</strong> (<em>float</em>) &#8211; Attribute to be predicted (not really needed, can be zeros)</li>
+<li><strong>topology</strong> (<em>str</em>) &#8211; Which 2D topology, &#8216;grid&#8217;, &#8216;hex&#8217; or &#8216;sphere&#8217;</li>
+<li><strong>som_type</strong> (<em>str</em>) &#8211; Which updating scheme to use &#8216;online&#8217; or &#8216;batch&#8217;</li>
+<li><strong>Ntop</strong> (<em>int</em>) &#8211; Size of map,  for grid Size=Ntop*Ntop,
+for hex Size=Ntop*(Ntop+1[2]) if Ntop is even[odd] and for sphere
+Size=12*Ntop*Ntop and top must be power of 2</li>
+<li><strong>iterations</strong> (<em>int</em>) &#8211; Number of iteration the entire sample is processed</li>
+<li><strong>periodic</strong> (<em>str</em>) &#8211; Use periodic boundary conditions (&#8216;yes&#8217;/&#8217;no&#8217;), valid for &#8216;hex&#8217; and &#8216;grid&#8217; only</li>
+<li><strong>dict_dim</strong> (<em>dict</em>) &#8211; dictionary with attributes names</li>
+<li><strong>astar</strong> (<em>float</em>) &#8211; Initial value of alpha</li>
+<li><strong>aend</strong> (<em>float</em>) &#8211; End value of alpha</li>
+<li><strong>importance</strong> (<em>str</em>) &#8211; Path to the file with importance ranking for attributes, default is none</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="SOMZ.SelfMap.create_map">
+<tt class="descname">create_map</tt><big>(</big><em>evol='no'</em>, <em>inputs_weights=''</em><big>)</big><a class="headerlink" href="#SOMZ.SelfMap.create_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is same as above but uses python routines instead</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="SOMZ.SelfMap.create_mapF">
+<tt class="descname">create_mapF</tt><big>(</big><em>evol='no'</em>, <em>inputs_weights=''</em><big>)</big><a class="headerlink" href="#SOMZ.SelfMap.create_mapF" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions actually create the maps, it uses
+random values to initialize the weights
+It uses a Fortran subroutine compiled with f2py</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="SOMZ.SelfMap.evaluate_map">
+<tt class="descname">evaluate_map</tt><big>(</big><em>inputX=''</em>, <em>inputY=''</em><big>)</big><a class="headerlink" href="#SOMZ.SelfMap.evaluate_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions evaluates the map created using the input Y or a new Y (array of labeled attributes)
+It uses the X array passed or new data X as well, the map doesn&#8217;t change</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>inputX</strong> (<em>float</em>) &#8211; Use this if another set of values for X is wanted using
+the weigths already computed</li>
+<li><strong>inputY</strong> (<em>float</em>) &#8211; One  dimensional array of the values to be assigned to each cell in the map
+based on the in-memory X passed</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="SOMZ.SelfMap.get_best">
+<tt class="descname">get_best</tt><big>(</big><em>line</em><big>)</big><a class="headerlink" href="#SOMZ.SelfMap.get_best" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the predictions  given a line search, where the line
+is a vector of attributes per individual object for THE best cell</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<em>float</em>) &#8211; input data to look in the tree</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">array with the cell content</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="SOMZ.SelfMap.get_vals">
+<tt class="descname">get_vals</tt><big>(</big><em>line</em><big>)</big><a class="headerlink" href="#SOMZ.SelfMap.get_vals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the predictions  given a line search, where the line
+is a vector of attributes per individual object fot the
+10 closest cells.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<em>float</em>) &#8211; input data to look in the tree</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">array with the cell content</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="SOMZ.SelfMap.plot_map">
+<tt class="descname">plot_map</tt><big>(</big><em>min_m=-100</em>, <em>max_m=-100</em>, <em>colbar='yes'</em><big>)</big><a class="headerlink" href="#SOMZ.SelfMap.plot_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the map after evaluating, the cells are colored with the mean value inside each
+one of them</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>min_m</strong> (<em>float</em>) &#8211; Lower limit for coloring the cells, -100 uses min value</li>
+<li><strong>max_m</strong> (<em>float</em>) &#8211; Upper limit for coloring the cells, -100 uses max value</li>
+<li><strong>colbar</strong> (<em>str</em>) &#8211; Include a colorbar (&#8216;yes&#8217;,&#8217;no&#8217;)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="SOMZ.SelfMap.save_map">
+<tt class="descname">save_map</tt><big>(</big><em>itn=-1</em>, <em>fileout='SOM'</em>, <em>path=''</em><big>)</big><a class="headerlink" href="#SOMZ.SelfMap.save_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the map</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>itn</strong> (<em>int</em>) &#8211; Number of map to be included on path, use -1 to ignore this number</li>
+<li><strong>fileout</strong> (<em>str</em>) &#8211; Name of output file</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; path for the output file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="SOMZ.SelfMap.save_map_dict">
+<tt class="descname">save_map_dict</tt><big>(</big><em>path=''</em>, <em>fileout='SOM'</em>, <em>itn=-1</em><big>)</big><a class="headerlink" href="#SOMZ.SelfMap.save_map_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the map in dictionary format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>itn</strong> (<em>int</em>) &#8211; Number of map to be included on path, use -1 to ignore this number</li>
+<li><strong>fileout</strong> (<em>str</em>) &#8211; Name of output file</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; path for the output file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="SOMZ.SelfMap.som_best_cell">
+<tt class="descname">som_best_cell</tt><big>(</big><em>inputs</em>, <em>return_vals=1</em><big>)</big><a class="headerlink" href="#SOMZ.SelfMap.som_best_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the closest cell to the input object
+It can return more than one value if needed</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="SOMZ.geometry">
+<tt class="descclassname">SOMZ.</tt><tt class="descname">geometry</tt><big>(</big><em>top</em>, <em>Ntop</em>, <em>periodic='no'</em><big>)</big><a class="headerlink" href="#SOMZ.geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-compute distances between cells in a given topology
+and store it on a distLib array</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>top</strong> (<em>str</em>) &#8211; Topology (&#8216;grid&#8217;,&#8217;hex&#8217;,&#8217;sphere&#8217;)</li>
+<li><strong>Ntop</strong> (<em>int</em>) &#8211; Size of map,  for grid Size=Ntop*Ntop,
+for hex Size=Ntop*(Ntop+1[2]) if Ntop is even[odd] and for sphere
+Size=12*Ntop*Ntop and top must be power of 2</li>
+<li><strong>periodic</strong> (<em>str</em>) &#8211; Use periodic boundary conditions (&#8216;yes&#8217;/&#8217;no&#8217;), valid for &#8216;hex&#8217; and &#8216;grid&#8217; only</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">2D array with distances pre computed between cells and total number of units</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">2D float array, int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="SOMZ.get_alpha">
+<tt class="descclassname">SOMZ.</tt><tt class="descname">get_alpha</tt><big>(</big><em>t</em>, <em>alphas</em>, <em>alphae</em>, <em>NT</em><big>)</big><a class="headerlink" href="#SOMZ.get_alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get value of alpha at a given time</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="SOMZ.get_ns">
+<tt class="descclassname">SOMZ.</tt><tt class="descname">get_ns</tt><big>(</big><em>ix</em>, <em>iy</em>, <em>nx</em>, <em>ny</em>, <em>index=False</em><big>)</big><a class="headerlink" href="#SOMZ.get_ns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get neighbors for rectangular grid given its
+coordinates and size of grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ix</strong> (<em>int</em>) &#8211; Coordinate in the x-axis</li>
+<li><strong>iy</strong> (<em>int</em>) &#8211; Coordinate in the y-axis</li>
+<li><strong>nx</strong> (<em>int</em>) &#8211; Number fo cells along the x-axis</li>
+<li><strong>ny</strong> (<em>int</em>) &#8211; Number fo cells along the y-axis</li>
+<li><strong>index</strong> (<em>bool</em>) &#8211; Return indexes in the map format</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Array of indexes for direct neighbors</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="SOMZ.get_ns_hex">
+<tt class="descclassname">SOMZ.</tt><tt class="descname">get_ns_hex</tt><big>(</big><em>ix</em>, <em>iy</em>, <em>nx</em>, <em>ny</em>, <em>index=False</em><big>)</big><a class="headerlink" href="#SOMZ.get_ns_hex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get neighbors for hexagonal grid given its coordinates
+and size of grid
+Same parameters as <a class="reference internal" href="#SOMZ.get_ns" title="SOMZ.get_ns"><tt class="xref py py-func docutils literal"><span class="pre">get_ns()</span></tt></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="SOMZ.get_sigma">
+<tt class="descclassname">SOMZ.</tt><tt class="descname">get_sigma</tt><big>(</big><em>t</em>, <em>sigma0</em>, <em>sigmaf</em>, <em>NT</em><big>)</big><a class="headerlink" href="#SOMZ.get_sigma" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get value of sigma at a given time</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="SOMZ.h">
+<tt class="descclassname">SOMZ.</tt><tt class="descname">h</tt><big>(</big><em>bmu</em>, <em>mapD</em>, <em>sigma</em><big>)</big><a class="headerlink" href="#SOMZ.h" title="Permalink to this definition">¶</a></dt>
+<dd><p>Neighborhood function which quantifies how much cells around the best matching one are modified</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bmu</strong> (<em>int</em>) &#8211; best matching unit</li>
+<li><strong>mapD</strong> (<em>float</em>) &#8211; array of distances computed with <a class="reference internal" href="#SOMZ.geometry" title="SOMZ.geometry"><tt class="xref py py-func docutils literal"><span class="pre">geometry()</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="SOMZ.is_power_2">
+<tt class="descclassname">SOMZ.</tt><tt class="descname">is_power_2</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#SOMZ.is_power_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if passed value is a power of 2</p>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="somz.html">SOMz: Self Organizing Maps and random atlas</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="others.html">Other routines</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Matias Carrasco Kind.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

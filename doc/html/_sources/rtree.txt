@@ -1,0 +1,9 @@
+Regression Tree Class
+=======================
+
+.. pull-quote::
+
+    This is the :class:`TPZ.Rtree` class in some detail, refer to the source code for mode information and methods.
+
+.. automodule:: TPZ
+    :members: Rtree

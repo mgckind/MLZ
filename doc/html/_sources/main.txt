@@ -1,0 +1,12 @@
+.. _run-file:
+
+runMLZ
+==========
+
+.. include:: colors.rst
+
+.. pull-quote::
+    This is the main file to run MLZ, this read the :ref:`input-file` and get all the configuration from it. It
+    prints the time  spent on all the steps.
+
+.. literalinclude:: ../mlz/runMLZ

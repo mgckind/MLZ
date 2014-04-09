@@ -1,0 +1,203 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Plotting &mdash; MLZ 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="up" title="Other routines" href="others.html" />
+    <link rel="next" title="Run MLZ" href="run_mlz.html" />
+    <link rel="prev" title="Utils" href="utils.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="index.html">
+          <img class="logo" src="_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="utils.html">Utils</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="run_mlz.html">Run MLZ</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="plotting">
+<h1>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline">¶</a></h1>
+<blockquote class="pull-quote">
+<div>This is the <a class="reference internal" href="#module-plotting" title="plotting"><tt class="xref py py-class docutils literal"><span class="pre">plotting</span></tt></a> class in some detail, this is used for plotting some results for the photometric
+redshift problem. Check <a class="reference internal" href="run.html"><em>Running a test</em></a> to check a quick view on how to use this.</div></blockquote>
+<span class="target" id="module-plotting"></span><span class="target" id="module-plotting"></span><p><em>Module author: Matias Carrasco Kind</em></p>
+<dl class="class">
+<dt id="plotting.Qplot">
+<em class="property">class </em><tt class="descclassname">plotting.</tt><tt class="descname">Qplot</tt><big>(</big><em>inputs_file</em><big>)</big><a class="headerlink" href="#plotting.Qplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a qplot instance to produce a set of useful plot for quick
+analysis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inputs_file</strong> (<em>str</em>) &#8211; path to input file where all information and parameters are declared <a class="reference internal" href="inputfile.html#input-file"><em>Input file template</em></a></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="plotting.Qplot.plot_importance">
+<tt class="descname">plot_importance</tt><big>(</big><em>result_id=0</em>, <em>Nzb=10</em><big>)</big><a class="headerlink" href="#plotting.Qplot.plot_importance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot ranking of importance of attributes used during the training/testing process</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The key <cite>OobError</cite> and <cite>VarImportance</cite> in <a class="reference internal" href="inputfile.html#input-file"><em>Input file template</em></a> must be set to &#8216;yes&#8217; to compute these quantities</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>results_id</strong> (<em>int</em>) &#8211; Result id number as the output on the results folder, default 0</li>
+<li><strong>Nzb</strong> (<em>int</em>) &#8211; Number of redshift bins</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plotting.Qplot.plot_map">
+<tt class="descname">plot_map</tt><big>(</big><em>nmap=0</em>, <em>colbar='yes'</em>, <em>min_m=-100</em>, <em>max_m=-100</em><big>)</big><a class="headerlink" href="#plotting.Qplot.plot_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a map created during the training process,</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nmap</strong> (<em>int</em>) &#8211; Number of created map, default is 0</li>
+<li><strong>min_m</strong> (<em>float</em>) &#8211; Lower limit for coloring the cells, -100 uses min value</li>
+<li><strong>max_m</strong> (<em>float</em>) &#8211; Upper limit for coloring the cells, -100 uses max value</li>
+<li><strong>colbar</strong> (<em>str</em>) &#8211; Include a colorbar (&#8216;yes&#8217;,&#8217;no&#8217;)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plotting.Qplot.plot_pdf_use">
+<tt class="descname">plot_pdf_use</tt><big>(</big><em>result_id=0</em><big>)</big><a class="headerlink" href="#plotting.Qplot.plot_pdf_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>PLots the redshift distribution using PDFs and using one single estimator and a map of zphot vs zspec using also
+PDFs.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The code utils/use_pdfs must be run first in order to create the needed files,
+it can be run in parallel</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>result_id</strong> (<em>int</em>) &#8211; result id (run number) as appears on the results , default = 0</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plotting.Qplot.plot_results">
+<tt class="descname">plot_results</tt><big>(</big><em>result_1=0</em>, <em>zconf_1=0.0</em>, <em>result_2=0</em>, <em>zconf_2=0.0</em><big>)</big><a class="headerlink" href="#plotting.Qplot.plot_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots a summary of main results for photometric redshifts, it has user interactive plots.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>result_1</strong> (<em>int</em>) &#8211; result id (run number) as appears on the results , default = 0 (uses mean of PDF for metrics)</li>
+<li><strong>zconf_1</strong> (<em>float</em>) &#8211; confidence level cut for file 1</li>
+<li><strong>result_2</strong> (<em>int</em>) &#8211; result id (run number) as appears on the results folder for a second optional file , default
+shows file 1 instead using the mode for the metrics</li>
+<li><strong>zconf_2</strong> (<em>float</em>) &#8211; confidence level cut for file 2</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plotting.Qplot.plot_tree">
+<tt class="descname">plot_tree</tt><big>(</big><em>ntree=0</em>, <em>save_files='no'</em>, <em>fileroot='TPZ'</em>, <em>path=''</em><big>)</big><a class="headerlink" href="#plotting.Qplot.plot_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a tree created during the training process,
+uses the Graphviz package (dot and neato)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ntree</strong> (<em>int</em>) &#8211; Number of created tree, default is 0</li>
+<li><strong>save_files</strong> (<em>str</em>) &#8211; Saves the created files from Graphviz (the .png and the .dot files) &#8216;yes&#8217;/&#8217;no&#8217;</li>
+<li><strong>fileroot</strong> (<em>str</em>) &#8211; root name for saved files</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; path name for output files</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="utils.html">Utils</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="run_mlz.html">Run MLZ</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Matias Carrasco Kind.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

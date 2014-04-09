@@ -1,0 +1,58 @@
+Welcome
+==========================================
+
+.. include:: colors.rst
+
+.. topic:: About
+
+    **MLZ**, "\ **M**\achine \ **L**\earning and photo-\ **Z**\"  is a parallel python framework that
+    computes fast and robust photometric redshift PDFs using Machine Learning algorithms. In particular,
+    it uses a supervised technique with prediction trees and random forest through :ref:`TPZ <tpz2>` or
+    a unsupervised methods with self organizing maps and random atlas
+    through :ref:`SOMz <somz2>`. It can be easily extended to other regression or classification problems.
+
+
+.. _refers:
+References
+...........
+    These are the references related to this framework where detailed information about these methods can be found.
+
+    * Carrasco Kind, M., & Brunner, R. J., 2013  :blueit:`"TPZ : Photometric redshift PDFs and ancillary information by using prediction trees and random forests"`, MNRAS, 432, 1483 (`Link <http://adsabs.harvard.edu/abs/2013MNRAS.432.1483C>`_)
+
+    * Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"SOMz : photometric redshift PDFs with self organizing maps and random atlas"` , MNRAS, in press. (`Link <http://adsabs.harvard.edu/abs/2013arXiv1312.5753C>`_)
+
+    * Carrasco Kind, M., & Brunner, R. J., 2013, :blueit:`"Implementing Probabilistic Photometric Redshifts"`, in Astronomical Society of the Pacific Conference Series, Vol. 475, Astronomical Data Analysis Software and Systems XXII (ADASSXXII), Freidel D., ed., p. 69 (`Link <http://adsabs.harvard.edu/abs/2013ASPC..475...69C>`_)
+
+Contact
+........
+
+`Here <https://sites.google.com/site/mgckind/>`_ you can find my contact information for questions or comments.
+
+
+Contents
+........
+
+    This is a brief documentation of MLZ and the routines included
+
+.. toctree::
+   :maxdepth: 2
+
+   req
+   install
+   ml_codes
+   others
+   run_mlz
+   run
+
+
+
+
+
+
+Indices and tables
+..................
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

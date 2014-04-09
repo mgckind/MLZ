@@ -1,0 +1,22 @@
+All figures:
+------------
+* Q: close all figures
+* q: close current figure
+
+Figure 1:
+---------
+- Top Panel
+* m, M: change color map
+* +,- : change levels of countours
+- Bottom Panel
+* r/n : Toggle on/off Normal distribution
+        with N(0,1)
+
+Figure 2:
+---------
+* p/t : Toggle plots in photo bins and spectroscopic bins
+* o   : Toggle on/off oob data when available
+
+Figure 3: 
+---------
+* Click on points to see its PDF

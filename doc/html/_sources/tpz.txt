@@ -1,0 +1,119 @@
+.. _tpz2:
+TPZ: Trees for Photo-Z
+===============================
+
+.. include:: colors.rst
+
+.. pull-quote::
+
+    TPZ [1]_ is a :blue:`supervised` machine learning,
+    parallel algorithm that uses :under:`prediction trees and random forest` techniques to produce both robust photometric
+    redshift PDFs and ancillary information for a galaxy sample. A prediction tree is built by asking a sequence
+    of questions that recursively split the input data taken from the spectroscopic sample, frequently into two
+    branches, until a terminal leaf is created that meets a stopping criterion (e.g., a minimum leaf size or a variance
+    threshold).
+
+    The dimension in which the data is divided is chosen to be the one with highest information gain
+    among the random subsample of dimensions obtained at every point. This process produces less correlated
+    trees and allows to explore several configurations within the data.
+
+    The small region bounding the data in the
+    terminal leaf node represents a specific subsample of the entire data with similar properties. Within this leaf, a
+    model is applied that provides a fairly comprehensible prediction, especially in situations
+    where many variables may exist that interact in a nonlinear manner as is often the case with photo-z estimation.
+
+.. figure:: figures/example_tree.png
+    :scale: 15 %
+    :align: center
+
+
+    A simplified example of a binary prediction tree plotted radially. The initial node is close to the center of the
+     figure.
+    The splitting process terminates when a stopping criterion is reached.
+
+
+
+
+In the code TPZ is implemented as a module which has 2 important classes: :class:`TPZ.Rtree` for regression and :class:`TPZ.Ctree` for
+classification. Both are documented in the code and listed below. For more information please refer to the `TPZ paper <http://adsabs.harvard.edu/abs/2013MNRAS.432.1483C>`_
+
+.. toctree::
+   :maxdepth: 2
+
+   rtree
+   ctree
+
+
+.. warning::
+
+   In order to visualize the created trees you need to have installed Graphviz_, usually is installed by default on Linux and Mac OS systems
+   You don't needed it in order to run MLZ
+
+Example 1
+..........
+
+.. pull-quote::
+
+    This is a simple example on how to use the :class:`TPZ.Rtree`, visualize  a tree and make a simple prediction. To see
+    an example of using this properly in a problem under the MLZ framework , see :doc:`run`
+
+.. plot:: ../mlz/test/test_TPZ_Rtree.py
+    :include-source: True
+    :width: 30%
+
+If you :download:`download  <../mlz/test/test_TPZ_Rtree.py>` this example and run it on a python console you would get the following output,
+although the final line would change slightly as there is a random process involved which would also
+change the figures:
+
+    >>> branches = T.leaves()
+    >>> print 'branch = ', branches[0]
+    branch =  ['L', 'L', 'L', 'L', 'L']
+    >>> content = T.print_branch(branches[0])
+    >>> print 'brach content'
+    branch content
+    >>> print content
+    [ 0.024914  0.029343  0.005126  0.017902  0.019716  0.02609   0.004404
+      0.006451  0.003074  0.034597  0.005701  0.003923  0.032468  0.031017
+      0.023015  0.038875  0.010996  0.018425  0.007773  0.013524  0.024911
+      0.003017  0.013113  0.006682  0.007372  0.021268]
+    >>> values = T.get_vals(X[10])
+    >>> print 'predicted values from tree'
+    >>> print values
+    [ 0.120684  0.118015  0.108008  0.103931  0.11477   0.099268  0.106299
+      0.114634  0.11031   0.115252  0.102601  0.132789  0.12069   0.125127
+      0.115067  0.086241  0.115476  0.112288  0.096661  0.105071  0.108449
+      0.119887  0.111333  0.120343  0.130859  0.104452  0.126068  0.095225
+      0.102079  0.123717  0.118518  0.116976  0.094429  0.107744  0.111157
+      0.095198  0.127612  0.114376  0.105994  0.117298  0.105951  0.09058
+      0.118837  0.108803  0.114075  0.159866  0.116929  0.086987  0.099276
+      0.088263  0.117582  0.119883  0.126069  0.117097  0.110187  0.099429
+      0.102188  0.105896  0.107781]
+    >>> print 'mean value from prediction', mean(values)
+    mean value from prediction 0.111365677966
+    >>> print 'real value', Y[10]
+    real value 0.120684
+
+
+Example 2
+..........
+
+.. pull-quote::
+
+    This is a simple :download:`example <../mlz/test/test_TPZ_Ctree.py>` on how to use the :class:`TPZ.Ctree`,
+    to visualize  a tree and to make a simple classification, in this case
+    we classify from low and high redshift. Note the differences with these tree as leaf are painted according to
+    different classes.
+
+.. plot:: ../mlz/test/test_TPZ_Ctree.py
+    :include-source: True
+    :width: 30%
+
+|br|
+|br|
+
+**References**
+
+.. [1] Carrasco Kind, M., & Brunner, R. J., 2013  :blueit:`"TPZ : Photometric redshift PDFs and ancillary information by using prediction trees and random forests"`, MNRAS, 432, 1483 (`Link <http://adsabs.harvard.edu/abs/2013MNRAS.432.1483C>`_)
+
+
+.. _Graphviz: http://www.graphviz.org/

@@ -1,0 +1,66 @@
+.. _somz2:
+SOMz: Self Organizing Maps and random atlas
+=============================================
+
+.. include:: colors.rst
+
+.. pull-quote::
+
+    SOMz [1]_ is a :blue:`unsupervised` machine learning technique that also computes photometric redshift PDFs.
+    Specifically, we have developed a new framework that we have named
+    :red:`random atlas`, which mimics the random forest approach by replacing the prediction trees with
+    :under:`self organizing maps` (SOMs). A SOM is essentially a neural network that maps a large training set via a
+    process of competitive learning from a high dimensional input space to a two-dimensional surface. The
+    mapping process retains the topology of the input data, thereby revealing potential unknown
+    correlations between input parameters, which can provide important insights into the data.
+
+    This is an unsupervised learning method as no prediction attributes are included in the mapping
+    process, only the non-prediction attributes are included. The output values  from the training
+    data are only used after the map has been constructed as they can be
+    used to generate the prediction model for each cell in the map. In our implementation , we first
+    construct a suite of maps that each use a random subset of the
+    full attributes and the randomized training data we developed for the random forest, and we then
+    aggregate the map predictions together to make our final prediction (via the random atlas).
+
+
+.. figure:: figures/scheme2.png
+    :scale: 80 %
+    :align: center
+
+    A schematic representation of a self organized map. The color of the map encodes the organization
+    of groups of objects with similar properties. The main feature of the SOM is that produces a nonlinear mapping
+    from a m-dimensional space of attributes to a two-dimensional lattices of neurons
+
+
+In the code SOMz is implemented as a module :class:`SOMZ` to create, evaluate, plot and make prediction. Given the
+nature of the algorithm this can also be used for both, regression and classifcatin it just a matter of changing the
+attributes when evaluating. For more details refer to the `SOMz paper <http://adsabs.harvard.edu/abs/2013arXiv1312
+.5753C>`_
+
+
+.. toctree::
+   :maxdepth: 2
+
+   som_mod
+
+
+Example
+.........
+
+.. pull-quote::
+
+    This is a simple example on how to use the :class:`SOMZ`, visualize  a map and make a simple prediction. To see
+    an example of using this properly in a problem under the MLZ framework , see :doc:`run`
+
+.. plot:: ../mlz/test/test_SOMZ.py
+    :include-source:
+    :width: 35%
+
+You  can :download:`download  <../mlz/test/test_SOMZ.py>` this example and run it on a python console to see the
+outputs and try different topologies, properties and resolutions.
+
+**References**
+
+.. [1] Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"SOMz : photometric redshift PDFs with self organizing maps and random atlas"` , MNRAS, in press. (`Link <http://adsabs.harvard.edu/abs/2013arXiv1312.5753C>`_)
+
+

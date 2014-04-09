@@ -1,0 +1,77 @@
+Installation
+============
+.. include:: colors.rst
+
+Download
+.........
+    You can get the latest version of the code from: https://pypi.python.org/pypi/MLZ/1.0
+
+    The simplest way to get MLZ is using pip::
+
+        [sudo] pip install MLZ
+
+    or::
+
+        pip install MLZ --user
+
+    or even::
+
+        easy_install --user MLZ
+
+    which will install and copy all the files to a local directory which can be specified by using the ``--prefix=<path>`` flag.
+    Open python and check if the module is present::
+
+        >>> import mlz
+
+    The code can also be installed manually, by getting the tar file and then uncompress the file::
+
+        tar -zxf MLZ-1.0.tar.gz
+
+    and install using::
+
+        python setup.py install --user
+
+    which is not required for the code to run via standard way. This will create a copy of the code in a local directory and a few
+    executable files will be copied to a local script folder (usually at :mono:`$HOME/.local/bin`). This also compiles automatically the fortran routines needed
+    for better performance.
+
+Fortran routines
+................
+
+    If the installation did not work via ``setup.py`` as shown, some fortran libraries will not be present,
+    these can be manually compiled using the f2py_ wrapper. In the :mono:`mlz` folder, go to the :mono:`ml_codes` folder where
+    you will find the file ``som.f90`` in that folder::
+
+        f2py -c -m somF som.f90
+
+    And the library ``somF.so`` will be created. The code still works even this step is not accomplished as these routines aid the code to run
+    more efficiently.
+
+Release Note
+............
+    MLZ is an open source code released and :ref:`licensed <license-file>` under the `University of Illinois/NCSA Open Source License <http://opensource.org/licenses/NCSA>`_ and it is distributed *without any warranty*.
+
+Acknowledgement
+................
+
+    Please, acknowledge the use of MLZ in your own work with this (or similar) with these :ref:`references <refers>`
+
+Uninstall
+.........
+
+    You can uninstall MLZ by deleting the files manually with::
+
+        python setup.py install --user --record installed_files.txt
+        cat installed_files.txt | xargs rm -rf
+        rm -rf installed_files
+
+    Then proceed to delete mlz folder in the local installation.
+
+    Or you can use::
+
+        pip uninstall MLZ
+
+.. External Links
+.. ..............
+
+.. _f2py: https://code.google.com/p/f2py/

@@ -1,0 +1,127 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Machine Learning routines &mdash; MLZ 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="next" title="TPZ: Trees for Photo-Z" href="tpz.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="index.html">
+          <img class="logo" src="_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="install.html">Installation</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="tpz.html">TPZ: Trees for Photo-Z</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="machine-learning-routines">
+<h1>Machine Learning routines<a class="headerlink" href="#machine-learning-routines" title="Permalink to this headline">¶</a></h1>
+<style> .red {color:#FF6F60} </style>
+<style> .green {color:#60CC93} </style>
+<style> .blue {color:#6396FC} </style>
+<style> .blueit {color:#6396FC; font-style:italic} </style>
+<style> .under {text-decoration:underline} </style>
+<style> .mono {font-family : "Courier new"} </style><blockquote class="pull-quote">
+<div><p>MLZ uses two methods to compute, primarily, photometric redshift PDFs.
+It uses a supervised technique called TPZ <a class="footnote-reference" href="#id3" id="id1">[1]</a> which uses prediction trees and random
+forest methods to make predictions in a regression or classification problem. We also have
+implemented a unsupervised methods using self organizing maps and introducing random atlas
+called SOMz <a class="footnote-reference" href="#id4" id="id2">[2]</a>.</p>
+<p>Both method can be called from the main routine to obtain results from different points of view,
+we are currently working on how efficiently combine these and other methods taking advantage of their strengths.</p>
+</div></blockquote>
+<p>The methods included are the following:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tpz.html">TPZ: Trees for Photo-Z</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rtree.html">Regression Tree Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ctree.html">Classification Trees Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tpz.html#example-1">Example 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tpz.html#example-2">Example 2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="somz.html">SOMz: Self Organizing Maps and random atlas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="som_mod.html">Somz module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="somz.html#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p><br />
+<br /></p>
+<div class="line-block">
+<div class="line"><strong>References</strong></div>
+</div>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Carrasco Kind, M., &amp; Brunner, R. J., 2013  <span class="blueit">&#8220;TPZ : Photometric redshift PDFs and ancillary information by using prediction trees and random forests&#8221;</span>, MNRAS, 432, 1483 (<a class="reference external" href="http://adsabs.harvard.edu/abs/2013MNRAS.432.1483C">Link</a>)</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>Carrasco Kind, M., &amp; Brunner, R. J., 2014, <span class="blueit">&#8220;SOMz : photometric redshift PDFs with self organizing maps and random atlas&#8221;</span> , MNRAS, in press. (<a class="reference external" href="http://adsabs.harvard.edu/abs/2013arXiv1312.5753C">Link</a>)</td></tr>
+</tbody>
+</table>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="install.html">Installation</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="tpz.html">TPZ: Trees for Photo-Z</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Matias Carrasco Kind.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

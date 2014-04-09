@@ -1,0 +1,215 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Regression Tree Class &mdash; MLZ 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="up" title="TPZ: Trees for Photo-Z" href="tpz.html" />
+    <link rel="next" title="Classification Trees Class" href="ctree.html" />
+    <link rel="prev" title="TPZ: Trees for Photo-Z" href="tpz.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="index.html">
+          <img class="logo" src="_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="tpz.html">TPZ: Trees for Photo-Z</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="ctree.html">Classification Trees Class</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="regression-tree-class">
+<h1>Regression Tree Class<a class="headerlink" href="#regression-tree-class" title="Permalink to this headline">¶</a></h1>
+<blockquote class="pull-quote">
+<div>This is the <a class="reference internal" href="#TPZ.Rtree" title="TPZ.Rtree"><tt class="xref py py-class docutils literal"><span class="pre">TPZ.Rtree</span></tt></a> class in some detail, refer to the source code for mode information and methods.</div></blockquote>
+<span class="target" id="module-TPZ"></span><span class="target" id="module-TPZ"></span><p><em>Module author: Matias Carrasco Kind</em></p>
+<dl class="class">
+<dt id="TPZ.Rtree">
+<em class="property">class </em><tt class="descclassname">TPZ.</tt><tt class="descname">Rtree</tt><big>(</big><em>X</em>, <em>Y</em>, <em>minleaf=4</em>, <em>forest='yes'</em>, <em>mstar=2</em>, <em>dict_dim=''</em><big>)</big><a class="headerlink" href="#TPZ.Rtree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a  regression tree class instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>X</strong> (<em>float or int array, 1 row per object</em>) &#8211; Preprocessed attributes array (<em>all</em> columns are considered)</li>
+<li><strong>Y</strong> (<em>float</em>) &#8211; Attribute to be predicted</li>
+<li><strong>minleaf</strong> (<em>int, def = 4</em>) &#8211; Minimum number of objects on terminal leaf</li>
+<li><strong>forest</strong> (<em>str, &#8216;yes&#8217;/&#8217;no&#8217;</em>) &#8211; Random forest key</li>
+<li><strong>mstar</strong> (<em>int</em>) &#8211; Number of random subsample of attributes if forest is used</li>
+<li><strong>dict_dim</strong> (<em>dict</em>) &#8211; dictionary with attributes names</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="TPZ.Rtree.get_branch">
+<tt class="descname">get_branch</tt><big>(</big><em>line</em><big>)</big><a class="headerlink" href="#TPZ.Rtree.get_branch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the branch in string format given a line search, where the line
+is a vector of attributes per individual object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<em>float</em>) &#8211; input data line to look in the tree, same dimensions as input X</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">str &#8211; branch array in string format, ex., [&#8216;L&#8217;,&#8217;L&#8217;,&#8217;R&#8217;]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="TPZ.Rtree.get_vals">
+<tt class="descname">get_vals</tt><big>(</big><em>line</em><big>)</big><a class="headerlink" href="#TPZ.Rtree.get_vals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the predictions  given a line search, where the line
+is a vector of attributes per individual object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<em>float</em>) &#8211; input data line to look in the tree, same dimensions as input X</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">float &#8211; array with the leaf content</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="TPZ.Rtree.leaves">
+<tt class="descname">leaves</tt><big>(</big><big>)</big><a class="headerlink" href="#TPZ.Rtree.leaves" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array with all branches in string format
+ex: [&#8216;L&#8217;,&#8217;R&#8217;,&#8217;L&#8217;] is a branch of depth 3 where L and R are the left or right
+branches</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str &#8211; Array of all branches in the tree</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="TPZ.Rtree.leaves_dim">
+<tt class="descname">leaves_dim</tt><big>(</big><big>)</big><a class="headerlink" href="#TPZ.Rtree.leaves_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an array of the used dimensions for all the the nodes on all the branches</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">int &#8211; Array of all the dimensions for each node on each branch</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="TPZ.Rtree.plot_tree">
+<tt class="descname">plot_tree</tt><big>(</big><em>itn=-1</em>, <em>fileout='TPZ'</em>, <em>path=''</em>, <em>save_png='no'</em><big>)</big><a class="headerlink" href="#TPZ.Rtree.plot_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a tree using dot (Graphviz)
+Saves it into a png file by default</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>itn</strong> (<em>int</em>) &#8211; Number of tree to be included on path, use -1 to ignore this number</li>
+<li><strong>fileout</strong> (<em>str</em>) &#8211; Name of file for the png files</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; path for the output files</li>
+<li><strong>save_png</strong> (<em>str</em>) &#8211; save png created by Graphviz (&#8216;yes&#8217;/&#8217;no&#8217;)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="TPZ.Rtree.print_branch">
+<tt class="descname">print_branch</tt><big>(</big><em>branch</em><big>)</big><a class="headerlink" href="#TPZ.Rtree.print_branch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the content of a leaf on a branch (given in string format)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TPZ.Rtree.save_tree">
+<tt class="descname">save_tree</tt><big>(</big><em>itn=-1</em>, <em>fileout='TPZ'</em>, <em>path=''</em><big>)</big><a class="headerlink" href="#TPZ.Rtree.save_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the tree</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>itn</strong> (<em>int</em>) &#8211; Number of tree to be included on path, use -1 to ignore this number</li>
+<li><strong>fileout</strong> (<em>str</em>) &#8211; Name of output file</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; path for the output file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="tpz.html">TPZ: Trees for Photo-Z</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="ctree.html">Classification Trees Class</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Matias Carrasco Kind.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

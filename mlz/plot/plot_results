@@ -1,0 +1,752 @@
+#!/usr/bin/env python
+__author__ = 'Matias Carrasco Kind'
+from pylab import *
+from numpy import *
+import matplotlib.cm as cm
+from scipy import optimize
+import os, sys
+import warnings
+
+warnings.simplefilter("ignore", RuntimeWarning)
+path_src = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+if not path_src in sys.path: sys.path.insert(1, path_src)
+del path_src
+from mlz.utils import *
+
+try:
+    from Tkinter import *
+    import tkFont
+
+    notk = False
+except ImportError:
+    notk = True
+
+
+class Parameter:
+    def __init__(self, value): self.value = value
+
+    def set(self, value): self.value = value
+
+    def __call__(self): return self.value
+
+
+def fit(function, parameters, x, y):
+    def f(params):
+        i = 0
+        for p in parameters:
+            p.set(params[i])
+            i += 1
+        return y - function(x)
+
+    if x is None: x = arange(y.shape[0])
+    p = [param() for param in parameters]
+    optimize.leastsq(f, p)
+
+
+def isNaN(num): return num != num
+
+
+def onpick2(event):
+    if event.mouseevent.inaxes:
+    #if len(event.ind) >=1:
+    #for i in event.ind: print i
+        x = event.mouseevent.xdata
+        y = event.mouseevent.ydata
+        cur_ax = event.mouseevent.inaxes
+        if cur_ax.is_first_col():
+            inx = 1
+        else:
+            inx = 2
+        if inx == 1: zx = zx1;zy = zy1
+        if inx == 2: zx = zx2;zy = zy2
+        dx = array(x - zx[event.ind], dtype=float)
+        dy = array(y - zy[event.ind], dtype=float)
+        dd = hypot(dx, dy)
+        indmin = dd.argmin()
+        dataind = event.ind[indmin]
+        print dataind
+        current1.set_visible(True)
+        current1.set_data(zx1[dataind], zy1[dataind])
+        current2.set_visible(True)
+        current2.set_data(zx2[dataind], zy2[dataind])
+
+        s3B.cla()
+        s3B.plot(zpdf1, pdf1[dataind], 'k-', label='P(z)', lw=1.5)
+        s3B.set_title(str(dataind) + ' ' + name1)
+        s3B.plot([zx1[dataind], zx1[dataind]], [0, pdf1[dataind].max()], 'r--', label='$z_{spec}$')
+        zmm = sum(zpdf1 * pdf1[dataind]) / sum(pdf1[dataind])
+        s3B.plot([zmm, zmm], [0, pdf1[dataind].max()], 'b--', label='$<P(z)>$')
+        zL = zy1[dataind] - rms * (1. + zy1[dataind])
+        zR = zy1[dataind] + rms * (1. + zy1[dataind])
+        wfill = where((zpdf1 >= zL) & (zpdf1 <= zR))[0]
+        s3B.fill_between(zpdf1[wfill], pdf1[dataind][wfill], facecolor='orange', alpha=0.5)
+        zcoo = '%.2f' % zC1[dataind]
+        s3B.plot(0, 0, visible=False, label='zConf = ' + zcoo)
+        s3B.set_xlabel('redshift', fontsize=15)
+        s3B.set_ylabel('P(z)', fontsize=15)
+        s3B.set_xlim(DTpars.minz, DTpars.maxz)
+        s3B.set_ylim(0, pdf1[dataind].max() * 1.1)
+        s3B.legend(loc=0, frameon=False)
+
+        s4B.cla()
+        s4B.plot(zpdf2, pdf2[dataind], 'k-', label='P(z)', lw=1.5)
+        s4B.set_title(str(dataind) + ' ' + name2)
+        s4B.plot([zx2[dataind], zx2[dataind]], [0, pdf2[dataind].max()], 'r--', label='$z_{spec}$')
+        zmm = sum(zpdf2 * pdf2[dataind]) / sum(pdf2[dataind])
+        s4B.plot([zmm, zmm], [0, pdf2[dataind].max()], 'b--', label='$<P(z)>$')
+        zL = zy2[dataind] - rms * (1. + zy2[dataind])
+        zR = zy2[dataind] + rms * (1. + zy2[dataind])
+        wfill = where((zpdf2 >= zL) & (zpdf2 <= zR))[0]
+        s4B.fill_between(zpdf2[wfill], pdf2[dataind][wfill], facecolor='orange', alpha=0.5)
+        zcoo = '%.2f' % zC2[dataind]
+        s4B.plot(0, 0, visible=False, label='zConf = ' + zcoo)
+        s4B.set_xlabel('redshift', fontsize=15)
+        s4B.set_ylabel('P(z)', fontsize=15)
+        s4B.set_xlim(DTpars.minz, DTpars.maxz)
+        s4B.set_ylim(0, pdf2[dataind].max() * 1.1)
+        s4B.legend(loc=0, frameon=False)
+
+        cf = gcf()
+        cf.canvas.draw()
+
+
+maps = [m for m in cm.datad if not m.endswith("_r")]
+
+
+def on_key(event):
+    global c1h, c2h, count_m, lev
+    if event.key == 'r':
+        c3.set_visible(True)
+        c4.set_visible(True)
+        cf = gcf()
+        cf.canvas.draw()
+    if event.key == 'n':
+        c3.set_visible(False)
+        c4.set_visible(False)
+        cf = gcf()
+        cf.canvas.draw()
+    if event.key == 'Q':
+        close('all')
+        root.destroy()
+    if event.key == 'q':
+        cf = gcf()
+        close(cf)
+    if event.key == 'm':
+        count_m += 1
+        c1h.set_cmap(maps[count_m])
+        c2h.set_cmap(maps[count_m])
+        cf = gcf()
+        cf.canvas.draw()
+    if event.key == 'M':
+        count_m -= 1
+        c1h.set_cmap(maps[count_m])
+        c2h.set_cmap(maps[count_m])
+        cf = gcf()
+        cf.canvas.draw()
+    if event.key == '+':
+        cf = gcf()
+        lev += 1
+        lev2 = linspace(minH + 1, maxH, lev)
+        tii = linspace(minH + 1, maxH, 6)
+        tii = array(map(int, tii))
+        tiis = map(str, tii)
+        current_cmap = c1h.get_cmap()
+        c1h.ax.cla()
+        cf.delaxes(cf.axes[4])
+        c1h = c1h.ax.contourf(H1, levels=lev2, extent=[minz, maxz, minz, maxz], origin='lower', cmap=current_cmap)
+        c1h.ax.set_xlabel(r'$z_{spec}$', fontsize=15)
+        c1h.ax.set_ylabel(r'$z_{phot}$', fontsize=15)
+        cf.subplots_adjust(right=0.90)
+        tc = colorbar(c1h, ax=c1h.ax, ticks=tii)
+        tc.ax.set_yticklabels(tiis)
+
+        c2h.ax.cla()
+        c2h = c2h.ax.contourf(H2, levels=lev2, extent=[minz, maxz, minz, maxz], origin='lower', cmap=current_cmap)
+        c2h.ax.set_xlabel(r'$z_{spec}$', fontsize=15)
+        c2h.ax.set_ylabel(r'$z_{phot}$', fontsize=15)
+        tc = colorbar(c2h, ax=c2h.ax, ticks=tii)
+        tc.ax.set_yticklabels(tiis)
+        c1h.ax.plot([minz, maxz], [minz, maxz], 'k:')
+        c2h.ax.plot([minz, maxz], [minz, maxz], 'k:')
+        c1h.ax.set_title(name1)
+        c2h.ax.set_title(name2)
+        cf.canvas.draw()
+    if event.key == '-':
+        cf = gcf()
+        lev -= 1
+        lev2 = linspace(minH + 1, maxH, lev)
+        tii = linspace(minH + 1, maxH, 6)
+        tii = array(map(int, tii))
+        tiis = map(str, tii)
+        current_cmap = c1h.get_cmap()
+        c1h.ax.cla()
+        cf.delaxes(cf.axes[4])
+        c1h = c1h.ax.contourf(H1, levels=lev2, extent=[minz, maxz, minz, maxz], origin='lower', cmap=current_cmap)
+        c1h.ax.set_xlabel(r'$z_{spec}$', fontsize=15)
+        c1h.ax.set_ylabel(r'$z_{phot}$', fontsize=15)
+        cf.subplots_adjust(right=0.90)
+        tc = colorbar(c1h, ax=c1h.ax, ticks=tii)
+        tc.ax.set_yticklabels(tiis)
+        c2h.ax.cla()
+        c2h = c2h.ax.contourf(H2, levels=lev2, extent=[minz, maxz, minz, maxz], origin='lower', cmap=current_cmap)
+        c2h.ax.set_xlabel(r'$z_{spec}$', fontsize=15)
+        c2h.ax.set_ylabel(r'$z_{phot}$', fontsize=15)
+        tc = colorbar(c2h, ax=c2h.ax, ticks=tii)
+        tc.ax.set_yticklabels(tiis)
+        c1h.ax.plot([minz, maxz], [minz, maxz], 'k:')
+        c2h.ax.plot([minz, maxz], [minz, maxz], 'k:')
+        c1h.ax.set_title(name1)
+        c2h.ax.set_title(name2)
+        cf = gcf()
+        cf.canvas.draw()
+
+
+def on_key2(event):
+    global count_o, mode_p
+    if event.key == 'o':
+        count_o += 1
+        if count_o % 2 == 1: vis = False
+        if count_o % 2 == 0: vis = True
+        if mode_p == 'zs':
+            ospec1a.set_visible(vis)
+            ospec2a.set_visible(vis)
+            ospec1b.set_visible(vis)
+            ospec2b.set_visible(vis)
+            ospec1c.set_visible(vis)
+            ospec2c.set_visible(vis)
+            ospec1d.set_visible(vis)
+            ospec2d.set_visible(vis)
+        if mode_p == 'zp':
+            ophot1a.set_visible(vis)
+            ophot2a.set_visible(vis)
+            ophot1b.set_visible(vis)
+            ophot2b.set_visible(vis)
+            ophot1c.set_visible(vis)
+            ophot2c.set_visible(vis)
+            ophot1d.set_visible(vis)
+            ophot2d.set_visible(vis)
+        figM.canvas.draw()
+    if event.key == 'p':
+        mode_p = 'zp'
+        cspec1a.set_visible(False)
+        cspec2a.set_visible(False)
+        cphot1a.set_visible(True)
+        cphot2a.set_visible(True)
+        if DTpars.ooberror == 'yes':
+            ospec1a.set_visible(False)
+            ospec2a.set_visible(False)
+            ophot1a.set_visible(True)
+            ophot2a.set_visible(True)
+        s1M.set_xticklabels('')
+        s1M.legend((cphot1a, cphot2a), (name1, name2), loc=0)
+        cspec1b.set_visible(False)
+        cspec2b.set_visible(False)
+        cphot1b.set_visible(True)
+        cphot2b.set_visible(True)
+        if DTpars.ooberror == 'yes':
+            ospec1b.set_visible(False)
+            ospec2b.set_visible(False)
+            ophot1b.set_visible(True)
+            ophot2b.set_visible(True)
+        s2M.set_xticklabels('')
+        cspec1c.set_visible(False)
+        cspec2c.set_visible(False)
+        cphot1c.set_visible(True)
+        cphot2c.set_visible(True)
+        if DTpars.ooberror == 'yes':
+            ospec1c.set_visible(False)
+            ospec2c.set_visible(False)
+            ophot1c.set_visible(True)
+            ophot2c.set_visible(True)
+        s3M.set_xticklabels('')
+        cspec1d.set_visible(False)
+        cspec2d.set_visible(False)
+        cphot1d.set_visible(True)
+        cphot2d.set_visible(True)
+        if DTpars.ooberror == 'yes':
+            ospec1d.set_visible(False)
+            ospec2d.set_visible(False)
+            ophot1d.set_visible(True)
+            ophot2d.set_visible(True)
+        s6M.set_xlabel(r'$z_{phot}$', fontsize=18)
+        figM.canvas.draw()
+    if event.key == 't':
+        mode_p = 'zs'
+        cspec1a.set_visible(True)
+        cspec2a.set_visible(True)
+        cphot1a.set_visible(False)
+        cphot2a.set_visible(False)
+        if DTpars.ooberror == 'yes':
+            ospec1a.set_visible(True)
+            ospec2a.set_visible(True)
+            ophot1a.set_visible(False)
+            ophot2a.set_visible(False)
+        s1M.set_xticklabels('')
+        s1M.legend((cspec1a, cspec2a), (name1, name2), loc=0)
+        cspec1b.set_visible(True)
+        cspec2b.set_visible(True)
+        cphot1b.set_visible(False)
+        cphot2b.set_visible(False)
+        if DTpars.ooberror == 'yes':
+            ospec1b.set_visible(True)
+            ospec2b.set_visible(True)
+            ophot1b.set_visible(False)
+            ophot2b.set_visible(False)
+        s2M.set_xticklabels('')
+        cspec1c.set_visible(True)
+        cspec2c.set_visible(True)
+        cphot1c.set_visible(False)
+        cphot2c.set_visible(False)
+        if DTpars.ooberror == 'yes':
+            ospec1c.set_visible(True)
+            ospec2c.set_visible(True)
+            ophot1c.set_visible(False)
+            ophot2c.set_visible(False)
+        s3M.set_xticklabels('')
+        cspec1d.set_visible(True)
+        cspec2d.set_visible(True)
+        cphot1d.set_visible(False)
+        cphot2d.set_visible(False)
+        if DTpars.ooberror == 'yes':
+            ospec1d.set_visible(True)
+            ospec2d.set_visible(True)
+            ophot1d.set_visible(False)
+            ophot2d.set_visible(False)
+        s6M.set_xlabel(r'$z_{spec}$', fontsize=18)
+        figM.canvas.draw()
+
+
+###################################
+#########    MAIN     #############
+###################################
+utils_mlz.print_welcome()
+if len(sys.argv) < 2:
+    utils_mlz.printpz()
+    utils_mlz.printpz("Usage:: ")
+    utils_mlz.printpz("plot_results <input file> <run No (def=0)>  <zConf cut (def: none)> ... ")
+    utils_mlz.printpz("a second run can be shown by adding a number of run and a zConf as well")
+    utils_mlz.printpz("Example::")
+    utils_mlz.printpz("./plot_results File.inputs 0 0.6 1 0.65")
+    sys.exit(0)
+
+fileinputs = sys.argv[1]
+DTpars = utils_mlz.read_dt_pars(fileinputs)
+DTsetup = DTpars
+DTpars.nbinsfinal = 14
+
+
+#Window with commands help
+if not notk:
+    root = Tk()
+    root.title("Commands help")
+    myfont = tkFont.Font(size=12)
+    text = Text(bg='black', fg='white', font=myfont)
+    long_path = os.path.abspath(utils_mlz.__file__)
+    mff = long_path.find('mlz/')
+    plot_path = long_path[0:mff + 4] + 'plot/help.txt'
+    helpfile = file(plot_path)
+    helptxt = helpfile.read()
+    helpfile.close()
+    text.insert(0.0, helptxt)
+    text.pack(expand=1, fill=BOTH)
+    text.config(state=DISABLED)
+
+ir1 = 0
+name1 = DTpars.finalfilename
+zConf1 = -1.0
+ir2 = 0
+name2 = DTpars.finalfilename
+zConf2 = -1.0
+second = False
+
+if len(sys.argv) > 2:
+    ir1 = int(sys.argv[2])
+    ir2 = ir1
+    name1 = DTpars.finalfilename + '.' + str(ir1)
+    try:
+        zConf1 = float(sys.argv[3])
+    except IndexError:
+        zConf1 = -1.0
+    if len(sys.argv) > 4:
+        second = True
+        ir2 = int(sys.argv[4])
+        name2 = DTpars.finalfilename + '.' + str(ir2)
+        try:
+            zConf2 = float(sys.argv[5])
+        except IndexError:
+            zConf2 = -1.0
+    else:
+        name2 = DTpars.finalfilename + '.' + str(ir1)
+
+count_m = 0
+count_o = 0
+mode_p = 'zs'
+
+path_r = DTsetup.path_results
+filedata1 = path_r + DTpars.finalfilename + '.' + str(ir1) + '.mlz'
+filedata2 = path_r + DTpars.finalfilename + '.' + str(ir2) + '.mlz'
+fileprobs1b = path_r + DTpars.finalfilename + '.' + str(ir1) + '.P.npy'
+fileprobs2b = path_r + DTpars.finalfilename + '.' + str(ir2) + '.P.npy'
+fileoob1 = path_r + DTpars.finalfilename + '_oob.' + str(ir1) + '.mlz'
+fileoob2 = path_r + DTpars.finalfilename + '_oob.' + str(ir2) + '.mlz'
+
+#Read tpz files
+#: a mode
+#b: mean
+zt1, z1a, z1b, zC1a, zC1b, e1a, e1b = loadtxt(filedata1, unpack=True)
+if second: zt2, z2a, z2b, zC2a, zC2b, e2a, e2b = loadtxt(filedata2, unpack=True)
+
+big1b = load(fileprobs1b)
+if second: big2b = load(fileprobs2b)
+
+minz = DTpars.minz
+maxz = DTpars.maxz
+
+showmean = 'yes'
+zx1 = zt1
+
+if showmean == 'yes':
+    zy1 = z1b
+    zC1 = zC1b
+    e1 = e1b
+    name1 = name1 + '_mean'
+else:
+    zy1 = z1a
+    zC1 = zC1a
+    e1 = e1a
+    name1 = name1 + '_mode'
+pdf1 = big1b
+zpdf1 = big1b[-1]
+w1 = where(zC1 >= zConf1)[0]
+
+if second:
+    zx2 = zt2
+    if showmean == 'yes':
+        zy2 = z2b
+        zC2 = zC2b
+        e2 = e2b
+        name2 = name2 + '_mean'
+    else:
+        zy2 = z2a
+        zC2 = zC2a
+        e2 = e2a
+        name2 = name2 + '_mode'
+    pdf2 = big2b
+    zpdf2 = big2b[-1]
+    w2 = where(zC2 >= zConf2)[0]
+else:
+    zx2 = zt1
+    zy2 = z1a
+    zC2 = zC1a
+    e2 = e1a
+    name2 = name2 + '_mode'
+    pdf2 = big1b
+    zpdf2 = zpdf1
+    w2 = where(zC2 >= zConf1)[0]
+
+Nbins = 60
+
+
+def inbin(z1, z2, minz, maxz, Nbins):
+    dz = (maxz - minz) / (1. * Nbins)
+    i1 = floor((z1 - minz) / dz)
+    i1 = max(i1, 0);
+    i1 = min(i1, Nbins - 1)
+    i2 = floor((z2 - minz) / dz)
+    i2 = max(i2, 0);
+    i2 = min(i2, Nbins - 1)
+    return int(i1), int(i2)
+
+
+H1 = zeros((Nbins, Nbins))
+H2 = zeros((Nbins, Nbins))
+
+for j in xrange(len(w1)):
+    if isNaN(zx1[w1[j]]) or isNaN(zy1[w1[j]]): continue
+    i1, i2 = inbin(zx1[w1[j]], zy1[w1[j]], minz, maxz, Nbins)
+    H1[i2, i1] += 1.
+for j in xrange(len(w2)):
+    if isNaN(zx2[w2[j]]) or isNaN(zy2[w2[j]]): continue
+    i1, i2 = inbin(zx2[w2[j]], zy2[w2[j]], minz, maxz, Nbins)
+    H2[i2, i1] += 1.
+
+
+# Map figure and errors
+fig = figure(1, figsize=(16, 12))
+fig1 = fig.add_subplot(221)
+fig2 = fig.add_subplot(222)
+fig3 = fig.add_subplot(223)
+fig4 = fig.add_subplot(224)
+fig1.plot([minz, maxz], [minz, maxz], 'k:')
+fig2.plot([minz, maxz], [minz, maxz], 'k:')
+lev = 11
+minH = min((H1.min(), H2.min()))
+minH = 3
+maxH = max((H1.max(), H2.max()))
+
+LL = linspace(minH, maxH, lev)
+
+c1h = fig1.contourf(H1, levels=LL, extent=[minz, maxz, minz, maxz], origin='lower', cmap=cm.jet)
+c1h_c = colorbar(c1h, ax=fig1)
+c1h.ax.set_xlabel(r'$z_{spec}$', fontsize=15)
+c1h.ax.set_ylabel(r'$z_{phot}$', fontsize=15)
+c2h = fig2.contourf(H2, levels=LL, extent=[minz, maxz, minz, maxz], origin='lower', cmap=cm.jet)
+c2h_c = colorbar(c2h, ax=fig2)
+c2h.ax.set_xlabel(r'$z_{spec}$', fontsize=15)
+c2h.ax.set_ylabel(r'$z_{phot}$', fontsize=15)
+
+fig1.set_title(name1)
+fig2.set_title(name2)
+
+fig1.set_xlim(minz, maxz)
+fig1.set_ylim(minz, maxz)
+fig2.set_xlim(minz, maxz)
+fig2.set_ylim(minz, maxz)
+
+
+
+
+#PLOT ERRORS!!
+xg = linspace(-10, 10, 10000)
+yg = 1. / sqrt(2. * pi) * exp(-0.5 * xg * xg)
+
+
+def gauss1(x): return 1. / (sqrt(2. * pi) * sigma1()) * exp(-0.5 * ((x - mu1()) / sigma1()) ** 2)
+
+
+def gauss2(x): return 1. / (sqrt(2. * pi) * sigma2()) * exp(-0.5 * ((x - mu2()) / sigma2()) ** 2)
+
+
+mu1 = Parameter(0.)
+sigma1 = Parameter(1.)
+mu2 = Parameter(0.)
+sigma2 = Parameter(1.)
+err1 = (zy1[w1] - zx1[w1]) / e1[w1]
+err2 = (zy2[w2] - zx2[w2]) / e2[w2]
+we1 = where(abs(err1) <= 5)[0]
+we2 = where(abs(err2) <= 5)[0]
+err1 = err1[we1]
+err2 = err2[we2]
+G1 = histogram(err1, bins=35, normed=True)
+G2 = histogram(err2, bins=35, normed=True)
+pmf1 = G1[0] * 1.
+bins1 = G1[1]
+pmf2 = G2[0] * 1.
+bins2 = G2[1]
+xx1 = 0.5 * (bins1[1:] + bins1[:-1])
+xx2 = 0.5 * (bins2[1:] + bins2[:-1])
+
+fit(gauss1, [mu1, sigma1], xx1, pmf1)
+fit(gauss2, [mu2, sigma2], xx2, pmf2)
+fig3.plot(xx1, pmf1, 'ko', label='std error')
+c3, = fig3.plot(xg, yg, 'r-', label='N(0,1)', visible=False)#/max(y)*max(G[0]))
+fit1 = r'$\mu=$%5.3f, $\sigma=$%5.3f' % (mu1(), sigma1())
+fig3.plot(xg, gauss1(xg), 'g-', label=fit1)#/max(y)*max(G[0]))
+fig3.set_xlabel('$\Delta z/\sigma_{68}$', fontsize=15)
+fig3.set_ylabel('Number density', fontsize=15)
+fig3.set_title(name1)
+fig3.legend(loc=2, prop={'size': 12})
+
+fig4.plot(xx2, pmf2, 'ko', label='std error')
+c4, = fig4.plot(xg, yg, 'r-', label='N(0,1)', visible=False)#/max(y)*max(G[0]))
+fit2 = r'$\mu=$%5.3f, $\sigma=$%5.3f' % (mu2(), sigma2())
+fig4.plot(xg, gauss2(xg), 'g-', label=fit2)#/max(y)*max(G[0]))
+fig4.set_xlabel('$\Delta z/\sigma_{68}$', fontsize=15)
+fig4.set_ylabel('Number density', fontsize=15)
+fig4.set_title(name2)
+fig4.legend(loc=2, prop={'size': 12})
+
+fig.canvas.mpl_connect('key_press_event', on_key)
+
+#Figure 3, true plots and PDFs
+
+rms = DTpars.rmsfactor
+
+figB = figure(3, figsize=(16, 12))
+s1B = figB.add_subplot(2, 2, 1)
+s2B = figB.add_subplot(2, 2, 2)
+s3B = figB.add_subplot(2, 2, 3)
+s4B = figB.add_subplot(2, 2, 4)
+
+x1 = y1 = DTpars.minz
+x2 = y2 = DTpars.maxz
+
+s1B.plot(zx1, zy1, 'w.', picker=5)
+s1B.plot(zx1[w1], zy1[w1], 'k.')
+current1, = s1B.plot(zx1[0], zy1[0], 'yo', ms=10, alpha=0.8, visible=False)
+s1B.set_xlabel(r'$z_{spec}$', fontsize=15)
+s1B.set_title(name1)
+s1B.set_ylabel(r'$z_{phot}$', fontsize=15)
+s1B.plot([x1, x2], [x1, x2], 'r-', lw=1.5)
+s1B.set_xlim(x1, x2)
+s1B.set_ylim(y1, y2)
+
+s2B.plot(zx2, zy2, 'w.', picker=5)
+s2B.plot(zx2[w2], zy2[w2], 'k.')
+current2, = s2B.plot(zx2[0], zy2[0], 'yo', ms=10, alpha=0.8, visible=False)
+s2B.set_xlabel(r'$z_{spec}$', fontsize=15)
+s2B.set_title(name2)
+s2B.set_ylabel(r'$z_{phot}$', fontsize=15)
+s2B.plot([x1, x2], [y1, y2], 'r-', lw=1.5)
+s2B.set_xlim(x1, x2)
+s2B.set_ylim(y1, y2)
+
+s3B.cla()
+s3B.plot(zpdf1, pdf1[0], visible=False)
+s3B.set_xlabel('redshift', fontsize=15)
+s3B.set_ylabel('P(z)', fontsize=15)
+s3B.set_xlim(DTpars.minz, DTpars.maxz)
+
+s4B.cla()
+s4B.plot(zpdf2, pdf2[0], visible=False)
+s4B.set_xlabel('redshift', fontsize=15)
+s4B.set_ylabel('P(z)', fontsize=15)
+s4B.set_xlim(DTpars.minz, DTpars.maxz)
+
+figB.canvas.mpl_connect('pick_event', onpick2)
+figB.canvas.mpl_connect('key_press_event', on_key)
+
+
+#Figure 2, metrics
+
+modephot = 1
+if modephot == 0: xtt = r'$z_{spec}$'
+if modephot == 1: xtt = r'$z_{phot}$'
+
+nbs = int(DTpars.nbinsfinal)
+
+if DTpars.ooberror == 'yes' and DTpars.predictionclass == 'Reg':
+    zs_o1, za_o1, zb_o1, zCa_o1, zCb_o1, ea_o1, eb_o1 = loadtxt(fileoob1, unpack=True)
+    zs_o2, za_o2, zb_o2, zCa_o2, zCb_o2, ea_o2, eb_o2 = loadtxt(fileoob2, unpack=True)
+    wo1 = where(zCb_o1 > zConf1)[0]
+    if second:
+        wo2 = where(zCb_o2 > zConf2)[0]
+    else:
+        wo2 = where(zCa_o2 > zConf1)[0]
+
+    Ob1s = utils_mlz.bias(zs_o1[wo1], zb_o1[wo1], '', DTpars.minz, DTpars.maxz, nbs, mode=0, verb=False)
+    Ob1p = utils_mlz.bias(zs_o1[wo1], zb_o1[wo1], '', DTpars.minz, DTpars.maxz, nbs, mode=1, verb=False)
+    if second:
+        Ob2s = utils_mlz.bias(zs_o2[wo2], zb_o2[wo2], '', DTpars.minz, DTpars.maxz, nbs, mode=0, verb=False)
+        Ob2p = utils_mlz.bias(zs_o2[wo2], zb_o2[wo2], '', DTpars.minz, DTpars.maxz, nbs, mode=1, verb=False)
+    else:
+        Ob2s = utils_mlz.bias(zs_o2[wo2], za_o2[wo2], '', DTpars.minz, DTpars.maxz, nbs, mode=0, verb=False)
+        Ob2p = utils_mlz.bias(zs_o2[wo2], za_o2[wo2], '', DTpars.minz, DTpars.maxz, nbs, mode=1, verb=False)
+
+B1s = utils_mlz.bias(zx1[w1], zy1[w1], name1, DTpars.minz, DTpars.maxz, nbs, mode=0)
+B2s = utils_mlz.bias(zx2[w2], zy2[w2], name2, DTpars.minz, DTpars.maxz, nbs, mode=0)
+B1p = utils_mlz.bias(zx1[w1], zy1[w1], name1, DTpars.minz, DTpars.maxz, nbs, mode=1)
+B2p = utils_mlz.bias(zx2[w2], zy2[w2], name2, DTpars.minz, DTpars.maxz, nbs, mode=1)
+
+figM = figure(2, figsize=(16, 12))
+figM.subplots_adjust(hspace=0.15)
+s1M = figM.add_subplot(4, 2, 1)
+s2M = figM.add_subplot(4, 2, 5)
+s3M = figM.add_subplot(4, 2, 3)
+s4M = figM.add_subplot(2, 2, 4)
+s5M = figM.add_subplot(4, 2, 2)
+s6M = figM.add_subplot(4, 2, 7)
+s7M = figM.add_subplot(4, 2, 4)
+
+cspec1a, = s1M.plot(B1s.bins, B1s.mean, 'b-', lw=1.5)
+cspec2a, = s1M.plot(B2s.bins, B2s.mean, 'g-', lw=1.5)
+cphot1a, = s1M.plot(B1p.bins, B1p.mean, 'b-', visible=False, lw=1.5)
+cphot2a, = s1M.plot(B2p.bins, B2p.mean, 'g-', visible=False, lw=1.5)
+
+if DTpars.ooberror == 'yes' and DTpars.predictionclass == 'Reg':
+    ospec1a, = s1M.plot(Ob1s.bins, Ob1s.mean, 'b--', lw=1.5)
+    ospec2a, = s1M.plot(Ob2s.bins, Ob2s.mean, 'g--', lw=1.5)
+    ophot1a, = s1M.plot(Ob1s.bins, Ob1p.mean, 'b--', visible=False, lw=1.5)
+    ophot2a, = s1M.plot(Ob2s.bins, Ob2p.mean, 'g--', visible=False, lw=1.5)
+
+s1M.plot([DTpars.minz, DTpars.maxz], [0, 0], 'k--')
+s1M.legend((cspec1a, cspec2a), (name1, name2), loc=0)
+s1M.set_ylabel('Mean $\Delta z$')
+s1M.set_xlim(DTpars.minz, DTpars.maxz)
+s1M.set_xticklabels('')
+
+cspec1b, = s2M.plot(B1s.bins, B1s.median, 'b-', lw=1.5)
+cspec2b, = s2M.plot(B2s.bins, B2s.median, 'g-', lw=1.5)
+cphot1b, = s2M.plot(B1p.bins, B1p.median, 'b-', visible=False, lw=1.5)
+cphot2b, = s2M.plot(B2p.bins, B2p.median, 'g-', visible=False, lw=1.5)
+
+if DTpars.ooberror == 'yes' and DTpars.predictionclass == 'Reg':
+    ospec1b, = s2M.plot(Ob1s.bins, Ob1s.median, 'b--', lw=1.5)
+    ospec2b, = s2M.plot(Ob2s.bins, Ob2s.median, 'g--', lw=1.5)
+    ophot1b, = s2M.plot(Ob1s.bins, Ob1p.median, 'b--', visible=False, lw=1.5)
+    ophot2b, = s2M.plot(Ob2s.bins, Ob2p.median, 'g--', visible=False, lw=1.5)
+
+s2M.plot([DTpars.minz, DTpars.maxz], [0, 0], 'k--')
+s2M.set_ylabel('Median $\Delta z$')
+s2M.set_xlim(DTpars.minz, DTpars.maxz)
+s2M.set_xticklabels('')
+
+cspec1c, = s3M.plot(B1s.bins, B1s.sigma, 'b-', lw=1.5)
+cspec2c, = s3M.plot(B2s.bins, B2s.sigma, 'g-', lw=1.5)
+cphot1c, = s3M.plot(B1p.bins, B1p.sigma, 'b-', visible=False, lw=1.5)
+cphot2c, = s3M.plot(B2p.bins, B2p.sigma, 'g-', visible=False, lw=1.5)
+
+cspec1d, = s6M.plot(B1s.bins, B1s.sigma68, 'b-', lw=1.5)
+cspec2d, = s6M.plot(B2s.bins, B2s.sigma68, 'g-', lw=1.5)
+cphot1d, = s6M.plot(B1p.bins, B1p.sigma68, 'b-', visible=False, lw=1.5)
+cphot2d, = s6M.plot(B2p.bins, B2p.sigma68, 'g-', visible=False, lw=1.5)
+
+if DTpars.ooberror == 'yes' and DTpars.predictionclass == 'Reg':
+    ospec1c, = s3M.plot(Ob1s.bins, Ob1s.sigma, 'b--', lw=1.5)
+    ospec2c, = s3M.plot(Ob2s.bins, Ob2s.sigma, 'g--', lw=1.5)
+    ophot1c, = s3M.plot(Ob1s.bins, Ob1p.sigma, 'b--', visible=False, lw=1.5)
+    ophot2c, = s3M.plot(Ob2s.bins, Ob2p.sigma, 'g--', visible=False, lw=1.5)
+    ospec1d, = s6M.plot(Ob1s.bins, Ob1s.sigma, 'b--', lw=1.5)
+    ospec2d, = s6M.plot(Ob2s.bins, Ob2s.sigma, 'g--', lw=1.5)
+    ophot1d, = s6M.plot(Ob1s.bins, Ob1p.sigma, 'b--', visible=False, lw=1.5)
+    ophot2d, = s6M.plot(Ob2s.bins, Ob2p.sigma, 'g--', visible=False, lw=1.5)
+
+s3M.set_ylabel(r'$\sigma$', fontsize=18)
+s3M.set_xlim(DTpars.minz, DTpars.maxz)
+s3M.set_xticklabels('')
+
+s6M.set_xlabel(r'$z_{spec}$', fontsize=18)
+s6M.set_ylabel(r'$\sigma_{68}$', fontsize=18)
+s6M.set_xlim(DTpars.minz, DTpars.maxz)
+
+s4M.hist(zx1, bins=50, range=(DTpars.minz, DTpars.maxz), normed=True, color='red', histtype='step', label=r'$z_{spec}$',
+         lw=2)
+s4M.hist(zy1[w1], bins=50, range=(DTpars.minz, DTpars.maxz), normed=True, color='blue', histtype='step', label=name1,
+         lw=2)
+s4M.hist(zy2[w2], bins=50, range=(DTpars.minz, DTpars.maxz), normed=True, color='green', histtype='step', label=name2,
+         lw=2)
+s4M.set_xlabel('Redshift')
+s4M.set_ylabel('N(z)')
+s4M.set_xlim(DTpars.minz, DTpars.maxz)
+s4M.legend(loc=0)
+
+zconf1, cum1 = utils_mlz.zconf_dist(zC1[w1], 40)
+zconf2, cum2 = utils_mlz.zconf_dist(zC2[w2], 40)
+s5M.plot(zconf1, cum1 * 100., 'b-', lw=1.5, label=name1)
+s5M.plot(zconf2, cum2 * 100., 'g-', lw=1.5, label=name2)
+ay2 = s5M.twiny()
+ay2.set_xlabel('zConf')
+ay2.set_xlim(0, 1)
+s5M.set_ylabel('Cumulative %')
+s5M.set_xticklabels('')
+s5M.set_xlim(0, 1)
+s5M.legend(loc=0)
+
+ZC1 = utils_mlz.conf(zC1[w1], zy1[w1], DTpars.minz, DTpars.maxz, nbs)
+wc1 = where(ZC1.zC > 0.0)
+ZC2 = utils_mlz.conf(zC2[w2], zy2[w2], DTpars.minz, DTpars.maxz, nbs)
+wc2 = where(ZC2.zC > 0.0)
+s7M.plot(ZC1.bins[wc1], ZC1.zC[wc1], 'b-', lw=1.5, label=name1)
+s7M.plot(ZC2.bins[wc2], ZC2.zC[wc2], 'g-', lw=1.5, label=name2)
+s7M.set_ylabel('zConf')
+s7M.set_xlabel('Redshift')
+s7M.set_xlim(DTpars.minz, DTpars.maxz)
+
+figM.canvas.mpl_connect('key_press_event', on_key)
+figM.canvas.mpl_connect('key_press_event', on_key2)
+
+show()
+if not notk:
+    root.mainloop() 
+
+

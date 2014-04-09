@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Utils &mdash; MLZ 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="up" title="Other routines" href="others.html" />
+    <link rel="next" title="Plotting" href="plotting.html" />
+    <link rel="prev" title="Data module" href="data.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="index.html">
+          <img class="logo" src="_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="data.html">Data module</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="plotting.html">Plotting</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="utils">
+<h1>Utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h1>
+<blockquote class="pull-quote">
+<div>This is the <a class="reference internal" href="#module-utils_mlz" title="utils_mlz"><tt class="xref py py-class docutils literal"><span class="pre">utils_mlz</span></tt></a> class in some detail, this class contains some useful routines used by MLZ.</div></blockquote>
+<span class="target" id="module-utils_mlz"></span><span class="target" id="module-utils_mlz"></span><p><em>Module author: Matias Carrasco Kind</em></p>
+<dl class="class">
+<dt id="utils_mlz.Stopwatch">
+<em class="property">class </em><tt class="descclassname">utils_mlz.</tt><tt class="descname">Stopwatch</tt><big>(</big><em>verb='yes'</em><big>)</big><a class="headerlink" href="#utils_mlz.Stopwatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stopwatch and some time procedures</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>verb</strong> (<em>str</em>) &#8211; &#8216;yes&#8217; or &#8216;no&#8217; (verbose?)</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="utils_mlz.Stopwatch.elapsed">
+<tt class="descname">elapsed</tt><big>(</big><em>only_sec=False</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#utils_mlz.Stopwatch.elapsed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints and saves elapsed time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>only_sec</strong> (<em>bool</em>) &#8211; set this to True for the elapsed time prints in seconds only</li>
+<li><strong>verbose</strong> (<em>bool</em>) &#8211; Prints on screen</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils_mlz.Stopwatch.restart">
+<tt class="descname">restart</tt><big>(</big><em>verb='Restart'</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#utils_mlz.Stopwatch.restart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the counter to zero, keeps tracking of starting time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>verb</strong> (<em>str</em>) &#8211; &#8216;Start&#8217; (default) or &#8216;Restart&#8217; (set the counter to zero and the starting</td>
+</tr>
+</tbody>
+</table>
+<p>time to current time, keeps the initial starting in self.start0)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="utils_mlz.bias">
+<em class="property">class </em><tt class="descclassname">utils_mlz.</tt><tt class="descname">bias</tt><big>(</big><em>zs</em>, <em>zb</em>, <em>name</em>, <em>zmin</em>, <em>zmax</em>, <em>nbins</em>, <em>mode=1</em>, <em>d_z=&lt;function &lt;lambda&gt; at 0x37536e0&gt;</em>, <em>verb=True</em><big>)</big><a class="headerlink" href="#utils_mlz.bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a instance to compute some metrics for the photo-z calculation for quick analysis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zs</strong> (<em>float</em>) &#8211; Spectrocopic redshift  array</li>
+<li><strong>zb</strong> (<em>float</em>) &#8211; Photometric redshift</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; name for identification</li>
+<li><strong>zmin</strong> (<em>float</em>) &#8211; Minimum redshift for binning</li>
+<li><strong>zmax</strong> (<em>float</em>) &#8211; Maximum redshift for binning</li>
+<li><strong>nbins</strong> (<em>int</em>) &#8211; Number of bins used</li>
+<li><strong>mode</strong> (<em>int</em>) &#8211; 0 (binning in spec-z) or 1 (binning in photo-z)</li>
+<li><strong>d_z</strong> (<em>function</em>) &#8211; function to be applied on z_phot and z_spec, default (z_phot-z_spec)</li>
+<li><strong>verb</strong> (<em>bool</em>) &#8211; verbose?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils_mlz.compute_error">
+<tt class="descclassname">utils_mlz.</tt><tt class="descname">compute_error</tt><big>(</big><em>z</em>, <em>pdf</em>, <em>zv</em><big>)</big><a class="headerlink" href="#utils_mlz.compute_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the error in the PDF calculation using a reference values from PDF
+it computes the 68% percentile limit around this value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>z</strong> (<em>float</em>) &#8211; redshift</li>
+<li><strong>pdf</strong> (<em>float</em>) &#8211; photo-z PDF</li>
+<li><strong>zv</strong> (<em>float</em>) &#8211; Reference value from PDF (can be mean, mode, median, etc.)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">error associated to reference value</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils_mlz.compute_zConf">
+<tt class="descclassname">utils_mlz.</tt><tt class="descname">compute_zConf</tt><big>(</big><em>z</em>, <em>pdf</em>, <em>zv</em>, <em>sigma</em><big>)</big><a class="headerlink" href="#utils_mlz.compute_zConf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the confidence level of the pdf with respect a reference value
+as the area between zv-sigma(1+zv) and zv+sigma(1+zv)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>z</strong> (<em>float</em>) &#8211; redshift</li>
+<li><strong>pdf</strong> (<em>float</em>) &#8211; photo-z PDF</li>
+<li><strong>zv</strong> (<em>float</em>) &#8211; reference value</li>
+<li><strong>sigma</strong> (<em>float</em>) &#8211; extent of confidence</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">zConf</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="utils_mlz.conf">
+<em class="property">class </em><tt class="descclassname">utils_mlz.</tt><tt class="descname">conf</tt><big>(</big><em>zconf</em>, <em>zb</em>, <em>zmin</em>, <em>zmax</em>, <em>nbins</em><big>)</big><a class="headerlink" href="#utils_mlz.conf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes confidence level (zConf) as a function of photometric redshift</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zconf</strong> (<em>float</em>) &#8211; zConf array for galaxies</li>
+<li><strong>zb</strong> (<em>float</em>) &#8211; Photometric redshifts</li>
+<li><strong>zmin</strong> (<em>float</em>) &#8211; Minimum redshift for binning</li>
+<li><strong>zmax</strong> (<em>float</em>) &#8211; Maximum redshift for binning</li>
+<li><strong>nbins</strong> (<em>int</em>) &#8211; Number of bins used</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils_mlz.get_area">
+<tt class="descclassname">utils_mlz.</tt><tt class="descname">get_area</tt><big>(</big><em>z</em>, <em>pdf</em>, <em>z1</em>, <em>z2</em><big>)</big><a class="headerlink" href="#utils_mlz.get_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute area under photo-z Pdf between z1 and z2, PDF must add to 1</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>z</strong> (<em>float</em>) &#8211; redshift</li>
+<li><strong>pdf</strong> (<em>float</em>) &#8211; photo-z PDF</li>
+<li><strong>z1</strong> (<em>float</em>) &#8211; Lower boundary</li>
+<li><strong>z2</strong> (<em>float</em>) &#8211; Upper boundary</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">area between z1 and z2</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils_mlz.get_limits">
+<tt class="descclassname">utils_mlz.</tt><tt class="descname">get_limits</tt><big>(</big><em>ntot</em>, <em>Nproc</em>, <em>rank</em><big>)</big><a class="headerlink" href="#utils_mlz.get_limits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get limits for farming an array to multiple processors</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ntot</strong> (<em>int</em>) &#8211; Number of objects in array</li>
+<li><strong>Nproc</strong> (<em>int</em>) &#8211; number of processor</li>
+<li><strong>rank</strong> (<em>int</em>) &#8211; current processor id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">L1,L2 the limits of the array for given processor</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int, int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils_mlz.percentile">
+<tt class="descclassname">utils_mlz.</tt><tt class="descname">percentile</tt><big>(</big><em>Nvals</em>, <em>percent</em><big>)</big><a class="headerlink" href="#utils_mlz.percentile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the percentile of a list of values.
+:param float Nvals: list of values
+:param float percent: a percentile value between 0 and 1.
+:return: percentile value
+:rtype: float</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils_mlz.print_dtpars">
+<tt class="descclassname">utils_mlz.</tt><tt class="descname">print_dtpars</tt><big>(</big><em>DTpars</em>, <em>outfile</em><big>)</big><a class="headerlink" href="#utils_mlz.print_dtpars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the values from class Pars to a file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>DTpars</strong> (<em>class</em>) &#8211; class Pars from input file</li>
+<li><strong>outfile</strong> (<em>str</em>) &#8211; output filename</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils_mlz.read_dt_pars">
+<tt class="descclassname">utils_mlz.</tt><tt class="descname">read_dt_pars</tt><big>(</big><em>filein</em>, <em>verbose=True</em>, <em>myrank=0</em><big>)</big><a class="headerlink" href="#utils_mlz.read_dt_pars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read parameters to be used by the program and convert them into integers/float
+if necessary, returning a class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filein</strong> (<em>str</em>) &#8211; name of inputs file, check format here <a class="reference internal" href="inputfile.html#input-file"><em>Input file template</em></a></li>
+<li><strong>verbose</strong> (<em>bool</em>) &#8211; True or False</li>
+<li><strong>myrank</strong> (<em>int</em>) &#8211; processor id for multi-core capabilities</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils_mlz.zconf_dist">
+<tt class="descclassname">utils_mlz.</tt><tt class="descname">zconf_dist</tt><big>(</big><em>conf</em>, <em>nbins</em><big>)</big><a class="headerlink" href="#utils_mlz.zconf_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the distribution of Zconf for different bins between 0 and 1</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>conf</strong> (<em>float</em>) &#8211; zConf values</li>
+<li><strong>nbins</strong> (<em>int</em>) &#8211; number of bins</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">zConf dist, bins</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float,float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="data.html">Data module</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="plotting.html">Plotting</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Matias Carrasco Kind.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,217 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Running a test &mdash; MLZ 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="prev" title="Run MLZ" href="run_mlz.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="index.html">
+          <img class="logo" src="_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="run_mlz.html">Run MLZ</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="running-a-test">
+<h1>Running a test<a class="headerlink" href="#running-a-test" title="Permalink to this headline">¶</a></h1>
+<style> .red {color:#FF6F60} </style>
+<style> .green {color:#60CC93} </style>
+<style> .blue {color:#6396FC} </style>
+<style> .blueit {color:#6396FC; font-style:italic} </style>
+<style> .under {text-decoration:underline} </style>
+<style> .mono {font-family : "Courier new"} </style><div class="section" id="run-on-sdss-data">
+<h2>Run on SDSS data<a class="headerlink" href="#run-on-sdss-data" title="Permalink to this headline">¶</a></h2>
+<blockquote class="pull-quote">
+<div>This distribution comes with a test folder where a example training set and a example testing set are located. This
+example correspond to a random subset of galaxies taken from the Main Galaxy Sample (MGS) from the <a class="reference external" href="http://www.sdss.org/">SDSS</a>. Each file
+has 5000 galaxies with spectroscopic redshift and magnitudes (model mag) and colors corrected by extinction in the 5
+bands, <em>u</em>, <em>g</em>, <em>r</em>, <em>i</em> and <em>z</em> as well as their associated errors, making a total of 9 attributes. Make sure
+you look at <a class="reference internal" href="run_mlz.html"><em>Run MLZ</em></a> for a general information on running MLZ</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is a very small subsample of the whole catalog to illustrate the use of the MLZ and its capabilities. Also
+only few trees or maps are created for illustration, ideally hundreds of trees and maps are necessary</p>
+</div>
+<blockquote class="pull-quote">
+<div><p>To run MLZ, type:</p>
+<div class="highlight-python"><pre>$ ./runMLZ test/SDSS_MGS.inputs</pre>
+</div>
+<p>To run this example you must be located at the tpz/ folder, if using <strong>mpi4py</strong> type:</p>
+<div class="highlight-python"><pre>$ mpirun -n &lt;cores&gt;  ./runMLZ test/SDSS_MGS.inputs</pre>
+</div>
+<p>Make sure &lt;cores&gt; matches your system. A view of the input file is <a class="reference internal" href="inputfile.html#input-file"><em>here</em></a>. The results are located
+in the folder <span class="green">mlz/test/results/</span> and the trees (or maps) are saved in <span class="green">tpz/test/trees/</span>. There are
+some <a class="reference internal" href="run_mlz.html#hidden-param"><em>other</em></a> parameters to control what phase to run or to manage the outputs.</p>
+</div></blockquote>
+</div>
+<div class="section" id="preview-of-results">
+<h2>Preview of results<a class="headerlink" href="#preview-of-results" title="Permalink to this headline">¶</a></h2>
+<blockquote class="pull-quote">
+<div><p>MLZ comes with some plotting routines, check <a class="reference internal" href="plotting.html#module-plotting" title="plotting"><tt class="xref py py-class docutils literal"><span class="pre">plotting</span></tt></a> for some of them and their parameters. It includes
+an interactive
+routine to preview the results. Within the main folder type:</p>
+<div class="highlight-python"><pre>$ ./plot/plot_results test/SDSS_MGS.inputs 0 0</pre>
+</div>
+<p>The first argument is the run number (every time TPZ increase this number by one) and the second argument is the
+confidence level zConf (see these <a class="reference internal" href="index.html#refers"><em>references</em></a>) for more information on this parameter and here for
+this routine <a class="reference internal" href="plotting.html#plotting.Qplot.plot_results" title="plotting.Qplot.plot_results"><tt class="xref py py-class docutils literal"><span class="pre">plotting.Qplot.plot_results</span></tt></a></p>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">you can compare different runs (using different parameters for example) by adding two extra arguments with
+the number of the run and zConf for these results like <strong>./plotting/plot_results.py test/SDSS_MGS.inputs 0 0 1 0</strong>
+will show a comparison between the first and the second run with no zConf applied. If only 2 arguments are present
+after the input file, it shows a comparison for the mode and the mean for those results.</p>
+</div>
+<blockquote class="pull-quote">
+<div>Three figures like the following are displayed for a summary of the results, with shape of PDFs, statisticsm etc</div></blockquote>
+<a class="reference internal image-reference" href="_images/ex1.png"><img alt="_images/ex1.png" src="_images/ex1.png" style="width: 403.0px; height: 303.0px;" /></a>
+<a class="reference internal image-reference" href="_images/ex2.png"><img alt="_images/ex2.png" src="_images/ex2.png" style="width: 403.0px; height: 303.0px;" /></a>
+<a class="reference internal image-reference" href="_images/ex3.png"><img alt="_images/ex3.png" src="_images/ex3.png" style="width: 403.0px; height: 303.0px;" /></a>
+<blockquote class="pull-quote">
+<div>These figures have some user interaction as explained in the help window (shown below). For example by clicking
+different points in the zphot vs zspec figure is possible to visualize its PDF, or the colormap can be changed in
+figure 3, or change between zspec or zphot in the binning, etc...</div></blockquote>
+<div class="highlight-python"><pre>All figures:
+------------
+* Q: close all figures
+* q: close current figure
+
+Figure 1:
+---------
+- Top Panel
+* m, M: change color map
+* +,- : change levels of countours
+- Bottom Panel
+* r/n : Toggle on/off Normal distribution
+        with N(0,1)
+
+Figure 2:
+---------
+* p/t : Toggle plots in photo bins and spectroscopic bins
+* o   : Toggle on/off oob data when available
+
+Figure 3: 
+---------
+* Click on points to see its PDF
+</pre>
+</div>
+</div>
+<div class="section" id="plotting-a-tree-or-a-map">
+<h2>Plotting a tree or a map<a class="headerlink" href="#plotting-a-tree-or-a-map" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>You can plot one of the created tree during the process in order to visualize how would it look like:</p>
+<div class="highlight-python"><pre>$ ./plot/plot_tree test/SDSS_MGS.inputs 0</pre>
+</div>
+<p>Or if you used SOMz instead you can also plot a map using the following:</p>
+<div class="highlight-python"><pre>$ ./plot/plot_map test/SDSS_MGS.inputs 0</pre>
+</div>
+<p>Check <a class="reference internal" href="plotting.html#plotting.Qplot.plot_tree" title="plotting.Qplot.plot_tree"><tt class="xref py py-class docutils literal"><span class="pre">plotting.Qplot.plot_tree</span></tt></a> and <a class="reference internal" href="plotting.html#plotting.Qplot.plot_map" title="plotting.Qplot.plot_map"><tt class="xref py py-class docutils literal"><span class="pre">plotting.Qplot.plot_map</span></tt></a> for information. The previous
+commands will generate figures like the following:</p>
+</div></blockquote>
+<a class="reference internal image-reference" href="_images/ex4.png"><img alt="_images/ex4.png" src="_images/ex4.png" style="width: 484.8px; height: 484.8px;" /></a>
+<a class="reference internal image-reference" href="_images/ex9.png"><img alt="_images/ex9.png" src="_images/ex9.png" style="width: 469.8px; height: 480.24px;" /></a>
+</div>
+<div class="section" id="some-pdf-example">
+<h2>Some PDF example<a class="headerlink" href="#some-pdf-example" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Some examples on how to use the PDF to compute N(z) or a zphot vs zspec map there are some analysis routines for
+them, first we need to run some pre-analysis routine, if using <strong>mpi4py</strong> type:</p>
+<div class="highlight-python"><pre>$ mpirun -n &lt;cores&gt; ./utils/use_pdfs test/SDSS_MGS.inputs</pre>
+</div>
+<p>Making sure to enter the right number of cores, if using a serial version type:</p>
+<div class="highlight-python"><pre>$ ./utils/use_pdfs test/SDSS_MGS.inputs</pre>
+</div>
+<p>After this two extra files are created in the results folder with N(z) dist and a map,
+you can change the binning by modifying the use_pdfs file it self, by default is 30. To plot these you can
+check <a class="reference internal" href="plotting.html#plotting.Qplot.plot_pdf_use" title="plotting.Qplot.plot_pdf_use"><tt class="xref py py-class docutils literal"><span class="pre">plotting.Qplot.plot_pdf_use</span></tt></a> and type:</p>
+<div class="highlight-python"><pre>$ ./plot/plot_pdf_use test/SDSS_MGS.inputs</pre>
+</div>
+<p>And then you will see two figures like the following:</p>
+</div></blockquote>
+<a class="reference internal image-reference" href="_images/ex5.png"><img alt="_images/ex5.png" src="_images/ex5.png" style="width: 406.0px; height: 306.0px;" /></a>
+<a class="reference internal image-reference" href="_images/ex6.png"><img alt="_images/ex6.png" src="_images/ex6.png" style="width: 406.0px; height: 306.0px;" /></a>
+</div>
+<div class="section" id="ancillary-information">
+<h2>Ancillary information<a class="headerlink" href="#ancillary-information" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>If the extra information is set on the <a class="reference internal" href="inputfile.html#input-file"><em>Input file template</em></a>, i.e., <tt class="docutils literal"><span class="pre">OobError</span></tt> and <tt class="docutils literal"><span class="pre">VarImportance</span></tt> are set to
+<span class="blue">yes</span>, then extra information can be plotted as well, note thar these variables are independent and setting
+only <tt class="docutils literal"><span class="pre">OobError</span></tt> to <span class="blue">yes</span> is always recommended as is a unbiased version of the performance on the same
+training set which serves a s a cross-validation and can be very useful. To plot the importance check first
+<a class="reference internal" href="plotting.html#plotting.Qplot.plot_importance" title="plotting.Qplot.plot_importance"><tt class="xref py py-class docutils literal"><span class="pre">plotting.Qplot.plot_importance</span></tt></a> and type within the main folder:</p>
+<div class="highlight-python"><pre>$ ./plot/plot_importance test/SDSS_MGS.inputs</pre>
+</div>
+<p>Which generated two plots like the following:</p>
+</div></blockquote>
+<a class="reference internal image-reference" href="_images/ex7.png"><img alt="_images/ex7.png" src="_images/ex7.png" style="width: 406.0px; height: 306.0px;" /></a>
+<a class="reference internal image-reference" href="_images/ex8.png"><img alt="_images/ex8.png" src="_images/ex8.png" style="width: 406.0px; height: 306.0px;" /></a>
+</div>
+<div class="section" id="extra-notes">
+<h2>Extra notes<a class="headerlink" href="#extra-notes" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>These figures and commands are only an example on how to run and visualize the data,
+these are not the optimal set of parameters for every data sets, look at  the <a class="reference internal" href="index.html#refers"><em>references</em></a>
+for more information on what are the best parameters and suggestion to take advantage of MLZ,
+increasing the number of trees or the resolution for SOMz (<tt class="docutils literal"><span class="pre">Ntop</span></tt>) always help, <tt class="docutils literal"><span class="pre">Natt</span></tt> is also important,
+for TPZ one could start with the square root of the number of attributes and for SOM with 2/3 of the number of
+attributes. Email me at mcarras2 at illinois.edu for questions or comments</div></blockquote>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="run_mlz.html">Run MLZ</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Matias Carrasco Kind.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

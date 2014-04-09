@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>TPZ: Trees for Photo-Z &mdash; MLZ 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="up" title="Machine Learning routines" href="ml_codes.html" />
+    <link rel="next" title="Regression Tree Class" href="rtree.html" />
+    <link rel="prev" title="Machine Learning routines" href="ml_codes.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="index.html">
+          <img class="logo" src="_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="ml_codes.html">Machine Learning routines</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="rtree.html">Regression Tree Class</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="tpz-trees-for-photo-z">
+<h1>TPZ: Trees for Photo-Z<a class="headerlink" href="#tpz-trees-for-photo-z" title="Permalink to this headline">¶</a></h1>
+<style> .red {color:#FF6F60} </style>
+<style> .green {color:#60CC93} </style>
+<style> .blue {color:#6396FC} </style>
+<style> .blueit {color:#6396FC; font-style:italic} </style>
+<style> .under {text-decoration:underline} </style>
+<style> .mono {font-family : "Courier new"} </style><blockquote class="pull-quote">
+<div><p>TPZ <a class="footnote-reference" href="#id2" id="id1">[1]</a> is a <span class="blue">supervised</span> machine learning,
+parallel algorithm that uses <span class="under">prediction trees and random forest</span> techniques to produce both robust photometric
+redshift PDFs and ancillary information for a galaxy sample. A prediction tree is built by asking a sequence
+of questions that recursively split the input data taken from the spectroscopic sample, frequently into two
+branches, until a terminal leaf is created that meets a stopping criterion (e.g., a minimum leaf size or a variance
+threshold).</p>
+<p>The dimension in which the data is divided is chosen to be the one with highest information gain
+among the random subsample of dimensions obtained at every point. This process produces less correlated
+trees and allows to explore several configurations within the data.</p>
+<p>The small region bounding the data in the
+terminal leaf node represents a specific subsample of the entire data with similar properties. Within this leaf, a
+model is applied that provides a fairly comprehensible prediction, especially in situations
+where many variables may exist that interact in a nonlinear manner as is often the case with photo-z estimation.</p>
+</div></blockquote>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/example_tree.png"><img alt="_images/example_tree.png" src="_images/example_tree.png" style="width: 326.4px; height: 314.1px;" /></a>
+</div>
+<p>In the code TPZ is implemented as a module which has 2 important classes: <a class="reference internal" href="rtree.html#TPZ.Rtree" title="TPZ.Rtree"><tt class="xref py py-class docutils literal"><span class="pre">TPZ.Rtree</span></tt></a> for regression and <a class="reference internal" href="ctree.html#TPZ.Ctree" title="TPZ.Ctree"><tt class="xref py py-class docutils literal"><span class="pre">TPZ.Ctree</span></tt></a> for
+classification. Both are documented in the code and listed below. For more information please refer to the <a class="reference external" href="http://adsabs.harvard.edu/abs/2013MNRAS.432.1483C">TPZ paper</a></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="rtree.html">Regression Tree Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ctree.html">Classification Trees Class</a></li>
+</ul>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">In order to visualize the created trees you need to have installed <a class="reference external" href="http://www.graphviz.org/">Graphviz</a>, usually is installed by default on Linux and Mac OS systems
+You don&#8217;t needed it in order to run MLZ</p>
+</div>
+<div class="section" id="example-1">
+<h2>Example 1<a class="headerlink" href="#example-1" title="Permalink to this headline">¶</a></h2>
+<blockquote class="pull-quote">
+<div>This is a simple example on how to use the <a class="reference internal" href="rtree.html#TPZ.Rtree" title="TPZ.Rtree"><tt class="xref py py-class docutils literal"><span class="pre">TPZ.Rtree</span></tt></a>, visualize  a tree and make a simple prediction. To see
+an example of using this properly in a problem under the MLZ framework , see <a class="reference internal" href="run.html"><em>Running a test</em></a></div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+
+<span class="n">path_src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s">&#39;../../&#39;</span><span class="p">))</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">path_src</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">path_src</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mlz.ml_codes</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c">#X and Y can be anything, in this case SDSS mags and colors for X and photo-z for Y</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">loadtxt</span><span class="p">(</span><span class="s">&#39;SDSS_MGS.train&#39;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">loadtxt</span><span class="p">(</span><span class="s">&#39;SDSS_MGS.train&#39;</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+
+<span class="c">#this dictionary is optional for this example</span>
+<span class="c">#for plotting the color labels</span>
+<span class="c">#(automatically included in MLZ)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;u&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span> <span class="s">&#39;g&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="s">&#39;r&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="s">&#39;i&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span> <span class="s">&#39;z&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span> <span class="s">&#39;u-g&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+     <span class="s">&#39;g-r&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">}}</span>
+
+<span class="c">#Calls the Regression Tree mode</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TPZ</span><span class="o">.</span><span class="n">Rtree</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">minleaf</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">mstar</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">dict_dim</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+<span class="n">T</span><span class="o">.</span><span class="n">plot_tree</span><span class="p">()</span>
+<span class="c">#get a list of all branches</span>
+<span class="n">branches</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">leaves</span><span class="p">()</span>
+<span class="c">#print first branch, in this case left ,left, left, etc...</span>
+<span class="k">print</span> <span class="s">&#39;branch = &#39;</span><span class="p">,</span> <span class="n">branches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c">#print content of branch</span>
+<span class="n">content</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">print_branch</span><span class="p">(</span><span class="n">branches</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">print</span> <span class="s">&#39;branch content&#39;</span>
+<span class="k">print</span> <span class="n">content</span>
+<span class="c">#get prediction values for a test data (just an example on how to do it)</span>
+<span class="c">#using a train objetc</span>
+<span class="n">values</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">get_vals</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span>
+<span class="k">print</span> <span class="s">&#39;predicted values from tree&#39;</span>
+<span class="k">print</span> <span class="n">values</span>
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&#39;mean value from prediction&#39;</span><span class="p">,</span> <span class="n">mean</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;real value&#39;</span><span class="p">,</span> <span class="n">Y</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+<span class="c">#Note we use a shallow tree and only one tree for example purposes and there</span>
+<span class="c">#is a random subsmaple so answer changes every time</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./mlz/test/test_TPZ_Rtree.py">Source code</a>)</p>
+<div class="figure">
+<img alt="_images/test_TPZ_Rtree_00.png" src="_images/test_TPZ_Rtree_00.png" style="width: 30%;" />
+<p class="caption">(<a class="reference external" href="./mlz/test/test_TPZ_Rtree_00.png">png</a>, <a class="reference external" href="./mlz/test/test_TPZ_Rtree_00.hires.png">hires.png</a>, <a class="reference external" href="./mlz/test/test_TPZ_Rtree_00.pdf">pdf</a>)</p>
+</div>
+<div class="figure">
+<img alt="_images/test_TPZ_Rtree_01.png" src="_images/test_TPZ_Rtree_01.png" style="width: 30%;" />
+<p class="caption">(<a class="reference external" href="./mlz/test/test_TPZ_Rtree_01.png">png</a>, <a class="reference external" href="./mlz/test/test_TPZ_Rtree_01.hires.png">hires.png</a>, <a class="reference external" href="./mlz/test/test_TPZ_Rtree_01.pdf">pdf</a>)</p>
+</div>
+<div class="figure">
+<img alt="_images/test_TPZ_Rtree_02.png" src="_images/test_TPZ_Rtree_02.png" style="width: 30%;" />
+<p class="caption">(<a class="reference external" href="./mlz/test/test_TPZ_Rtree_02.png">png</a>, <a class="reference external" href="./mlz/test/test_TPZ_Rtree_02.hires.png">hires.png</a>, <a class="reference external" href="./mlz/test/test_TPZ_Rtree_02.pdf">pdf</a>)</p>
+</div>
+<p>If you <a class="reference download internal" href="_downloads/test_TPZ_Rtree.py"><tt class="xref download docutils literal"><span class="pre">download</span></tt></a> this example and run it on a python console you would get the following output,
+although the final line would change slightly as there is a random process involved which would also
+change the figures:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">branches</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">leaves</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="s">&#39;branch = &#39;</span><span class="p">,</span> <span class="n">branches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">branch =  [&#39;L&#39;, &#39;L&#39;, &#39;L&#39;, &#39;L&#39;, &#39;L&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">content</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">print_branch</span><span class="p">(</span><span class="n">branches</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="s">&#39;brach content&#39;</span>
+<span class="go">branch content</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">content</span>
+<span class="go">[ 0.024914  0.029343  0.005126  0.017902  0.019716  0.02609   0.004404</span>
+<span class="go">  0.006451  0.003074  0.034597  0.005701  0.003923  0.032468  0.031017</span>
+<span class="go">  0.023015  0.038875  0.010996  0.018425  0.007773  0.013524  0.024911</span>
+<span class="go">  0.003017  0.013113  0.006682  0.007372  0.021268]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">get_vals</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="s">&#39;predicted values from tree&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">values</span>
+<span class="go">[ 0.120684  0.118015  0.108008  0.103931  0.11477   0.099268  0.106299</span>
+<span class="go">  0.114634  0.11031   0.115252  0.102601  0.132789  0.12069   0.125127</span>
+<span class="go">  0.115067  0.086241  0.115476  0.112288  0.096661  0.105071  0.108449</span>
+<span class="go">  0.119887  0.111333  0.120343  0.130859  0.104452  0.126068  0.095225</span>
+<span class="go">  0.102079  0.123717  0.118518  0.116976  0.094429  0.107744  0.111157</span>
+<span class="go">  0.095198  0.127612  0.114376  0.105994  0.117298  0.105951  0.09058</span>
+<span class="go">  0.118837  0.108803  0.114075  0.159866  0.116929  0.086987  0.099276</span>
+<span class="go">  0.088263  0.117582  0.119883  0.126069  0.117097  0.110187  0.099429</span>
+<span class="go">  0.102188  0.105896  0.107781]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="s">&#39;mean value from prediction&#39;</span><span class="p">,</span> <span class="n">mean</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="go">mean value from prediction 0.111365677966</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="s">&#39;real value&#39;</span><span class="p">,</span> <span class="n">Y</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+<span class="go">real value 0.120684</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-2">
+<h2>Example 2<a class="headerlink" href="#example-2" title="Permalink to this headline">¶</a></h2>
+<blockquote class="pull-quote">
+<div>This is a simple <a class="reference download internal" href="_downloads/test_TPZ_Ctree.py"><tt class="xref download docutils literal"><span class="pre">example</span></tt></a> on how to use the <a class="reference internal" href="ctree.html#TPZ.Ctree" title="TPZ.Ctree"><tt class="xref py py-class docutils literal"><span class="pre">TPZ.Ctree</span></tt></a>,
+to visualize  a tree and to make a simple classification, in this case
+we classify from low and high redshift. Note the differences with these tree as leaf are painted according to
+different classes.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+
+<span class="n">path_src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s">&#39;../../&#39;</span><span class="p">))</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">path_src</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">path_src</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mlz.ml_codes</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c">#X and Y can be anything, in this case SDSS mags and colors for X and photo-z for Y</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">loadtxt</span><span class="p">(</span><span class="s">&#39;SDSS_MGS.train&#39;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">loadtxt</span><span class="p">(</span><span class="s">&#39;SDSS_MGS.train&#39;</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+
+<span class="c">#make two classes by separating Y in low and high redhisft for example</span>
+
+<span class="n">Y</span> <span class="o">=</span> <span class="n">where</span><span class="p">((</span><span class="n">Y</span> <span class="o">&gt;</span> <span class="mf">0.15</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c">#0: low redshift, 1: high redshift</span>
+
+<span class="c">#this dictionary is optional for this example</span>
+<span class="c">#for plotting the color labels</span>
+<span class="c">#(automatically included in MLZ)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;u&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span> <span class="s">&#39;g&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="s">&#39;r&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="s">&#39;i&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span> <span class="s">&#39;z&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span> <span class="s">&#39;u-g&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+     <span class="s">&#39;g-r&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ind&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">}}</span>
+
+<span class="c">#Calls the Classification Tree mode</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TPZ</span><span class="o">.</span><span class="n">Ctree</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">minleaf</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">mstar</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">dict_dim</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">nclass</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;int&#39;</span><span class="p">))</span>
+<span class="n">T</span><span class="o">.</span><span class="n">plot_tree</span><span class="p">()</span>
+<span class="c">#get a list of all branches</span>
+<span class="n">branches</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">leaves</span><span class="p">()</span>
+<span class="c">#print first branch, in this case left ,left, left, etc...</span>
+<span class="k">print</span> <span class="s">&#39;branch = &#39;</span><span class="p">,</span> <span class="n">branches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c">#print content of branch</span>
+<span class="n">content</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">print_branch</span><span class="p">(</span><span class="n">branches</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">print</span> <span class="s">&#39;branch content&#39;</span>
+<span class="k">print</span> <span class="n">content</span>
+<span class="c">#get prediction values for a test data (just an example on how to do it)</span>
+<span class="c">#using a train objetc</span>
+<span class="n">values</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">get_vals</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">20</span><span class="p">])</span>
+<span class="k">print</span> <span class="s">&#39;predicted values from tree&#39;</span>
+<span class="k">print</span> <span class="n">values</span>
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&#39;mean value from prediction&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">values</span><span class="p">)))</span>
+<span class="k">print</span> <span class="s">&#39;real value&#39;</span><span class="p">,</span> <span class="n">Y</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span>
+<span class="c">#Note we use a shallow tree and only one tree for example purposes and there</span>
+<span class="c">#is a random subsmaple so answer changes every time</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./mlz/test/test_TPZ_Ctree.py">Source code</a>)</p>
+<div class="figure">
+<img alt="_images/test_TPZ_Ctree_00.png" src="_images/test_TPZ_Ctree_00.png" style="width: 30%;" />
+<p class="caption">(<a class="reference external" href="./mlz/test/test_TPZ_Ctree_00.png">png</a>, <a class="reference external" href="./mlz/test/test_TPZ_Ctree_00.hires.png">hires.png</a>, <a class="reference external" href="./mlz/test/test_TPZ_Ctree_00.pdf">pdf</a>)</p>
+</div>
+<div class="figure">
+<img alt="_images/test_TPZ_Ctree_01.png" src="_images/test_TPZ_Ctree_01.png" style="width: 30%;" />
+<p class="caption">(<a class="reference external" href="./mlz/test/test_TPZ_Ctree_01.png">png</a>, <a class="reference external" href="./mlz/test/test_TPZ_Ctree_01.hires.png">hires.png</a>, <a class="reference external" href="./mlz/test/test_TPZ_Ctree_01.pdf">pdf</a>)</p>
+</div>
+<div class="figure">
+<img alt="_images/test_TPZ_Ctree_02.png" src="_images/test_TPZ_Ctree_02.png" style="width: 30%;" />
+<p class="caption">(<a class="reference external" href="./mlz/test/test_TPZ_Ctree_02.png">png</a>, <a class="reference external" href="./mlz/test/test_TPZ_Ctree_02.hires.png">hires.png</a>, <a class="reference external" href="./mlz/test/test_TPZ_Ctree_02.pdf">pdf</a>)</p>
+</div>
+<p><br />
+<br /></p>
+<p><strong>References</strong></p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Carrasco Kind, M., &amp; Brunner, R. J., 2013  <span class="blueit">&#8220;TPZ : Photometric redshift PDFs and ancillary information by using prediction trees and random forests&#8221;</span>, MNRAS, 432, 1483 (<a class="reference external" href="http://adsabs.harvard.edu/abs/2013MNRAS.432.1483C">Link</a>)</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="ml_codes.html">Machine Learning routines</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="rtree.html">Regression Tree Class</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Matias Carrasco Kind.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

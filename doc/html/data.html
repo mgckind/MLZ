@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Data module &mdash; MLZ 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="up" title="Other routines" href="others.html" />
+    <link rel="next" title="Utils" href="utils.html" />
+    <link rel="prev" title="Other routines" href="others.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="index.html">
+          <img class="logo" src="_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="others.html">Other routines</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="utils.html">Utils</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="data-module">
+<h1>Data module<a class="headerlink" href="#data-module" title="Permalink to this headline">¶</a></h1>
+<blockquote class="pull-quote">
+<div>This is the <a class="reference internal" href="#module-data" title="data"><tt class="xref py py-class docutils literal"><span class="pre">data</span></tt></a> class in some detail, this class is useful to read the data in a specified format and
+to read the inputs parameters as specified in the <a class="reference internal" href="inputfile.html#input-file"><em>Input file template</em></a>.</div></blockquote>
+<span class="target" id="module-data"></span><span class="target" id="module-data"></span><p><em>Module author: Matias Carrasco Kind</em></p>
+<dl class="function">
+<dt id="data.bootstrap_index">
+<tt class="descclassname">data.</tt><tt class="descname">bootstrap_index</tt><big>(</big><em>N</em>, <em>SS</em><big>)</big><a class="headerlink" href="#data.bootstrap_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns bootstrapping indexes of sample N from array of indices</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>N</strong> (<em>int</em>) &#8211; size of boostrap sample</li>
+<li><strong>SS</strong> (<em>int</em>) &#8211; extract indexes from 0 to SS</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">array of bootstrap indices</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="data.catalog">
+<em class="property">class </em><tt class="descclassname">data.</tt><tt class="descname">catalog</tt><big>(</big><em>Pars</em>, <em>cat_type='train'</em>, <em>L1=0</em>, <em>L2=-1</em>, <em>rank=0</em><big>)</big><a class="headerlink" href="#data.catalog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a catalog instance for training or testing</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Pars</strong> (<em>class</em>) &#8211; Class of parameters read from inputs files</li>
+<li><strong>cat_type</strong> (<em>str</em>) &#8211; &#8216;train&#8217; or &#8216;test&#8217; file (names are taken from Pars class)</li>
+<li><strong>L1</strong> (<em>int</em>) &#8211; keep only entries between L1 and L2</li>
+<li><strong>L2</strong> (<em>int</em>) &#8211; keep only entries between L1 and L2</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="data.catalog.get_XY">
+<tt class="descname">get_XY</tt><big>(</big><em>curr_at='all'</em>, <em>bootstrap='no'</em><big>)</big><a class="headerlink" href="#data.catalog.get_XY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates X and Y methods based on catalog, using random realization or bootstrapping,
+after this both X and Y are loaded and ready to be used</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>curr_at</strong> (<em>dict</em>) &#8211; dictionary  of attributes to be used (like a subsample of them), &#8216;all&#8217; by default</li>
+<li><strong>bootstrap</strong> (<em>str</em>) &#8211; Bootstrapping sample? (&#8216;yes&#8217;/&#8217;no&#8217;)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Saves X, Y oob (and no-oob) data if required and original catalog</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="data.catalog.has_X">
+<tt class="descname">has_X</tt><big>(</big><big>)</big><a class="headerlink" href="#data.catalog.has_X" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is X already loaded in memory?</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="data.catalog.has_Y">
+<tt class="descname">has_Y</tt><big>(</big><big>)</big><a class="headerlink" href="#data.catalog.has_Y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is Y already loaded in memory?</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="data.catalog.load_random">
+<tt class="descname">load_random</tt><big>(</big><big>)</big><a class="headerlink" href="#data.catalog.load_random" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the random catalog with the realizations</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="data.catalog.make_random">
+<tt class="descname">make_random</tt><big>(</big><em>outfileran=''</em>, <em>ntimes=-1</em><big>)</big><a class="headerlink" href="#data.catalog.make_random" title="Permalink to this definition">¶</a></dt>
+<dd><p>Actually makes the random realizations
+:param str outfileran: output file (not needed)
+:param int ntimes: taken from class Pars unless otherwise indicated</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="data.catalog.oob_data">
+<tt class="descname">oob_data</tt><big>(</big><em>frac=0.0</em><big>)</big><a class="headerlink" href="#data.catalog.oob_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates oob data and separates it from the no-oob data for further tests
+:param float frac: Fraction of the data to be separated, taken from class Pars (default is 1/3)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="data.catalog.sample_dim">
+<tt class="descname">sample_dim</tt><big>(</big><em>nsample</em><big>)</big><a class="headerlink" href="#data.catalog.sample_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Samples from the list of attributes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nsample</strong> (<em>int</em>) &#8211; size of subsample</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dictionary with subsample attributes and their locations</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="data.create_random_realizations">
+<tt class="descclassname">data.</tt><tt class="descname">create_random_realizations</tt><big>(</big><em>AT</em>, <em>F</em>, <em>N</em>, <em>keyatt</em><big>)</big><a class="headerlink" href="#data.create_random_realizations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create random realizations using error in magnitudes,
+saves a temporarily file on train data directory.
+Uses normal distribution</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>AT</strong> (<em>dict</em>) &#8211; dictionary with columns names and colum index</li>
+<li><strong>F</strong> (<em>float</em>) &#8211; Training data</li>
+<li><strong>N</strong> (<em>int</em>) &#8211; Number of realizations</li>
+<li><strong>keyatt</strong> (<em>str</em>) &#8211; Attribute name to be predicted or classifed</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns  an array with random realizations</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="data.make_AT">
+<tt class="descclassname">data.</tt><tt class="descname">make_AT</tt><big>(</big><em>cols</em>, <em>attributes</em>, <em>keyatt</em><big>)</big><a class="headerlink" href="#data.make_AT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates dictionary used on all routines</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Make sure all columns have different names, and error columns are the same as attribute
+columns with a &#8216;e&#8217; in front of it, ex. &#8216;mag_u&#8217; and &#8216;emag_u&#8217;</p>
+</div>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cols</strong> (<em>str</em>) &#8211; str array with column names from file</li>
+<li><strong>attributes</strong> (<em>str</em>) &#8211; attributes to be used from those columns</li>
+<li><strong>keyatt</strong> (<em>str</em>) &#8211; Attribute to be predicted or classified</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dictionary, each key correspond to an attribute and itself a dictionary  where &#8216;ind&#8217; is the
+column index and &#8216;eind&#8217; is the error column for the same attribute,
+ex., A={u:{&#8216;ind&#8217;=1, &#8216;eind&#8217;=6}}</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="data.read_catalog">
+<tt class="descclassname">data.</tt><tt class="descname">read_catalog</tt><big>(</big><em>filename</em>, <em>myrank=0</em>, <em>check='no'</em><big>)</big><a class="headerlink" href="#data.read_catalog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the catalog, either for training or testing
+currently accepting ascii tables, numpy tables</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>str</em>) &#8211; Filename of the catalod</li>
+<li><strong>myrank</strong> (<em>int</em>) &#8211; current processor id, for parallel reading (not implemented)</li>
+<li><strong>check</strong> (<em>str</em>) &#8211; To check the code, only uses 50 lines of catalog</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The whole catalog</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="others.html">Other routines</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="utils.html">Utils</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Matias Carrasco Kind.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

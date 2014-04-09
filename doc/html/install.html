@@ -1,0 +1,149 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; MLZ 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="next" title="Machine Learning routines" href="ml_codes.html" />
+    <link rel="prev" title="Requirements" href="req.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="index.html">
+          <img class="logo" src="_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="req.html">Requirements</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="ml_codes.html">Machine Learning routines</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<style> .red {color:#FF6F60} </style>
+<style> .green {color:#60CC93} </style>
+<style> .blue {color:#6396FC} </style>
+<style> .blueit {color:#6396FC; font-style:italic} </style>
+<style> .under {text-decoration:underline} </style>
+<style> .mono {font-family : "Courier new"} </style><div class="section" id="download">
+<h2>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>You can get the latest version of the code from: <a class="reference external" href="https://pypi.python.org/pypi/MLZ/1.0">https://pypi.python.org/pypi/MLZ/1.0</a></p>
+<p>The simplest way to get MLZ is using pip:</p>
+<div class="highlight-python"><pre>[sudo] pip install MLZ</pre>
+</div>
+<p>or:</p>
+<div class="highlight-python"><pre>pip install MLZ --user</pre>
+</div>
+<p>or even:</p>
+<div class="highlight-python"><pre>easy_install --user MLZ</pre>
+</div>
+<p>which will install and copy all the files to a local directory which can be specified by using the <tt class="docutils literal"><span class="pre">--prefix=&lt;path&gt;</span></tt> flag.
+Open python and check if the module is present:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mlz</span>
+</pre></div>
+</div>
+<p>The code can also be installed manually, by getting the tar file and then uncompress the file:</p>
+<div class="highlight-python"><pre>tar -zxf MLZ-1.0.tar.gz</pre>
+</div>
+<p>and install using:</p>
+<div class="highlight-python"><pre>python setup.py install --user</pre>
+</div>
+<p>which is not required for the code to run via standard way. This will create a copy of the code in a local directory and a few
+executable files will be copied to a local script folder (usually at <span class="mono">$HOME/.local/bin</span>). This also compiles automatically the fortran routines needed
+for better performance.</p>
+</div></blockquote>
+</div>
+<div class="section" id="fortran-routines">
+<h2>Fortran routines<a class="headerlink" href="#fortran-routines" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>If the installation did not work via <tt class="docutils literal"><span class="pre">setup.py</span></tt> as shown, some fortran libraries will not be present,
+these can be manually compiled using the <a class="reference external" href="https://code.google.com/p/f2py/">f2py</a> wrapper. In the <span class="mono">mlz</span> folder, go to the <span class="mono">ml_codes</span> folder where
+you will find the file <tt class="docutils literal"><span class="pre">som.f90</span></tt> in that folder:</p>
+<div class="highlight-python"><pre>f2py -c -m somF som.f90</pre>
+</div>
+<p>And the library <tt class="docutils literal"><span class="pre">somF.so</span></tt> will be created. The code still works even this step is not accomplished as these routines aid the code to run
+more efficiently.</p>
+</div></blockquote>
+</div>
+<div class="section" id="release-note">
+<h2>Release Note<a class="headerlink" href="#release-note" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>MLZ is an open source code released and <a class="reference internal" href="license.html#license-file"><em>licensed</em></a> under the <a class="reference external" href="http://opensource.org/licenses/NCSA">University of Illinois/NCSA Open Source License</a> and it is distributed <em>without any warranty</em>.</div></blockquote>
+</div>
+<div class="section" id="acknowledgement">
+<h2>Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>Please, acknowledge the use of MLZ in your own work with this (or similar) with these <a class="reference internal" href="index.html#refers"><em>references</em></a></div></blockquote>
+</div>
+<div class="section" id="uninstall">
+<h2>Uninstall<a class="headerlink" href="#uninstall" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>You can uninstall MLZ by deleting the files manually with:</p>
+<div class="highlight-python"><pre>python setup.py install --user --record installed_files.txt
+cat installed_files.txt | xargs rm -rf
+rm -rf installed_files</pre>
+</div>
+<p>Then proceed to delete mlz folder in the local installation.</p>
+<p>Or you can use:</p>
+<div class="highlight-python"><pre>pip uninstall MLZ</pre>
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="req.html">Requirements</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="ml_codes.html">Machine Learning routines</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Matias Carrasco Kind.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

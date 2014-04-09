@@ -1,0 +1,11 @@
+Data module
+================
+
+.. pull-quote::
+
+    This is the :class:`data` class in some detail, this class is useful to read the data in a specified format and
+    to read the inputs parameters as specified in the :ref:`input-file`.
+
+
+.. automodule:: data
+    :members:

@@ -1,0 +1,67 @@
+#Input parameters for TPZ (Don't delete them)
+#Space between ":" and "value" is important
+#
+#            BLANK SPACE
+#                 |                  
+#                 | 
+#                 |
+# FILENAMES       V
+TrainFile        : SDSS_MGS.train     # Name of training file
+TestFile         : SDSS_MGS.test      # Name of test file
+FinalFileName    : SDSS_MGS           # Root of Final name
+#------------------------------------------------------
+#     PATHS
+#------------------------------------------------------
+Path_Train       : test/  # Path to train file
+Path_Test        : test/  # Path to test file
+Path_Output      : test/  # Path to results
+#------------------------------------------------------
+#     COLUMNS AND ATTRIBUTES
+#------------------------------------------------------
+#in columns names the column for error must be named same a the column with an e in front
+Columns          : zs,u,g,r,i,z,u-g,g-r,r-i,i-z,eu,eg,er,ei,ez,eu-g,eg-r,er-i,ei-z   # Columns of training file
+Att              : u,g,r,i,z,u-g,g-r,r-i,i-z                  # Attributes to use, try a subset!
+Columns_Test     : zs,u,g,r,i,z,u-g,g-r,r-i,i-z,eu,eg,er,ei,ez,eu-g,eg-r,er-i,ei-z     # Columns for test, no need have a KetAtt column
+KeyAtt           : zs                           #name of  the column to be predicted
+#------------------------------------------------------
+#     CODE STEPS
+#------------------------------------------------------
+CheckOnly        : no                # Check everything with small samples to test the codes
+PredictionMode   : TPZ               # TPZ/SOM/TPZ_C
+PredictionClass  : Reg               # Reg/Class
+#------------------------------------------------------
+#   REDSHIFT RELATED (OR FOR CLASSIFICATION)
+#------------------------------------------------------
+MinZ             : 0.001             # Min redshift (class label)
+MaxZ             : 0.3               # Max redshift (class label)
+NzBins           : 80                # Number of bins in z range (2 for Classification)
+#------------------------------------------------------
+#   COMMON FOR TPZ/SOM
+#------------------------------------------------------
+NRandom          : 2                 # Number of random realizations (1 original data)
+NTrees           : 4                 # Number of trees or maps!  (total number is NRandom x NTrees)
+Natt             : 3                 # Number of attributes m* for TPZ or subsample for SOM
+OobError         : no                # Out-of-bag error?
+VarImportance    : no               # Perform variable importance ranking?
+#------------------------------------------------------
+#   TPZ
+#------------------------------------------------------
+MinLeaf          : 5                 # Minimum number for terminal leaf
+ImpurityIndex    : entropy           # options (entropy/gini/classE) for Classification
+#------------------------------------------------------
+#   SOM
+#------------------------------------------------------
+Topology         : hex               # grid,hex,sphere
+Periodic         : yes               # periodic? yes/no
+Ntop             : 15                # map size (in the case fo sphere, npix=12*ntop*ntop , ntop: must be power of 2)
+Iterations       : 200               # number of iterations
+SomType          : online            # online/batch
+AlphaStart       : 0.9               # Alpha start
+AlphaEnd         : 0.5               # Alpha end
+ImportanceFile   : none              # path to importance file, write 'none' is not used
+#------------------------------------------------------
+#   Get PDFs
+#------------------------------------------------------
+SigmaFactor      : 3.                # Gaussian smoothing with kernel Sigma1*Resolution
+RmsFactor        : 0.02              # initial rms, can be modified using oob data
+#------------------------------------------------------

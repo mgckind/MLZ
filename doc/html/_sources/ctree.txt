@@ -1,0 +1,10 @@
+Classification Trees Class
+============================
+
+.. pull-quote::
+
+    This is the :class:`TPZ.Ctree` class in some detail, refer to the source code for mode information and methods.
+
+
+.. automodule:: TPZ
+    :members: Ctree

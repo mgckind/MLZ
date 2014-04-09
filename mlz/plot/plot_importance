@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+__author__ = 'Matias Carrasco Kind'
+from numpy import *
+import os, sys
+path_src = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+if not path_src in sys.path: sys.path.insert(1, path_src)
+from mlz.utils import *
+import mlz.plot.plotting as pl
+
+if len(sys.argv) < 2:
+    utils_mlz.printpz()
+    utils_mlz.printpz("Usage:: ")
+    utils_mlz.printpz("-----------------------------------------------")
+    utils_mlz.printpz("./plot_importance <input file> <run No (def=0)>")
+    utils_mlz.printpz("-----------------------------------------------")
+    utils_mlz.printpz()
+    utils_mlz.printpz("<input file>  : Same used in runALL")
+    utils_mlz.printpz("<run No> : result id on results/ folder , default is 0")
+    sys.exit(0)
+
+FilePars=sys.argv[1]
+Narg=len(sys.argv)
+if Narg > 2:
+    it=int(sys.argv[2])
+else:
+    it=0
+Q = pl.Qplot(FilePars)
+Q.plot_importance(it)
+
+

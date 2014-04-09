@@ -1,0 +1,151 @@
+Running a test
+===============
+
+.. include:: colors.rst
+
+Run on SDSS data
+................
+
+.. pull-quote::
+
+    This distribution comes with a test folder where a example training set and a example testing set are located. This
+    example correspond to a random subset of galaxies taken from the Main Galaxy Sample (MGS) from the SDSS_. Each file
+    has 5000 galaxies with spectroscopic redshift and magnitudes (model mag) and colors corrected by extinction in the 5
+    bands, *u*, *g*, *r*, *i* and *z* as well as their associated errors, making a total of 9 attributes. Make sure
+    you look at :doc:`run_mlz` for a general information on running MLZ
+
+.. _SDSS: http://www.sdss.org/
+
+.. note::
+
+    This is a very small subsample of the whole catalog to illustrate the use of the MLZ and its capabilities. Also
+    only few trees or maps are created for illustration, ideally hundreds of trees and maps are necessary
+
+
+.. pull-quote::
+
+    To run MLZ, type::
+
+        $ ./runMLZ test/SDSS_MGS.inputs
+
+    To run this example you must be located at the tpz/ folder, if using **mpi4py** type::
+
+        $ mpirun -n <cores>  ./runMLZ test/SDSS_MGS.inputs
+
+    Make sure <cores> matches your system. A view of the input file is :ref:`here <input-file>`. The results are located
+    in the folder :green:`mlz/test/results/` and the trees (or maps) are saved in :green:`tpz/test/trees/`. There are
+    some :ref:`other <hidden-param>` parameters to control what phase to run or to manage the outputs.
+
+Preview of results
+..................
+
+.. pull-quote::
+
+    MLZ comes with some plotting routines, check :class:`plotting` for some of them and their parameters. It includes
+    an interactive
+    routine to preview the results. Within the main folder type::
+
+        $ ./plot/plot_results test/SDSS_MGS.inputs 0 0
+
+    The first argument is the run number (every time TPZ increase this number by one) and the second argument is the
+    confidence level zConf (see these :ref:`references <refers>`) for more information on this parameter and here for
+    this routine :class:`plotting.Qplot.plot_results`
+
+.. note::
+
+    you can compare different runs (using different parameters for example) by adding two extra arguments with
+    the number of the run and zConf for these results like **./plotting/plot_results.py test/SDSS_MGS.inputs 0 0 1 0**
+    will show a comparison between the first and the second run with no zConf applied. If only 2 arguments are present
+    after the input file, it shows a comparison for the mode and the mean for those results.
+
+.. pull-quote::
+
+    Three figures like the following are displayed for a summary of the results, with shape of PDFs, statisticsm etc
+
+.. image:: figures/ex1.png
+    :scale: 25%
+.. image:: figures/ex2.png
+    :scale: 25%
+.. image:: figures/ex3.png
+    :scale: 25%
+
+.. pull-quote::
+
+    These figures have some user interaction as explained in the help window (shown below). For example by clicking
+    different points in the zphot vs zspec figure is possible to visualize its PDF, or the colormap can be changed in
+    figure 3, or change between zspec or zphot in the binning, etc...
+
+
+.. literalinclude :: ../mlz/plot/help.txt
+
+Plotting a tree or a map
+.........................
+
+    You can plot one of the created tree during the process in order to visualize how would it look like::
+
+        $ ./plot/plot_tree test/SDSS_MGS.inputs 0
+
+    Or if you used SOMz instead you can also plot a map using the following::
+
+        $ ./plot/plot_map test/SDSS_MGS.inputs 0
+
+    Check :class:`plotting.Qplot.plot_tree` and :class:`plotting.Qplot.plot_map` for information. The previous
+    commands will generate figures like the following:
+
+.. image:: figures/ex4.png
+    :scale: 40%
+.. image:: figures/ex9.png
+    :scale: 58%
+
+Some PDF example
+.................
+
+    Some examples on how to use the PDF to compute N(z) or a zphot vs zspec map there are some analysis routines for
+    them, first we need to run some pre-analysis routine, if using **mpi4py** type::
+
+        $ mpirun -n <cores> ./utils/use_pdfs test/SDSS_MGS.inputs
+
+    Making sure to enter the right number of cores, if using a serial version type::
+
+        $ ./utils/use_pdfs test/SDSS_MGS.inputs
+
+    After this two extra files are created in the results folder with N(z) dist and a map,
+    you can change the binning by modifying the use_pdfs file it self, by default is 30. To plot these you can
+    check :class:`plotting.Qplot.plot_pdf_use` and type::
+
+        $ ./plot/plot_pdf_use test/SDSS_MGS.inputs
+
+    And then you will see two figures like the following:
+
+.. image:: figures/ex5.png
+    :scale: 50%
+.. image:: figures/ex6.png
+    :scale: 50%
+
+Ancillary information
+......................
+
+    If the extra information is set on the :ref:`input-file`, i.e., ``OobError`` and ``VarImportance`` are set to
+    :blue:`yes`, then extra information can be plotted as well, note thar these variables are independent and setting
+    only ``OobError`` to :blue:`yes` is always recommended as is a unbiased version of the performance on the same
+    training set which serves a s a cross-validation and can be very useful. To plot the importance check first
+    :class:`plotting.Qplot.plot_importance` and type within the main folder::
+
+        $ ./plot/plot_importance test/SDSS_MGS.inputs
+
+    Which generated two plots like the following:
+
+.. image:: figures/ex7.png
+    :scale: 50%
+.. image:: figures/ex8.png
+    :scale: 50%
+
+Extra notes
+..............
+
+    These figures and commands are only an example on how to run and visualize the data,
+    these are not the optimal set of parameters for every data sets, look at  the :ref:`references <refers>`
+    for more information on what are the best parameters and suggestion to take advantage of MLZ,
+    increasing the number of trees or the resolution for SOMz (``Ntop``) always help, ``Natt`` is also important,
+    for TPZ one could start with the square root of the number of attributes and for SOM with 2/3 of the number of
+    attributes. Email me at mcarras2 at illinois.edu for questions or comments

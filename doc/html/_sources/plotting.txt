@@ -1,0 +1,10 @@
+Plotting
+===================
+
+.. pull-quote::
+
+    This is the :class:`plotting` class in some detail, this is used for plotting some results for the photometric
+    redshift problem. Check :doc:`run` to check a quick view on how to use this.
+
+.. automodule:: plotting
+    :members:
