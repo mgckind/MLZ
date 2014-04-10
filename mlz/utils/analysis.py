@@ -194,15 +194,22 @@ def save_single(Zall, Pars, path='', fileout='', oob='no', var=''):
     e1 = Zall[:, 6]
     if path == '': path = Pars.path_results
     if not os.path.exists(path): os.system('mkdir ' + path)
-    if fileout == '': filebase = Pars.finalfilename
-    for j in xrange(100):
-        if os.path.exists(path + filebase + '.' + str(j) + '.mlz'):
-            continue
-        else:
-            if oob == 'no': fileout = path + filebase + '.' + str(j) + '.mlz'
-            if oob == 'yes': fileout = path + filebase + '_oob' + var + '.' + str(j) + '.mlz'
-            fileinputs = path + filebase + '.' + str(j) + '.inputs'
-            break
+    if fileout == '':
+        filebase = Pars.finalfilename
+        for j in xrange(100):
+            if os.path.exists(path + filebase + '.' + str(j) + '.mlz'):
+                continue
+            else:
+                if oob == 'no': fileout = path + filebase + '.' + str(j) + '.mlz'
+                if oob == 'yes': fileout = path + filebase + '_oob' + var + '.' + str(j) + '.mlz'
+                fileinputs = path + filebase + '.' + str(j) + '.inputs'
+                break
+    else:
+        filebase=fileout
+        if oob == 'no': fileout = path + filebase  + '.mlz'
+        if oob == 'yes': fileout = path + filebase + '_oob' +'.mlz'
+        fileinputs = path + filebase + '.inputs'
+
     if oob == 'no': utils_mlz.print_dtpars(Pars, fileinputs)
     fout = open(fileout, 'w')
     header = '# ztrue     zmode0    zmean1     zConf0    zConf1    err0    err1\n'
