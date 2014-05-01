@@ -84,7 +84,6 @@ def read_dt_pars(filein, verbose=True, myrank=0):
             self.treefraction = 0.9
             self.dotrain   = 'yes'
             self.dotest   = 'yes'
-            self.multiplefiles = 'no'
             self.writepdf = 'yes'
             self.all_names = []
             self.all_values = []
