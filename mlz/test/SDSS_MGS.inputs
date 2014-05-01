@@ -34,7 +34,7 @@ PredictionClass  : Reg               # Reg/Class
 #------------------------------------------------------
 MinZ             : 0.001             # Min redshift (class label)
 MaxZ             : 0.3               # Max redshift (class label)
-NzBins           : 80                # Number of bins in z range (2 for Classification)
+NzBins           : 80                # Number of bins in z range (2 for Classification), Final output is double this value
 #------------------------------------------------------
 #   COMMON FOR TPZ/SOM
 #------------------------------------------------------
@@ -42,7 +42,8 @@ NRandom          : 2                 # Number of random realizations (1 original
 NTrees           : 4                 # Number of trees or maps!  (total number is NRandom x NTrees)
 Natt             : 3                 # Number of attributes m* for TPZ or subsample for SOM
 OobError         : no                # Out-of-bag error?
-VarImportance    : no               # Perform variable importance ranking?
+VarImportance    : no                # Perform variable importance ranking?
+MultipleFiles    : no                # Write a PDFs file per core instead of merging them (faster)
 #------------------------------------------------------
 #   TPZ
 #------------------------------------------------------
