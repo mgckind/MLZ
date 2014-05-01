@@ -26,7 +26,6 @@ if not SF90:
 sys.setrecursionlimit(8000)
 try:
     from mpi4py import MPI
-
     PLL = 'MPI'
 except ImportError:
     PLL = 'SERIAL'
@@ -417,6 +416,8 @@ if rank == 0:
 else:
     if PLL == 'MPI': comm.Send(Z0, dest=0, tag=rank * 2)
     del Z0
+
+path_r, filebase_r, num_r = analysis.get_path_new(Pars_in)
 if PLL == 'MPI': comm.Barrier()
 
 if rank == 0:
@@ -431,7 +432,6 @@ if Cmode == 'Reg' and Pars_in.writepdf == 'yes':
             utils_mlz.printpz('** Writing multiple file for PDFs **')
             utils_mlz.printpz('************************************')
             utils_mlz.printpz()
-        path_r, filebase_r, num_r = analysis.get_path_new(Pars_in, rank)
         analysis.save_PDF(zfine2, BP0, Pars_in, path=path_r, filebase=filebase_r, num=num_r, multiple='yes', rank=rank)
     else:
         s0, s1 = utils_mlz.get_limits(Ng, Nproc, rank)
@@ -449,7 +449,7 @@ if Cmode == 'Reg' and Pars_in.writepdf == 'yes':
             if PLL == 'MPI': comm.Send(BP0, dest=0, tag=rank * 2)
         if PLL == 'MPI': comm.Barrier()
         if rank == 0:
-            analysis.save_PDF(zfine2, BIGP, Pars_in)
+            analysis.save_PDF(zfine2, BIGP, Pars_in, path=path_r, filebase=filebase_r, num=num_r)
             del BIGP
 
 if rank == 0:
