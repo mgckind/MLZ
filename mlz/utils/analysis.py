@@ -193,7 +193,7 @@ def save_single(Zall, Pars, path='', fileout='', oob='no', var=''):
     e0 = Zall[:, 5]
     e1 = Zall[:, 6]
     if path == '': path = Pars.path_results
-    if not os.path.exists(path): os.system('mkdir -p' + path)
+    if not os.path.exists(path): os.system('mkdir -p ' + path)
     if fileout == '':
         filebase = Pars.finalfilename
         for j in xrange(100):
@@ -223,7 +223,7 @@ def save_single(Zall, Pars, path='', fileout='', oob='no', var=''):
 
 def get_path_new(Pars):
     path = Pars.path_results
-    if not os.path.exists(path): os.system('mkdir -p' + path)
+    if not os.path.exists(path): os.system('mkdir -p ' + path)
     filebase = Pars.finalfilename
     for j in xrange(100):
         if os.path.exists(path + filebase + '.' + str(j) + '.mlz'):
@@ -268,7 +268,7 @@ def save_single_t(Zall, Pars, path='', fileout='', oob='no', var=''):
     type_phot = Zall[:, 0]
     type_ml = Zall[:, 1]
     if path == '': path = Pars.path_results
-    if not os.path.exists(path): os.system('mkdir ' + path)
+    if not os.path.exists(path): os.system('mkdir -p ' + path)
     if fileout == '': filebase = Pars.finalfilename
     for j in xrange(100):
         if os.path.exists(path + filebase + '.' + str(j) + '.mlz'):
