@@ -558,6 +558,7 @@ def allkeys():
         'nrandom              ', \
         'minz                 ', \
         'maxz                 ', \
+        'multiplefiles        ', \
         'nzbins               ', \
         'minleaf              ', \
         'impurityindex        ', \
