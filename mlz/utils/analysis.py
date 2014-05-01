@@ -140,10 +140,10 @@ class GetPz_short():
                 self.bigpdf[mybin] += 1
         return self.bigpdf
 
-    def get_pdf(self, rawpdf, zs=0, zbins = ''):
+    def get_pdf(self, rawpdf, zs=0, zbins=''):
         pdf = rawpdf
         self.zs = zs
-        if zbins != '' : self.zbins = zbins
+        if zbins != '': self.zbins = zbins
         pdf2 = interp(self.zfine2, self.zbins, pdf)
         pdf2 = where(greater(pdf2, max(pdf2) * 0.20), pdf2, 0.)
         pdf2 = convolve(pdf2, self.gaus2, 1)
@@ -193,7 +193,7 @@ def save_single(Zall, Pars, path='', fileout='', oob='no', var=''):
     e0 = Zall[:, 5]
     e1 = Zall[:, 6]
     if path == '': path = Pars.path_results
-    if not os.path.exists(path): os.system('mkdir ' + path)
+    if not os.path.exists(path): os.system('mkdir -p' + path)
     if fileout == '':
         filebase = Pars.finalfilename
         for j in xrange(100):
@@ -205,9 +205,9 @@ def save_single(Zall, Pars, path='', fileout='', oob='no', var=''):
                 fileinputs = path + filebase + '.' + str(j) + '.inputs'
                 break
     else:
-        filebase=fileout
-        if oob == 'no': fileout = path + filebase  + '.mlz'
-        if oob == 'yes': fileout = path + filebase + '_oob' +'.mlz'
+        filebase = fileout
+        if oob == 'no': fileout = path + filebase + '.mlz'
+        if oob == 'yes': fileout = path + filebase + '_oob' + '.mlz'
         fileinputs = path + filebase + '.inputs'
 
     if oob == 'no': utils_mlz.print_dtpars(Pars, fileinputs)
@@ -221,16 +221,14 @@ def save_single(Zall, Pars, path='', fileout='', oob='no', var=''):
     fout.close()
 
 
-def get_path_new(Pars, rank):
+def get_path_new(Pars):
     path = Pars.path_results
-    if rank == 0:
-        if not os.path.exists(path): os.system('mkdir ' + path)
+    if not os.path.exists(path): os.system('mkdir -p' + path)
     filebase = Pars.finalfilename
     for j in xrange(100):
         if os.path.exists(path + filebase + '.' + str(j) + '.mlz'):
             continue
         else:
-            fileoutPDF = path + filebase + '.' + str(j) + '.P'
             break
     return path, filebase, j
 
@@ -242,7 +240,7 @@ def save_PDF(zfine, pdfs, Pars, path='', filebase='', num=-1, oob='no', var='', 
 
     if path == '':
         path = Pars.path_results
-    if not os.path.exists(path): os.system('mkdir ' + path)
+    if not os.path.exists(path): os.system('mkdir -p ' + path)
     if filebase == '':
         filebase = Pars.finalfilename
     if num == -1:
