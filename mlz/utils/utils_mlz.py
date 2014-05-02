@@ -52,7 +52,7 @@ def read_dt_pars(filein, verbose=True, myrank=0):
         DTpars[n.lower()] = val
         sortname.append(n.lower())
     tofloat = ['nrandom', 'nzbins', 'sigmafactor', 'minz', 'maxz', 'minleaf', 'ntrees', 'natt', 'rmsfactor',
-               'ntop', 'iterations', 'alphastart', 'alphaend']
+               'ntop', 'iterations', 'alphastart', 'alphaend', 'numbercoef', 'numberbases']
     for key in tofloat:
         try:
             DTpars[key] = float(DTpars[key])
@@ -574,6 +574,12 @@ def allkeys():
         'alphastart           ', \
         'alphaend             ', \
         'importancefile       ', \
+        'sparserep            ', \
+        'sparsedims           ', \
+        'numbercoef           ', \
+        'numberbases          ', \
+        'originalpdffile      ', \
+        'writefits            ', \
         'rmsfactor            ']
     keys_input = [aa.strip() for aa in keys_input]
     return keys_input

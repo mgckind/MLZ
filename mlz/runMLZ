@@ -4,6 +4,7 @@ from numpy import *
 import copy
 import random as rn
 import os, sys
+import pyfits as pf
 
 try:
     from ml_codes import *
@@ -26,6 +27,7 @@ if not SF90:
 sys.setrecursionlimit(8000)
 try:
     from mpi4py import MPI
+
     PLL = 'MPI'
 except ImportError:
     PLL = 'SERIAL'
@@ -424,33 +426,130 @@ if rank == 0:
     analysis.save_single(BIGZ, Pars_in)
     del BIGZ
 
+if Pars_in.sparserep == 'yes':
+    if rank == 0: utils_mlz.printpz("Sparse Representation for PDFs")
+    mu = [min(zfine2), max(zfine2)]
+    Nmu, Nsig, Nv = map(int, Pars_in.sparsedims)
+    Ncoef = int(Pars_in.numbercoef)
+    Nsparse = int(Pars_in.numberbases)
+    AA = linspace(0, 1, Ncoef)
+    dz_sp = zfine2[1] - zfine2[0]
+    Da = AA[1] - AA[0]
+    max_sig = (max(zfine2) - min(zfine2)) / 12.
+    min_sig = dz_sp / 6.
+    sig = [min_sig, max_sig]
+    NA = Nmu * Nsig * Nv
+
+    head = pf.Header()
+    head['N_MU'] = Nmu
+    head['N_SIGMA'] = Nsig
+    head['N_VOIGT'] = Nv
+    head['N_COEF'] = Ncoef
+    head['N_SPARSE'] = Nsparse
+    head['MU1'] = mu[0]
+    head['MU2'] = mu[1]
+    head['SIGMA1'] = sig[0]
+    head['SIGMA2'] = sig[1]
+
+    if rank == 0:
+        utils_mlz.printpz("Nmu, Nsigm Nv = [ ", Nmu, ", ", Nsig, ", ", Nv, " ]")
+        utils_mlz.printpz("Number of total bases in dictionary : ", NA)
+        utils_mlz.printpz("Number of bases sparse representation : ", Nsparse)
+        utils_mlz.printpz()
+        utils_mlz.printpz("Creating Dictionary...")
+    AD = pdf_storage.create_voigt_dict(zfine2, mu, Nmu, sig, Nsig, Nv)
+    if rank == 0:
+        utils_mlz.printpz("Creating Sparse Representation...")
+    SPR = zeros((len(BP0), Nsparse), dtype='int32')
+    for ip in xrange(len(BP0)):
+        pdf0 = BP0[ip]
+        if sum(pdf0) > 0:
+            pdf0 /= sum(pdf0)
+        else:
+            continue
+        Dind, Dval = pdf_storage.sparse_basis(AD, pdf0, Nsparse)
+        if len(Dind) <= 1: continue
+        if max(Dval) > 0:
+            Dvalm = Dval / max(Dval)
+            indexm = array(map(round, (Dvalm / Da)), dtype='int')
+        else:
+            indexm = zeros(len(Dind), dtype='int')
+        temp_int = array(map(pdf_storage.combine_int, indexm, Dind))
+        SPR[ip, 0:len(temp_int)] = temp_int
+        AD[:, [Dind]] = AD[:, [arange(len(Dind))]]
+        del temp_int, indexm, Dind, Dval, Dvalm
+if PLL == 'MPI': comm.Barrier()
+
 if Cmode == 'Reg' and Pars_in.writepdf == 'yes':
     if Pars_in.multiplefiles == 'yes':
-        if rank == 0:
+        if rank == 0 and PLL == 'MPI':
             utils_mlz.printpz()
             utils_mlz.printpz('************************************')
             utils_mlz.printpz('** Writing multiple file for PDFs **')
             utils_mlz.printpz('************************************')
             utils_mlz.printpz()
-        analysis.save_PDF(zfine2, BP0, Pars_in, path=path_r, filebase=filebase_r, num=num_r, multiple='yes', rank=rank)
+        if Pars_in.originalpdffile == 'yes':
+            analysis.save_PDF(zfine2, BP0, Pars_in, path=path_r, filebase=filebase_r, num=num_r, multiple='yes',
+                              rank=rank)
+            del BP0
+        if Pars_in.sparserep == 'yes':
+            head['N_TOT'] = len(SPR)
+            analysis.save_PDF_sparse(zfine2, SPR, head, Pars_in, path=path_r, filebase=filebase_r, num=num_r,
+                                     multiple='yes', rank=rank)
+            del SPR
     else:
+        if rank == 0:
+            utils_mlz.printpz()
+            utils_mlz.printpz('*************************************')
+            utils_mlz.printpz('** Collecting data from processors **')
+            utils_mlz.printpz('*************************************')
+            utils_mlz.printpz()
         s0, s1 = utils_mlz.get_limits(Ng, Nproc, rank)
-        if rank == 0:
-            BIGP = zeros((Ng, len(zfine2)))
-            BIGP[s0:s1, :] = BP0
-            for srank in xrange(1, Nproc):
-                s0, s1 = utils_mlz.get_limits(Ng, Nproc, srank)
-                size_dat = s1 - s0
-                BPT = zeros((size_dat, len(zfine2)))
-                if PLL == 'MPI': comm.Recv(BPT, source=srank, tag=srank * 2)
-                BIGP[s0:s1, :] = BPT
-                del BPT
-        else:
-            if PLL == 'MPI': comm.Send(BP0, dest=0, tag=rank * 2)
-        if PLL == 'MPI': comm.Barrier()
-        if rank == 0:
-            analysis.save_PDF(zfine2, BIGP, Pars_in, path=path_r, filebase=filebase_r, num=num_r)
-            del BIGP
+        if Pars_in.originalpdffile == 'yes':
+            if rank == 0:
+                utils_mlz.printpz("Saving Original PDFs")
+                utils_mlz.printpz()
+                BIGP = zeros((Ng, len(zfine2)))
+                BIGP[s0:s1, :] = BP0
+                for srank in xrange(1, Nproc):
+                    s0, s1 = utils_mlz.get_limits(Ng, Nproc, srank)
+                    size_dat = s1 - s0
+                    BPT = zeros((size_dat, len(zfine2)))
+                    if PLL == 'MPI': comm.Recv(BPT, source=srank, tag=srank * 2)
+                    BIGP[s0:s1, :] = BPT
+                    del BPT
+            else:
+                if PLL == 'MPI':
+                    comm.Send(BP0, dest=0, tag=rank * 2)
+                    del BP0
+            if PLL == 'MPI': comm.Barrier()
+            if rank == 0:
+                analysis.save_PDF(zfine2, BIGP, Pars_in, path=path_r, filebase=filebase_r, num=num_r)
+                del BIGP
+
+        if Pars_in.sparserep == 'yes':
+            s0, s1 = utils_mlz.get_limits(Ng, Nproc, rank)
+            if rank == 0:
+                utils_mlz.printpz("Saving Sparse Represenation PDFs")
+                utils_mlz.printpz()
+                BIGP = zeros((Ng, Nsparse), dtype='int32')
+                BIGP[s0:s1, :] = SPR
+                for srank in xrange(1, Nproc):
+                    s0, s1 = utils_mlz.get_limits(Ng, Nproc, srank)
+                    size_dat = s1 - s0
+                    BPT = zeros((size_dat, Nsparse), dtype='int32')
+                    if PLL == 'MPI': comm.Recv(BPT, source=srank, tag=srank * 2)
+                    BIGP[s0:s1, :] = BPT
+                    del BPT
+            else:
+                if PLL == 'MPI':
+                    comm.Send(SPR, dest=0, tag=rank * 2)
+                    del SPR
+            if PLL == 'MPI': comm.Barrier()
+            if rank == 0:
+                head['N_TOT'] = int(Ng)
+                analysis.save_PDF_sparse(zfine2, BIGP, head, Pars_in, path=path_r, filebase=filebase_r, num=num_r)
+                del BIGP
 
 if rank == 0:
     utils_mlz.printpz('+-+-+-+-+-+-+-+-+')

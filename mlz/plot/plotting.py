@@ -8,6 +8,8 @@ import os, sys
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.gridspec as gridspec
+import random as rn
+import pyfits as pf
 
 path_src = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
 if not path_src in sys.path: sys.path.insert(1, path_src)
@@ -200,7 +202,7 @@ class Qplot():
         maxz = self.Pars.maxz
         lev = 10
         maxH = H1.max()
-        minH = maxH/20.
+        minH = maxH / 20.
         LL = linspace(minH, maxH, lev)
         plt.contourf(H1, levels=LL, extent=[minz, maxz, minz, maxz], origin='lower', cmap=cm.jet)
         plt.colorbar()
@@ -213,7 +215,7 @@ class Qplot():
 
         zz, nn = loadtxt(path_results + filebase + '.' + str(ir) + '_zdist', unpack=True)
         zs, za, zb, oa, ob, ea, eb = loadtxt(path_results + filebase + '.' + str(ir) + '.mlz', unpack=True)
-        Nbins = 30
+        Nbins = len(nn)
 
         Nz = linspace(minz, maxz, Nbins + 1)
         Nzmid = 0.5 * (Nz[1:] + Nz[:-1])
@@ -249,6 +251,81 @@ class Qplot():
 
         plt.show()
 
+    def plot_sparse(self, result_id=0, kgal=-1):
+        """
+        Plot original and sparse representation of a random select galaxy
+
+        .. note ::
+
+            Both the original and the spare rep. files must exist
+
+        :param int results_id: Result id number as the output on the results folder, default 0
+        :param int kgal: Id for specific galaxy
+        """
+
+        filenum = str(result_id)
+        froot = self.Pars.path_results + self.Pars.finalfilename
+        if self.Pars.multiplefiles == 'yes':
+            if self.Pars.writefits == 'no': forig = froot + '.' + filenum + '.P_0.npy'
+            if self.Pars.writefits == 'yes':forig = froot + '.' + filenum + '.P_0.fits'
+            ffits = froot + '.' + filenum + '.Psparse_0.fits'
+        else:
+            if self.Pars.writefits == 'no' : forig = froot + '.' + filenum + '.P.npy'
+            if self.Pars.writefits == 'yes' : forig = froot + '.' + filenum + '.P.fits'
+            ffits = froot + '.' + filenum + '.Psparse.fits'
+
+        if self.Pars.writefits == 'no' : PO = load(forig)
+        if self.Pars.writefits == 'yes' :
+            Temp=pf.open(forig)
+            PO=Temp[1].data.field('PDF values')
+            Temp.close()
+
+        F = pf.open(ffits)
+        P = F[2].data.field('Sparse_indices')
+        F.close()
+
+        if kgal < 0:
+            k = rn.sample(xrange(len(PO) - 1), 1)[0]
+        else:
+            k = kgal
+
+        head = pdf_storage.read_header(ffits)
+        z = head['z']
+
+        rep_pdf = pdf_storage.reconstruct_pdf_int(P[k], head)
+
+        plt.figure()
+        plt.plot(z, PO[k] / sum(PO[k]), label='original')
+        plt.plot(z, rep_pdf, label='Sparse rep')
+        plt.xlabel('redshift')
+        plt.ylabel('P(z)')
+        plt.legend(loc=0)
+        title = 'Galaxy example No: %d out of %d' % (k, len(P))
+        plt.title(title)
+
+        plt.figure()
+        AD = pdf_storage.create_voigt_dict(z, head['mu'], head['Nmu'], head['sig'], head['Nsig'], head['Nv'])
+        sp_ind = array(map(pdf_storage.get_N, P[k]))
+        spi = sp_ind[:, 0]
+        Dind2 = sp_ind[:, 1]
+        AA = linspace(0, 1, head['Ncoef'])
+        Da = AA[1] - AA[0]
+        vals = spi * Da
+        delta = zeros(shape(AD)[1])
+        delta[Dind2] = vals
+
+        pdfr = dot(AD, delta)
+        plt.plot(z, pdfr / sum(pdfr), 'r-', lw=2, label='Sparse Rep.')
+        for i in xrange(len(Dind2)):
+            plt.plot(z, AD[:, Dind2[i]] * vals[i] / sum(pdfr), 'k-')
+        plt.plot(z, AD[:, Dind2[0]] * vals[0] / sum(pdfr), 'k-', label='bases')
+        plt.xlabel('redshift')
+        plt.ylabel('P(z)')
+        plt.legend(loc=0)
+        title = 'Galaxy example No: %d out of %d' % (k, len(P))
+        plt.title(title)
+
+        plt.show()
 
 
 

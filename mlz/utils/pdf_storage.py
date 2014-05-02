@@ -18,12 +18,10 @@ def sparse_basis(dictionary, query_vec, n_basis, tolerance=None):
     solve the linear operations adapted from Rubinstein, R., Zibulevsky, M. and Elad, M., Technical Report - CS
     Technion, April 2008
 
-    :param float dictionary: Array with all basis on each column, must has shape (len(vector), total basis) and each
-    column must have euclidean l-2 norm equal to 1
+    :param float dictionary: Array with all basis on each column, must has shape (len(vector), total basis) and each column must have euclidean l-2 norm equal to 1
     :param float query_vec: vector of which a sparse representation is desired
     :param int n_basis: number of desired basis
-    :param float tolerance: tolerance desired if n_basis is not needed to be fixed, must input a large number for
-    n_basis to assure achieving tolerance
+    :param float tolerance: tolerance desired if n_basis is not needed to be fixed, must input a large number for n_basis to assure achieving tolerance
 
     :return: indices, values (2 arrays one with the position and the second with the coefficients)
     """

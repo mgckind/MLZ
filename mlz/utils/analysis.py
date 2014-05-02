@@ -8,6 +8,7 @@ import utils_mlz
 import os, sys
 from scipy.stats import mode
 import pyfits as pf
+import datetime
 
 
 def get_zbins(Pars):
@@ -259,14 +260,28 @@ def save_PDF(zfine, pdfs, Pars, path='', filebase='', num=-1, oob='no', var='', 
 
     if multiple == 'yes': fileoutPDF = fileoutPDF + '_' + str(rank)
     pdfs = concatenate((pdfs, [zfine]))
-    save(fileoutPDF, pdfs)
+    if Pars.writefits == 'no':
+        save(fileoutPDF, pdfs)
+    else:
+        head = pf.Header()
+        head['N_TOT'] = len(pdfs) - 1
+        head['DZ'] = zfine[1]-zfine[0]
+        head['NPOINTS'] = len(zfine)
+        head['COMMENT'] = 'The last row of the table are the redshift positions'
+        head['COMMENT'] = 'This file was created using MLZ'
+        head['HISTORY'] = 'Created on ' + datetime.datetime.now().strftime("%Y-%m-%d  %H:%M")
+        fmt = '%dE' % len(zfine)
+        col0 = pf.Column(name='PDF values', format=fmt, array=pdfs)
+        table0 = pf.new_table(pf.ColDefs([col0]))
+        prihdu = pf.PrimaryHDU(header=head)
+        hdulist = pf.HDUList([prihdu, table0])
+        hdulist.writeto(fileoutPDF + '.fits', clobber=True)
 
 
 def save_PDF_sparse(zfine, pdfs, head, Pars, path='', filebase='', num=-1, oob='no', var='', multiple='no', rank=0):
     """
     Saves photo-z PDFs in sparse representation
     """
-
 
     if path == '':
         path = Pars.path_results
@@ -279,11 +294,11 @@ def save_PDF_sparse(zfine, pdfs, head, Pars, path='', filebase='', num=-1, oob='
                                                     path + filebase + '.' + str(j) + '.P.npy'):
                 continue
             else:
-                fileoutPDF = path + filebase + '.' + str(j) + '.P'
+                fileoutPDF = path + filebase + '.' + str(j) + '.Psparse'
                 if oob == 'yes': fileoutPDF = path + filebase + '_oob' + var + '.' + str(j) + '.P'
                 break
     else:
-        fileoutPDF = path + filebase + '.' + str(num) + '.P'
+        fileoutPDF = path + filebase + '.' + str(num) + '.Psparse'
         if oob == 'yes': fileoutPDF = path + filebase + '_oob' + var + '.' + str(num) + '.P'
 
     if multiple == 'yes': fileoutPDF = fileoutPDF + '_' + str(rank)
@@ -295,11 +310,7 @@ def save_PDF_sparse(zfine, pdfs, head, Pars, path='', filebase='', num=-1, oob='
     table2 = pf.new_table(pf.ColDefs([col2]))
     prihdu = pf.PrimaryHDU(header=head)
     hdulist = pf.HDUList([prihdu, table1, table2])
-    hdulist.writeto(fileoutPDF+'.fits', clobber=True)
-
-
-
-
+    hdulist.writeto(fileoutPDF + '.fits', clobber=True)
 
 
 def save_single_t(Zall, Pars, path='', fileout='', oob='no', var=''):

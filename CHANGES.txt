@@ -1,4 +1,16 @@
 v1.0, 2014-01-04 -- release
 v1.0, 2014-01-15 -- fixed a minor bug 
 v1.0, 2014-04-09 -- added to github
-v1.0, 2014-04-10 -- fixed minor bug on analysis.py regarding output filenames
+v1.0, 2014-04-10 -- fixed minor bug on analysis.py regarding output file names
+----------------
+v1.1, 2014-05-01 -- Now can compute N(z) and True plots using output PDFs
+                    Check use_pdfs in utils and plot_pdf_use in plot
+                 -- Add multiple file options to write PDFs files per processor
+                    which is faster for BIG files
+                 -- fixed bug on multiple output file names
+v1.1, 2014-05-02 -- Added PDF storage module
+                 -- Add plotting routines to plot sparse representation
+                 -- Add keys to input file
+                 -- Optional fits output (original PDFs)
+                 -- Updated documentation
+                 -- v1.1 Release

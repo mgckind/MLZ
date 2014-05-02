@@ -5,7 +5,7 @@ redshift PDFs using machine learning techniques,
 providing optional extra information.
 
 :Author: Matias Carrasco Kind
-:Version: 1.0
+:Version: 1.1
 
 For a more detailed documentation see: http://lcdm.astro.illinois.edu/static/code/mlz/MLZ-1.0/doc/html/index.html
 
