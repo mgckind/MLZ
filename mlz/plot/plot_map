@@ -13,7 +13,7 @@ if len(sys.argv) < 2:
     utils_mlz.printpz("./plot_map <input file> <map number> ")
     utils_mlz.printpz("---------------------------------------")
     utils_mlz.printpz()
-    utils_mlz.printpz("<input file>  : Same used in runALL")
+    utils_mlz.printpz("<input file>  : Same used in runMLZ")
     utils_mlz.printpz("<map number> : default is 0")
     sys.exit(0)
 

@@ -6,6 +6,7 @@ import matplotlib.cm as cm
 from scipy import optimize
 import os, sys
 import warnings
+import pyfits as pf
 
 warnings.simplefilter("ignore", RuntimeWarning)
 path_src = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
@@ -385,8 +386,13 @@ mode_p = 'zs'
 path_r = DTsetup.path_results
 filedata1 = path_r + DTpars.finalfilename + '.' + str(ir1) + '.mlz'
 filedata2 = path_r + DTpars.finalfilename + '.' + str(ir2) + '.mlz'
-fileprobs1b = path_r + DTpars.finalfilename + '.' + str(ir1) + '.P.npy'
-fileprobs2b = path_r + DTpars.finalfilename + '.' + str(ir2) + '.P.npy'
+if DTpars.writefits == 'no':
+    fileprobs1b = path_r + DTpars.finalfilename + '.' + str(ir1) + '.P.npy'
+    fileprobs2b = path_r + DTpars.finalfilename + '.' + str(ir2) + '.P.npy'
+if DTpars.writefits == 'yes':
+    fileprobs1b = path_r + DTpars.finalfilename + '.' + str(ir1) + '.P.fits'
+    fileprobs2b = path_r + DTpars.finalfilename + '.' + str(ir2) + '.P.fits'
+
 fileoob1 = path_r + DTpars.finalfilename + '_oob.' + str(ir1) + '.mlz'
 fileoob2 = path_r + DTpars.finalfilename + '_oob.' + str(ir2) + '.mlz'
 
@@ -396,8 +402,17 @@ fileoob2 = path_r + DTpars.finalfilename + '_oob.' + str(ir2) + '.mlz'
 zt1, z1a, z1b, zC1a, zC1b, e1a, e1b = loadtxt(filedata1, unpack=True)
 if second: zt2, z2a, z2b, zC2a, zC2b, e2a, e2b = loadtxt(filedata2, unpack=True)
 
-big1b = load(fileprobs1b)
-if second: big2b = load(fileprobs2b)
+if DTpars.writefits == 'no':
+    big1b = load(fileprobs1b)
+    if second: big2b = load(fileprobs2b)
+if DTpars.writefits == 'yes':
+    Temp = pf.open(fileprobs1b)
+    big1b = Temp[1].data.field('PDF values')
+    Temp.close()
+    if second:
+        Temp = pf.open(fileprobs2b)
+        big2b = Temp[1].data.field('PDF values')
+        Temp.close()
 
 minz = DTpars.minz
 maxz = DTpars.maxz

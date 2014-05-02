@@ -4,6 +4,7 @@ from numpy import *
 from scipy.interpolate import interp1d as spl
 import sys, os
 import utils_mlz
+import pyfits as pf
 
 try:
     from mpi4py import MPI
@@ -83,21 +84,29 @@ if rank == 0:
 if Pars.multiplefiles == 'yes':
     utils_mlz.printpz()
     if rank == 0: utils_mlz.printpz("Reading from multiple files")
-    Bpdf = load(fileroot + 'P_' + str(rank) + '.npy')
+    if Pars.writefits == 'no':
+        Bpdf = load(fileroot + 'P_' + str(rank) + '.npy')
+    else:
+        Temp = pf.open(fileroot + 'P_' + str(rank) + '.fits')
+        Bpdf = Temp[1].data.field('PDF values')
+        Temp.close()
     zfine = Bpdf[-1]
     spdf = Bpdf[:-1]
     del Bpdf
 else:
-    Bpdf = load(fileroot + 'P.npy')
+    if Pars.writefits == 'no':
+        Bpdf = load(fileroot + 'P.npy')
+    else:
+        Temp = pf.open(fileroot + 'P.fits')
+        Bpdf = Temp[1].data.field('PDF values')
+        Temp.close()
     zfine = Bpdf[-1]
     spdf = Bpdf[L0:L1]
     del Bpdf
 
 zspec = zt[L0:L1]
 zC = zCb[L0:L1]
-del zt,zCb
-
-
+del zt, zCb
 
 H1 = zeros((Nbins, Nbins))
 
@@ -108,7 +117,7 @@ Nz = linspace(minz, maxz, Nbins + 1)
 Nzmid = 0.5 * (Nz[1:] + Nz[:-1])
 N_z = zeros(len(Nz) - 1)
 
-if rank ==0:
+if rank == 0:
     utils_mlz.printpz()
     utils_mlz.printpz("Creating map and computing N(z) ...")
 for i in xrange(len(spdf)):
@@ -144,11 +153,10 @@ if rank == 0:
     N_z = N_z / sum(N_z)
     savetxt(path_results + filebase + '.' + str(ir) + '_zdist', zip(Nzmid, N_z), fmt='%.6f')
 
-
-    if rank ==0 :
+    if rank == 0:
         clock_all.elapsed()
         utils_mlz.printpz()
-        utils_mlz.printpz("N(zphot) saved in ", path_results + filebase + '.' + str(ir) + '_zdist' )
+        utils_mlz.printpz("N(zphot) saved in ", path_results + filebase + '.' + str(ir) + '_zdist')
         utils_mlz.printpz("Zspec vs Zphot map saved in  ", path_results + filebase + '.' + str(ir) + '_map')
 
 if PLL == 'MPI': MPI.Finalize()

@@ -14,7 +14,7 @@ if len(sys.argv) < 2:
     utils_mlz.printpz("./plot_importance <input file> <run No (def=0)>")
     utils_mlz.printpz("-----------------------------------------------")
     utils_mlz.printpz()
-    utils_mlz.printpz("<input file>  : Same used in runALL")
+    utils_mlz.printpz("<input file>  : Same used in runMLZ")
     utils_mlz.printpz("<run No> : result id on results/ folder , default is 0")
     sys.exit(0)
 
