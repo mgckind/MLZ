@@ -7,6 +7,7 @@ from numpy import *
 import utils_mlz
 import os, sys
 from scipy.stats import mode
+import pyfits as pf
 
 
 def get_zbins(Pars):
@@ -259,6 +260,46 @@ def save_PDF(zfine, pdfs, Pars, path='', filebase='', num=-1, oob='no', var='', 
     if multiple == 'yes': fileoutPDF = fileoutPDF + '_' + str(rank)
     pdfs = concatenate((pdfs, [zfine]))
     save(fileoutPDF, pdfs)
+
+
+def save_PDF_sparse(zfine, pdfs, head, Pars, path='', filebase='', num=-1, oob='no', var='', multiple='no', rank=0):
+    """
+    Saves photo-z PDFs in sparse representation
+    """
+
+
+    if path == '':
+        path = Pars.path_results
+    if not os.path.exists(path): os.system('mkdir -p ' + path)
+    if filebase == '':
+        filebase = Pars.finalfilename
+    if num == -1:
+        for j in xrange(100):
+            if os.path.exists(path + filebase + '.' + str(j) + '.mlz') and os.path.exists(
+                                                    path + filebase + '.' + str(j) + '.P.npy'):
+                continue
+            else:
+                fileoutPDF = path + filebase + '.' + str(j) + '.P'
+                if oob == 'yes': fileoutPDF = path + filebase + '_oob' + var + '.' + str(j) + '.P'
+                break
+    else:
+        fileoutPDF = path + filebase + '.' + str(num) + '.P'
+        if oob == 'yes': fileoutPDF = path + filebase + '_oob' + var + '.' + str(num) + '.P'
+
+    if multiple == 'yes': fileoutPDF = fileoutPDF + '_' + str(rank)
+
+    col1 = pf.Column(name='redshift', format='E', array=zfine)
+    fmt = '%dJ' % head['N_SPARSE']
+    col2 = pf.Column(name='Sparse_indices', format=fmt, array=pdfs)
+    table1 = pf.new_table(pf.ColDefs([col1]))
+    table2 = pf.new_table(pf.ColDefs([col2]))
+    prihdu = pf.PrimaryHDU(header=head)
+    hdulist = pf.HDUList([prihdu, table1, table2])
+    hdulist.writeto(fileoutPDF+'.fits', clobber=True)
+
+
+
+
 
 
 def save_single_t(Zall, Pars, path='', fileout='', oob='no', var=''):
