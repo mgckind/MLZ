@@ -1,0 +1,137 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Sparse Representation (new!) &mdash; MLZ 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="next" title="PDF storage module" href="sparse_mod.html" />
+    <link rel="prev" title="Running a test" href="run.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="index.html">
+          <img class="logo" src="_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="run.html">Running a test</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="sparse_mod.html">PDF storage module</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="sparse-representation-new">
+<h1>Sparse Representation (new!)<a class="headerlink" href="#sparse-representation-new" title="Permalink to this headline">¶</a></h1>
+<style> .red {color:#FF6F60} </style>
+<style> .green {color:#60CC93} </style>
+<style> .blue {color:#6396FC} </style>
+<style> .blueit {color:#6396FC; font-style:italic} </style>
+<style> .under {text-decoration:underline} </style>
+<style> .mono {font-family : "Courier new"} </style><blockquote class="pull-quote">
+<div>Sparse Representation of photometric redshift PDFs <a class="footnote-reference" href="#id2" id="id1">[1]</a> is a novel technique to represent and store these PDFs in an efficient way without
+losing resolution or information. It works by creating a over determined dictionary of basis with Gaussian and <a class="reference external" href="http://en.wikipedia.org/wiki/Voigt_profile">Voigt</a> profiles
+which cover the redshift space for several values for the center and width for these distributions. Usually we create less than 2^16
+bases so we can represent them using 16 bits integers. By using an Orthogonal Matching Pursuit algorithm we look to minimize the number of bases
+used, without repetition, and the coefficients for each base can be also represented using another 16 bits integer. In this way, we can represent
+a PDF using only 32-bits integers per base when only <span class="red">10-20 bases is necessary</span>.</div></blockquote>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/32bit.png"><img alt="_images/32bit.png" src="_images/32bit.png" style="width: 841.6px; height: 125.6px;" /></a>
+<p class="caption">A single four-byte integer scheme to store a single basis
+function in the sparse representation method. The first sixteen bits
+store the coefficients (including sign), while the second sixteen bits
+store the location of the bases in the dictionary.</p>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/bases.png"><img alt="_images/bases.png" src="_images/bases.png" style="width: 400.8px; height: 327.6px;" /></a>
+<p class="caption">A illustration of the bases used in the dictionary, each shaded region is composed by several functions of
+different widths, those colored shaded regions are full of bases. In a real dictionary the spacing between these
+functions is much tighter (~200 points in the redshift range)</p>
+<div class="legend">
+The number of bases and parameters depend strongly on the data based used, the module <a class="reference internal" href="sparse_mod.html#module-pdf_storage" title="pdf_storage"><tt class="xref py py-class docutils literal"><span class="pre">pdf_storage</span></tt></a> contains
+most of the functions used to make the representation, for more information check our <a class="reference external" href="http://adsabs.harvard.edu/abs/2014arXiv1404.6442C">Sparse represenation paper</a></div>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sparse_mod.html">PDF storage module</a></li>
+</ul>
+</div>
+<div class="section" id="example-case">
+<h2>Example Case<a class="headerlink" href="#example-case" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Based on our previous  <a class="reference internal" href="run.html#run-sdss"><em>example</em></a> on the SDSS data. we have added additional keys on the
+ref:<cite>input-file</cite>, including a key for computing the sparse representation. If this key is set to <span class="red">yes</span> then MLZ
+will run longer but it will produce a fits file with the extension <span class="blueit">.Psparse.fits</span> which have all information
+necessary on its header and have the representation for each galaxy, to visualize an example, type:</p>
+<div class="highlight-python"><pre>$ ./plot/plot_sparse test/SDSS_MGS.inputs 0</pre>
+</div>
+<p>where a random galaxy will be displayed as well as the bases used. An example is shown below.
+To get a specific galaxy just add an extra argument at the end with the galaxy id, like:</p>
+<div class="highlight-python"><pre>$ ./plot/plot_sparse test/SDSS_MGS.inputs 0 100</pre>
+</div>
+<p>Which will display the 100th galaxy from the sample.</p>
+</div></blockquote>
+<a class="reference internal image-reference" href="_images/ex_sp0.png"><img alt="_images/ex_sp0.png" src="_images/ex_sp0.png" style="width: 406.0px; height: 306.0px;" /></a>
+<a class="reference internal image-reference" href="_images/ex_sp1.png"><img alt="_images/ex_sp1.png" src="_images/ex_sp1.png" style="width: 406.0px; height: 306.0px;" /></a>
+<p><strong>References</strong></p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Carrasco Kind, M., &amp; Brunner, R. J., 2014, <span class="blueit">&#8220;Sparse Representation of Photometric Redshift PDFs: Preparing for Petascale Astronomy&#8221;</span>, MNRAS in press. (<a class="reference external" href="http://adsabs.harvard.edu/abs/2014arXiv1404.6442C">Link</a>)</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="run.html">Running a test</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="sparse_mod.html">PDF storage module</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Matias Carrasco Kind.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

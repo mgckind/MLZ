@@ -31,5 +31,5 @@ The methods included are the following:
 | **References**
 
 .. [1] Carrasco Kind, M., & Brunner, R. J., 2013  :blueit:`"TPZ : Photometric redshift PDFs and ancillary information by using prediction trees and random forests"`, MNRAS, 432, 1483 (`Link <http://adsabs.harvard.edu/abs/2013MNRAS.432.1483C>`_)
-.. [2] Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"SOMz : photometric redshift PDFs with self organizing maps and random atlas"` , MNRAS, in press. (`Link <http://adsabs.harvard.edu/abs/2013arXiv1312.5753C>`_)
+.. [2] Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"SOMz : photometric redshift PDFs with self organizing maps and random atlas"` , MNRAS, 438, 3409 (`Link <http://adsabs.harvard.edu/abs/2014MNRAS.438.3409C>`_)
 

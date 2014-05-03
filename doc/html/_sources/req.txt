@@ -9,6 +9,7 @@ Requirements
     - mpi4py_ (for parallel running)
     - healpy_ (for spherical coordinates) **optional but recommended**
     - f2py_   (a fortran wrapper) **optional but recommended**
+    - pyfits_ (for storage) **optional but recommended**
 
 Parallel MLZ
 ............
@@ -41,5 +42,6 @@ Parallel MLZ
 .. _Mpi4py: http://mpi4py.scipy.org/
 .. _healpy: http://healpy.readthedocs.org/en/latest/
 .. _f2py: https://code.google.com/p/f2py/
+.. _pyfits: http://www.stsci.edu/institute/software_hardware/pyfits
 
 

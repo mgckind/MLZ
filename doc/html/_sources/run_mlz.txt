@@ -54,10 +54,7 @@ Some hidden parameters
         training data
     *   :green:`dotest`: The test phase is carried out, default is :blue:`yes`, set it to :blue:`no` if only training
         is desired
-    *   :green:`multiplefiles`: Write a PDF file per core for large runs to avoid communications bottleneck,
-        default is :blue:`no`
     *   :green:`writepdf`: Write the PDF? default if :blue:`yes`, if not needed can be set to :blue:`no`
-
 
 
 

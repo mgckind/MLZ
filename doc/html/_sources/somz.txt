@@ -61,6 +61,6 @@ outputs and try different topologies, properties and resolutions.
 
 **References**
 
-.. [1] Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"SOMz : photometric redshift PDFs with self organizing maps and random atlas"` , MNRAS, in press. (`Link <http://adsabs.harvard.edu/abs/2013arXiv1312.5753C>`_)
+.. [1] Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"SOMz : photometric redshift PDFs with self organizing maps and random atlas"` , MNRAS, 438, 3409 (`Link <http://adsabs.harvard.edu/abs/2014MNRAS.438.3409C>`_)
 
 

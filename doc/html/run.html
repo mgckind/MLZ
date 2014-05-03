@@ -30,6 +30,7 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="next" title="Sparse Representation (new!)" href="sparse.html" />
     <link rel="prev" title="Run MLZ" href="run_mlz.html" /> 
   </head>
   <body>
@@ -44,6 +45,8 @@
         «&#160;&#160;<a href="run_mlz.html">Run MLZ</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="sparse.html">Sparse Representation (new!)</a>&#160;&#160;»
         </p>
 
       </div>
@@ -102,7 +105,7 @@ will show a comparison between the first and the second run with no zConf applie
 after the input file, it shows a comparison for the mode and the mean for those results.</p>
 </div>
 <blockquote class="pull-quote">
-<div>Three figures like the following are displayed for a summary of the results, with shape of PDFs, statisticsm etc</div></blockquote>
+<div>Three figures like the following are displayed for a summary of the results, with shape of PDFs, statistics etc</div></blockquote>
 <a class="reference internal image-reference" href="_images/ex1.png"><img alt="_images/ex1.png" src="_images/ex1.png" style="width: 403.0px; height: 303.0px;" /></a>
 <a class="reference internal image-reference" href="_images/ex2.png"><img alt="_images/ex2.png" src="_images/ex2.png" style="width: 403.0px; height: 303.0px;" /></a>
 <a class="reference internal image-reference" href="_images/ex3.png"><img alt="_images/ex3.png" src="_images/ex3.png" style="width: 403.0px; height: 303.0px;" /></a>
@@ -135,6 +138,26 @@ Figure 3:
 </pre>
 </div>
 </div>
+<div class="section" id="some-pdf-examples">
+<h2>Some PDF examples<a class="headerlink" href="#some-pdf-examples" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Some examples on how to use the PDF to compute N(z) or a zphot vs zspec map there are some analysis routines for
+them, first we need to run some pre-analysis routine, if using <strong>mpi4py</strong> type:</p>
+<div class="highlight-python"><pre>$ mpirun -n &lt;cores&gt; ./utils/use_pdfs test/SDSS_MGS.inputs 0 0.1 30</pre>
+</div>
+<p>Making sure to enter the right number of cores, if using a serial version type:</p>
+<div class="highlight-python"><pre>$ ./utils/use_pdfs test/SDSS_MGS.inputs</pre>
+</div>
+<p>After this two extra files are created in the results folder with N(z) dist and a map,
+you can change the binning by changing the last argument in the command line , by default is 30. To plot these you can
+check <a class="reference internal" href="plotting.html#plotting.Qplot.plot_pdf_use" title="plotting.Qplot.plot_pdf_use"><tt class="xref py py-class docutils literal"><span class="pre">plotting.Qplot.plot_pdf_use</span></tt></a> and type:</p>
+<div class="highlight-python"><pre>$ ./plot/plot_pdf_use test/SDSS_MGS.inputs</pre>
+</div>
+<p>And then you will see two figures like the following:</p>
+</div></blockquote>
+<a class="reference internal image-reference" href="_images/ex5.png"><img alt="_images/ex5.png" src="_images/ex5.png" style="width: 406.0px; height: 306.0px;" /></a>
+<a class="reference internal image-reference" href="_images/ex6.png"><img alt="_images/ex6.png" src="_images/ex6.png" style="width: 406.0px; height: 306.0px;" /></a>
+</div>
 <div class="section" id="plotting-a-tree-or-a-map">
 <h2>Plotting a tree or a map<a class="headerlink" href="#plotting-a-tree-or-a-map" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -149,26 +172,6 @@ commands will generate figures like the following:</p>
 </div></blockquote>
 <a class="reference internal image-reference" href="_images/ex4.png"><img alt="_images/ex4.png" src="_images/ex4.png" style="width: 484.8px; height: 484.8px;" /></a>
 <a class="reference internal image-reference" href="_images/ex9.png"><img alt="_images/ex9.png" src="_images/ex9.png" style="width: 469.8px; height: 480.24px;" /></a>
-</div>
-<div class="section" id="some-pdf-example">
-<h2>Some PDF example<a class="headerlink" href="#some-pdf-example" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><p>Some examples on how to use the PDF to compute N(z) or a zphot vs zspec map there are some analysis routines for
-them, first we need to run some pre-analysis routine, if using <strong>mpi4py</strong> type:</p>
-<div class="highlight-python"><pre>$ mpirun -n &lt;cores&gt; ./utils/use_pdfs test/SDSS_MGS.inputs</pre>
-</div>
-<p>Making sure to enter the right number of cores, if using a serial version type:</p>
-<div class="highlight-python"><pre>$ ./utils/use_pdfs test/SDSS_MGS.inputs</pre>
-</div>
-<p>After this two extra files are created in the results folder with N(z) dist and a map,
-you can change the binning by modifying the use_pdfs file it self, by default is 30. To plot these you can
-check <a class="reference internal" href="plotting.html#plotting.Qplot.plot_pdf_use" title="plotting.Qplot.plot_pdf_use"><tt class="xref py py-class docutils literal"><span class="pre">plotting.Qplot.plot_pdf_use</span></tt></a> and type:</p>
-<div class="highlight-python"><pre>$ ./plot/plot_pdf_use test/SDSS_MGS.inputs</pre>
-</div>
-<p>And then you will see two figures like the following:</p>
-</div></blockquote>
-<a class="reference internal image-reference" href="_images/ex5.png"><img alt="_images/ex5.png" src="_images/ex5.png" style="width: 406.0px; height: 306.0px;" /></a>
-<a class="reference internal image-reference" href="_images/ex6.png"><img alt="_images/ex6.png" src="_images/ex6.png" style="width: 406.0px; height: 306.0px;" /></a>
 </div>
 <div class="section" id="ancillary-information">
 <h2>Ancillary information<a class="headerlink" href="#ancillary-information" title="Permalink to this headline">¶</a></h2>
@@ -205,6 +208,8 @@ attributes. Email me at mcarras2 at illinois.edu for questions or comments</div>
         «&#160;&#160;<a href="run_mlz.html">Run MLZ</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="sparse.html">Sparse Representation (new!)</a>&#160;&#160;»
         </p>
 
       </div>

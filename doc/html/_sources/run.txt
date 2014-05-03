@@ -1,3 +1,4 @@
+.. _run_sdss:
 Running a test
 ===============
 
@@ -60,7 +61,7 @@ Preview of results
 
 .. pull-quote::
 
-    Three figures like the following are displayed for a summary of the results, with shape of PDFs, statisticsm etc
+    Three figures like the following are displayed for a summary of the results, with shape of PDFs, statistics etc
 
 .. image:: figures/ex1.png
     :scale: 25%
@@ -77,6 +78,34 @@ Preview of results
 
 
 .. literalinclude :: ../mlz/plot/help.txt
+
+
+Some PDF examples
+..................
+
+    Some examples on how to use the PDF to compute N(z) or a zphot vs zspec map there are some analysis routines for
+    them, first we need to run some pre-analysis routine, if using **mpi4py** type::
+
+        $ mpirun -n <cores> ./utils/use_pdfs test/SDSS_MGS.inputs 0 0.1 30
+
+    Making sure to enter the right number of cores, if using a serial version type::
+
+        $ ./utils/use_pdfs test/SDSS_MGS.inputs
+
+    After this two extra files are created in the results folder with N(z) dist and a map,
+    you can change the binning by changing the last argument in the command line , by default is 30. To plot these you can
+    check :class:`plotting.Qplot.plot_pdf_use` and type::
+
+        $ ./plot/plot_pdf_use test/SDSS_MGS.inputs
+
+    And then you will see two figures like the following:
+
+.. image:: figures/ex5.png
+    :scale: 50%
+.. image:: figures/ex6.png
+    :scale: 50%
+
+
 
 Plotting a tree or a map
 .........................
@@ -96,31 +125,6 @@ Plotting a tree or a map
     :scale: 40%
 .. image:: figures/ex9.png
     :scale: 58%
-
-Some PDF example
-.................
-
-    Some examples on how to use the PDF to compute N(z) or a zphot vs zspec map there are some analysis routines for
-    them, first we need to run some pre-analysis routine, if using **mpi4py** type::
-
-        $ mpirun -n <cores> ./utils/use_pdfs test/SDSS_MGS.inputs
-
-    Making sure to enter the right number of cores, if using a serial version type::
-
-        $ ./utils/use_pdfs test/SDSS_MGS.inputs
-
-    After this two extra files are created in the results folder with N(z) dist and a map,
-    you can change the binning by modifying the use_pdfs file it self, by default is 30. To plot these you can
-    check :class:`plotting.Qplot.plot_pdf_use` and type::
-
-        $ ./plot/plot_pdf_use test/SDSS_MGS.inputs
-
-    And then you will see two figures like the following:
-
-.. image:: figures/ex5.png
-    :scale: 50%
-.. image:: figures/ex6.png
-    :scale: 50%
 
 Ancillary information
 ......................

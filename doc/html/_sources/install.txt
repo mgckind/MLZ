@@ -4,7 +4,7 @@ Installation
 
 Download
 .........
-    You can get the latest version of the code from: https://pypi.python.org/pypi/MLZ/1.0
+    You can get the latest version of the code from: https://pypi.python.org/pypi/MLZ/1.1
 
     The simplest way to get MLZ is using pip::
 

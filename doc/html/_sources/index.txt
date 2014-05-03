@@ -10,6 +10,9 @@ Welcome
     it uses a supervised technique with prediction trees and random forest through :ref:`TPZ <tpz2>` or
     a unsupervised methods with self organizing maps and random atlas
     through :ref:`SOMz <somz2>`. It can be easily extended to other regression or classification problems.
+    We recently have added an additional feature that allows high compressed representation of the photo-z
+    PDFs using :ref:`sparse representation <sparse2>`. This allow to efficiently store and handle a large number
+    of PDF from different techniques
 
 
 .. _refers:
@@ -19,15 +22,22 @@ References
 
     * Carrasco Kind, M., & Brunner, R. J., 2013  :blueit:`"TPZ : Photometric redshift PDFs and ancillary information by using prediction trees and random forests"`, MNRAS, 432, 1483 (`Link <http://adsabs.harvard.edu/abs/2013MNRAS.432.1483C>`_)
 
-    * Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"SOMz : photometric redshift PDFs with self organizing maps and random atlas"` , MNRAS, in press. (`Link <http://adsabs.harvard.edu/abs/2013arXiv1312.5753C>`_)
+    * Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"SOMz : photometric redshift PDFs with self organizing maps and random atlas"` , MNRAS, 438, 3409 (`Link <http://adsabs.harvard.edu/abs/2014MNRAS.438.3409C>`_)
 
-    * Carrasco Kind, M., & Brunner, R. J., 2013, :blueit:`"Implementing Probabilistic Photometric Redshifts"`, in Astronomical Society of the Pacific Conference Series, Vol. 475, Astronomical Data Analysis Software and Systems XXII (ADASSXXII), Freidel D., ed., p. 69 (`Link <http://adsabs.harvard.edu/abs/2013ASPC..475...69C>`_)
+    * Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"Exhausting the Information: Novel Bayesian Combination of Photometric Redshift PDFs"`, MNRAS submitted (`Link <http://adsabs.harvard.edu/abs/2014arXiv1403.0044C>`_)
+
+    * Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"Sparse Representation of Photometric Redshift PDFs: Preparing for Petascale Astronomy"`, MNRAS in press. (`Link <http://adsabs.harvard.edu/abs/2014arXiv1404.6442C>`_)
 
 Contact
 ........
 
 `Here <https://sites.google.com/site/mgckind/>`_ you can find my contact information for questions or comments.
 
+
+Now on GitHub
+.............
+
+We have uploaded MLZ to `GitHub <https://github.com/mgckind/MLZ>`_
 
 Contents
 ........
@@ -43,6 +53,7 @@ Contents
    others
    run_mlz
    run
+   sparse
 
 
 

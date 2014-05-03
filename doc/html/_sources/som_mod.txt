@@ -3,7 +3,7 @@ Somz module
 
 .. pull-quote::
 
-    This is the :class:`SOMZ` class in some detail, refer to the source code for mode information and methods.
+    This is the :class:`SOMZ` class in some detail, refer to the source code for more information and methods.
 
 
 .. automodule:: SOMZ

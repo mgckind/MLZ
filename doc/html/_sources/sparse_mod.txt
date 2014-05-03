@@ -1,0 +1,10 @@
+PDF storage module
+==================
+
+.. pull-quote::
+
+    This is the :class:`pdf_storage` module in some detail, refer to the source code for more information and methods.
+
+
+.. automodule:: pdf_storage
+    :members:
