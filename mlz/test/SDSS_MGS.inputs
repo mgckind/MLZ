@@ -69,7 +69,7 @@ MultipleFiles    : no                # Write a PDFs file per core instead of mer
 #------------------------------------------------------
 #   SPARSE REPRESENTATION
 #------------------------------------------------------
-SparseRep        : yes                # Sparse representation, it creates a fits file
+SparseRep        : no                # Sparse representation, it creates a fits file
 SparseDims       : 200,50,2          # Nmu, Nsigma, Nv (To create dictionary)
 NumberCoef       : 32001             # Integers to represent the coefficients
 NumberBases      : 20                # Number of fixed bases to use
