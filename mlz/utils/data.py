@@ -37,17 +37,19 @@ def read_catalog(filename, myrank=0, check='no', get_ng='no', L_1=0, L_2=-1, A_T
             return ngt
         if L_2 != -1:
             Ta = GH[1].data[L_1:L_2]
-            if A_T != '':
-                col = 0
-                klist = []
-                for k in A_T.keys():
-                    if A_T[k]['ind'] >= 0:
-                        col += 1
-                        klist.append(k)
-                filein = numpy.zeros((len(Ta), col))
-                for k in klist:
-                    T_temp = Ta.field(k)
-                    filein[:, A_T[k]['ind']] = T_temp
+	  else:
+		Ta = GH[1].data
+        if A_T != '':
+            col = 0
+            klist = []
+            for k in A_T.keys():
+                if A_T[k]['ind'] >= 0:
+                    col += 1
+                    klist.append(k)
+            filein = numpy.zeros((len(Ta), col))
+            for k in klist:
+                T_temp = Ta.field(k)
+                filein[:, A_T[k]['ind']] = T_temp
             else:
                 filein = numpy.array(Ta.tolist())
             GH.close()
