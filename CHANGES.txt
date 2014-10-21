@@ -18,5 +18,6 @@ v1.1, 2014-09-25 -- Output inputs file fixed
                  -- Update usage prompt
 v1.1, 2014-10-16 -- Read fits files as input (pyfits 3.3)
                  -- Added argument options (--no_train, --no_test, --no_pdfs)
+                 -- runMLZ --help to see the options
                  -- Added colored outputs
 		
