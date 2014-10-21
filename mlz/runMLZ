@@ -5,6 +5,7 @@ import copy
 import random as rn
 import os, sys
 import pyfits as pf
+import argparse
 
 try:
     from ml_codes import *
@@ -40,15 +41,43 @@ else:
     size = 1
     rank = 0
 
+
+class MyParser(argparse.ArgumentParser):
+    def error(self, message):
+        if rank==0:
+            print '\n**************************'
+            sys.stderr.write('Error: %s\n' % message)
+            print '**************************\n'
+            self.print_help()
+            print
+            print '**************************\n'
+            print
+
+        if PLL == 'MPI': MPI.Finalize()
+        sys.exit(2)
+
+
+
+parser = MyParser(description='Compute photo-z using Machine Learning techniques, check full documentation at ' \
+                              'http://lcdm.astro.illinois.edu/code/mlz.html or  ' \
+                              ' *Comments/questions: Matias Carrasco Kind mcarras2@illinois.edu*')
+parser.add_argument("inputsfile", help="Inputs file with all parameters, check documentation for more info")
+parser.add_argument("--no_train", help="It skips the training stage assuming it was already done", action="store_true")
+parser.add_argument("--no_test", help="It skips the testing stage on test data", action="store_true")
+parser.add_argument("--no_pdfs", help="It doesn't write or produce photo-z PDFs", action="store_true")
+
+args_in = parser.parse_args()
+
+
 if rank == 0:
     utils_mlz.print_welcome()
     clock_all = utils_mlz.Stopwatch()
-Nproc = size #number of processors
-Narg = len(sys.argv)
-if Narg != 2:
-    if rank == 0: utils_mlz.usage()
-    if PLL == 'MPI': MPI.Finalize()
-    sys.exit(0)
+Nproc = size  # number of processors
+#Narg = len(sys.argv)
+#if Narg != 2:
+#    if rank == 0: utils_mlz.usage()
+#    if PLL == 'MPI': MPI.Finalize()
+#    sys.exit(0)
 
 
 def join_oob(rank, rawA, PLL):
@@ -67,11 +96,14 @@ def join_oob(rank, rawA, PLL):
         return 0.
 
 
-FilePars = sys.argv[1] #inputs file name
-#READ PARAMETERS
+FilePars = args_in.inputsfile #sys.argv[1]  # inputs file name
+# READ PARAMETERS
 verbo = False
 if rank == 0: verbo = True
 Pars_in = utils_mlz.read_dt_pars(FilePars, verbose=verbo)
+if args_in.no_train: Pars_in.dotrain = 'no'
+if args_in.no_test: Pars_in.dotest = 'no'
+if args_in.no_pdfs: Pars_in.writepdf = 'no'
 if Pars_in.varimportance == 'yes': Pars_in.ooberror == 'yes'
 if Pars_in.checkonly == 'yes':
     if rank == 0:
@@ -92,6 +124,15 @@ if Pmode == 'TPZ_C': Pars_in.predictionclass = 'Class'
 Cmode = Pars_in.predictionclass
 #READ TRAIN AND TEST FILES
 
+if Pars_in.dotrain == 'no':
+    if rank == 0:
+        utils_mlz.printpz()
+        utils_mlz.printpz('********************************',red=True)
+        utils_mlz.printpz('*  No training  is performed   *',red=True)
+        utils_mlz.printpz('********************************',red=True)
+        utils_mlz.printpz()
+
+
 if Pars_in.dotrain == 'yes':
     Train = data.catalog(Pars_in, cat_type='train', rank=rank)
 
@@ -109,10 +150,10 @@ if Pars_in.dotrain == 'yes':
         utils_mlz.print_mode(Cmode)
         if not SF90 and Pmode == 'SOM':
             utils_mlz.printpz()
-            utils_mlz.printpz('******************************************************')
-            utils_mlz.printpz('* Fortran module somF not found, using python module *')
-            utils_mlz.printpz('*   try: f2py -c -m somF som.f90 to compile it       *')
-            utils_mlz.printpz('******************************************************')
+            utils_mlz.printpz('******************************************************',red=True)
+            utils_mlz.printpz('* Fortran module somF not found, using python module *',red=True)
+            utils_mlz.printpz('*   try: f2py -c -m somF som.f90 to compile it       *',red=True)
+            utils_mlz.printpz('******************************************************',red=True)
         utils_mlz.printpz()
 
     if Pars_in.importancefile == 'none':
@@ -304,257 +345,291 @@ if Pars_in.dotrain == 'yes':
 if Pars_in.dotest == 'no':
     if rank == 0:
         utils_mlz.printpz()
-        utils_mlz.printpz("Only training was selected")
-        utils_mlz.printpz("Check utils/utils_mlz.py ")
+        utils_mlz.printpz('********************************',red=True)
+        utils_mlz.printpz('*  No solution is performed    *',red=True)
+        utils_mlz.printpz('********************************',red=True)
         utils_mlz.printpz()
-    if PLL == 'MPI': MPI.Finalize()
-    sys.exit(0)
+        utils_mlz.printpz()
+
 
 #------------------------------------------------------------------------
 # NOW TEST
-zfine, zfine2, resz, resz2, wzin = analysis.get_zbins(Pars_in)
-zfine2 = zfine2[wzin]
-ntot = int(Pars_in.nrandom * Pars_in.ntrees)
-if rank == 0:
-    local_clock = utils_mlz.Stopwatch('no')
-    cat_temp = data.read_catalog(Pars_in.path_test + Pars_in.testfile, check=Pars_in.checkonly)
-    Ng = array(len(cat_temp), 'i')
-    del cat_temp
-else:
-    Ng = array(0, 'i')
+if Pars_in.dotest == 'yes':
+    zfine, zfine2, resz, resz2, wzin = analysis.get_zbins(Pars_in)
+    zfine2 = zfine2[wzin]
+    ntot = int(Pars_in.nrandom * Pars_in.ntrees)
+    if rank == 0:
+        local_clock = utils_mlz.Stopwatch('no')
+        Ng_temp = data.read_catalog(Pars_in.path_test + Pars_in.testfile, check=Pars_in.checkonly, get_ng='yes')
+        Ng = array(Ng_temp ,'i')
+        #Ng = array(len(cat_temp), 'i')
+        #del cat_temp
+    else:
+        Ng = array(0, 'i')
 
-if PLL == 'MPI': comm.Barrier()
-if PLL == 'MPI': comm.Bcast([Ng, MPI.INT], root=0)
+    if PLL == 'MPI': comm.Barrier()
+    if PLL == 'MPI': comm.Bcast([Ng, MPI.INT], root=0)
 
-s0, s1 = utils_mlz.get_limits(Ng, Nproc, rank)
-if rank == 0:
-    utils_mlz.printpz('-> NUMBER OF GALAXIES IN TEST CATALOG : ', Ng)
-    for i in xrange(Nproc):
-        Xs_0, Xs_1 = utils_mlz.get_limits(Ng, Nproc, i)
-        utils_mlz.printpz(Xs_0, ' ', Xs_1, ' -------------> to core ', i)
+    s0, s1 = utils_mlz.get_limits(Ng, Nproc, rank)
+    if rank == 0:
+        utils_mlz.printpz('-> NUMBER OF GALAXIES IN TEST CATALOG : ', Ng)
+        for i in xrange(Nproc):
+            Xs_0, Xs_1 = utils_mlz.get_limits(Ng, Nproc, i)
+            utils_mlz.printpz(Xs_0, ' ', Xs_1, ' -------------> to core ', i)
 
-Test = data.catalog(Pars_in, cat_type='test', L1=s0, L2=s1, rank=rank)
-Test.get_XY()
+    Test = data.catalog(Pars_in, cat_type='test', L1=s0, L2=s1, rank=rank)
+    Test.get_XY()
 
-if Test.has_Y():
-    yvals = Test.Y
-else:
-    yvals = zeros(Test.nobj)
+    if Test.has_Y():
+        yvals = Test.Y
+    else:
+        yvals = zeros(Test.nobj)
 
-test_nobj = Test.nobj
+    test_nobj = Test.nobj
 
-Z0 = zeros((Test.nobj, 7))
+    Z0 = zeros((Test.nobj, 7))
 
-if Pmode == 'TPZ': path1 = Test.Pars.path_output_trees
-if Pmode == 'TPZ_C': path1 = Test.Pars.path_output_trees
-if Pmode == 'SOM': path1 = Test.Pars.path_output_maps
+    if Pmode == 'TPZ': path1 = Test.Pars.path_output_trees
+    if Pmode == 'TPZ_C': path1 = Test.Pars.path_output_trees
+    if Pmode == 'SOM': path1 = Test.Pars.path_output_maps
 
-if Pmode == 'TPZ': fileb = Pars_in.treefilename
-if Pmode == 'TPZ_C': fileb = Pars_in.treefilename
-if Pmode == 'SOM': fileb = Pars_in.somfilename
+    if Pmode == 'TPZ': fileb = Pars_in.treefilename
+    if Pmode == 'TPZ_C': fileb = Pars_in.treefilename
+    if Pmode == 'SOM': fileb = Pars_in.somfilename
 
-if Cmode == 'Reg':
-    BP0 = zeros((Test.nobj, len(zfine2)))
-    BP0raw = zeros((Test.nobj, len(zfine) - 1))
-    Test_S = analysis.GetPz_short(Pars_in)
-if Cmode == 'Class':
-    S1 = zeros(Test.nobj)
-    S2 = zeros(Test.nobj)
-    Nv = zeros(Test.nobj)
+    if Cmode == 'Reg':
+        BP0 = zeros((Test.nobj, len(zfine2)))
+        BP0raw = zeros((Test.nobj, len(zfine) - 1))
+        Test_S = analysis.GetPz_short(Pars_in)
+    if Cmode == 'Class':
+        S1 = zeros(Test.nobj)
+        S2 = zeros(Test.nobj)
+        Nv = zeros(Test.nobj)
 
-for k in xrange(ntot):
-    ff = '_%04d' % k
-    filec = path1 + fileb + ff + '.npy'
-    S = load(filec)
-    S = S.item()
-    DD = S.dict_dim
-    if Pmode == 'SOM': Test.get_XY(curr_at=DD)
-    for i in xrange(Test.nobj):
-        temp = S.get_vals(Test.X[i])
-        if temp[0] != -1.:
-            if Cmode == 'Reg': BP0raw[i, :] += Test_S.get_hist(temp)
-            if Cmode == 'Class':
-                S1[i] += sum(array(temp))
-                S2[i] += sum(array(temp) * array(temp))
-                Nv[i] += 1. * len(temp)
+    for k in xrange(ntot):
+        ff = '_%04d' % k
+        filec = path1 + fileb + ff + '.npy'
+        S = load(filec)
+        S = S.item()
+        DD = S.dict_dim
+        if Pmode == 'SOM': Test.get_XY(curr_at=DD)
+        for i in xrange(Test.nobj):
+            temp = S.get_vals(Test.X[i])
+            if temp[0] != -1.:
+                if Cmode == 'Reg': BP0raw[i, :] += Test_S.get_hist(temp)
+                if Cmode == 'Class':
+                    S1[i] += sum(array(temp))
+                    S2[i] += sum(array(temp) * array(temp))
+                    Nv[i] += 1. * len(temp)
 
-if Cmode == 'Reg':
-    for k in xrange(test_nobj):
-        z_phot, pdf_phot = Test_S.get_pdf(BP0raw[k], yvals[k])
-        Z0[k, :] = z_phot
-        BP0[k, :] = pdf_phot
-    del BP0raw, yvals
-if Cmode == 'Class':
-    z_0, z_1, s_0 = analysis.class_stat(S1, S2, Nv, Pars_in)
-    Z0[:, 0] = yvals
-    Z0[:, 1] = z_0
-    Z0[:, 2] = z_1
-    Z0[:, 3] = s_0
-    del S1, S2, Nv
-
-if rank == 0:
-    utils_mlz.printpz()
-    utils_mlz.printpz('+-+-+-+-+-+-+-+-+-+-+-+-+')
-    utils_mlz.printpz(PLL, ' time Testing')
-    utils_mlz.printpz('+-+-+-+-+-+-+-+-+-+-+-+-+')
-    local_clock.elapsed()
-
-if PLL == 'MPI': comm.Barrier()
-####################################
-
-
-s0, s1 = utils_mlz.get_limits(Ng, Nproc, rank)
-
-if rank == 0:
-    BIGZ = zeros((Ng, 7))
-    BIGZ[s0:s1, :] = Z0
-    for srank in xrange(1, Nproc):
-        s0, s1 = utils_mlz.get_limits(Ng, Nproc, srank)
-        size_dat = s1 - s0
-        ZT = zeros((size_dat, 7))
-        if PLL == 'MPI': comm.Recv(ZT, source=srank, tag=srank * 2)
-        BIGZ[s0:s1, :] = ZT
-        del ZT
-else:
-    if PLL == 'MPI': comm.Send(Z0, dest=0, tag=rank * 2)
-    del Z0
-
-path_r, filebase_r, num_r = analysis.get_path_new(Pars_in)
-if PLL == 'MPI': comm.Barrier()
-
-if rank == 0:
-    analysis.save_single(BIGZ, Pars_in)
-    del BIGZ
-
-if Pars_in.sparserep == 'yes':
-    if rank == 0: utils_mlz.printpz("Sparse Representation for PDFs")
-    mu = [min(zfine2), max(zfine2)]
-    Nmu, Nsig, Nv = map(int, Pars_in.sparsedims)
-    Ncoef = int(Pars_in.numbercoef)
-    Nsparse = int(Pars_in.numberbases)
-    AA = linspace(0, 1, Ncoef)
-    dz_sp = zfine2[1] - zfine2[0]
-    Da = AA[1] - AA[0]
-    max_sig = (max(zfine2) - min(zfine2)) / 12.
-    min_sig = dz_sp / 6.
-    sig = [min_sig, max_sig]
-    NA = Nmu * Nsig * Nv
-
-    head = pf.Header()
-    head['N_MU'] = Nmu
-    head['N_SIGMA'] = Nsig
-    head['N_VOIGT'] = Nv
-    head['N_COEF'] = Ncoef
-    head['N_SPARSE'] = Nsparse
-    head['MU1'] = mu[0]
-    head['MU2'] = mu[1]
-    head['SIGMA1'] = sig[0]
-    head['SIGMA2'] = sig[1]
+    if Cmode == 'Reg':
+        for k in xrange(test_nobj):
+            z_phot, pdf_phot = Test_S.get_pdf(BP0raw[k], yvals[k])
+            Z0[k, :] = z_phot
+            BP0[k, :] = pdf_phot
+        del BP0raw, yvals
+    if Cmode == 'Class':
+        z_0, z_1, s_0 = analysis.class_stat(S1, S2, Nv, Pars_in)
+        Z0[:, 0] = yvals
+        Z0[:, 1] = z_0
+        Z0[:, 2] = z_1
+        Z0[:, 3] = s_0
+        del S1, S2, Nv
 
     if rank == 0:
-        utils_mlz.printpz("Nmu, Nsigm Nv = [ ", Nmu, ", ", Nsig, ", ", Nv, " ]")
-        utils_mlz.printpz("Number of total bases in dictionary : ", NA)
-        utils_mlz.printpz("Number of bases sparse representation : ", Nsparse)
         utils_mlz.printpz()
-        utils_mlz.printpz("Creating Dictionary...")
-    AD = pdf_storage.create_voigt_dict(zfine2, mu, Nmu, sig, Nsig, Nv)
-    if rank == 0:
-        utils_mlz.printpz("Creating Sparse Representation...")
-    SPR = zeros((len(BP0), Nsparse), dtype='int32')
-    for ip in xrange(len(BP0)):
-        pdf0 = BP0[ip]
-        if sum(pdf0) > 0:
-            pdf0 /= sum(pdf0)
-        else:
-            continue
-        Dind, Dval = pdf_storage.sparse_basis(AD, pdf0, Nsparse)
-        if len(Dind) <= 1: continue
-        if max(Dval) > 0:
-            Dvalm = Dval / max(Dval)
-            indexm = array(map(round, (Dvalm / Da)), dtype='int')
-        else:
-            indexm = zeros(len(Dind), dtype='int')
-        temp_int = array(map(pdf_storage.combine_int, indexm, Dind))
-        SPR[ip, 0:len(temp_int)] = temp_int
-        AD[:, [Dind]] = AD[:, [arange(len(Dind))]]
-        del temp_int, indexm, Dind, Dval, Dvalm
-if PLL == 'MPI': comm.Barrier()
+        utils_mlz.printpz('+-+-+-+-+-+-+-+-+-+-+-+-+')
+        utils_mlz.printpz(PLL, ' time Testing')
+        utils_mlz.printpz('+-+-+-+-+-+-+-+-+-+-+-+-+')
+        local_clock.elapsed()
 
-if Cmode == 'Reg' and Pars_in.writepdf == 'yes':
-    if Pars_in.multiplefiles == 'yes':
+    if PLL == 'MPI': comm.Barrier()
+    ####################################
+
+
+    s0, s1 = utils_mlz.get_limits(Ng, Nproc, rank)
+
+    if rank == 0:
+        BIGZ = zeros((Ng, 7))
+        BIGZ[s0:s1, :] = Z0
+        for srank in xrange(1, Nproc):
+            s0, s1 = utils_mlz.get_limits(Ng, Nproc, srank)
+            size_dat = s1 - s0
+            ZT = zeros((size_dat, 7))
+            if PLL == 'MPI': comm.Recv(ZT, source=srank, tag=srank * 2)
+            BIGZ[s0:s1, :] = ZT
+            del ZT
+    else:
+        if PLL == 'MPI': comm.Send(Z0, dest=0, tag=rank * 2)
+        del Z0
+
+    path_r, filebase_r, num_r = analysis.get_path_new(Pars_in)
+    if PLL == 'MPI': comm.Barrier()
+
+    if rank == 0:
+        analysis.save_single(BIGZ, Pars_in)
+        del BIGZ
+
+
+
+    if Cmode == 'Reg' and Pars_in.writepdf == 'no':
         if rank == 0 and PLL == 'MPI':
             utils_mlz.printpz()
             utils_mlz.printpz('************************************')
-            utils_mlz.printpz('** Writing multiple file for PDFs **')
+            utils_mlz.printpz('** No photo-z PDF were produced   **')
             utils_mlz.printpz('************************************')
             utils_mlz.printpz()
-        if Pars_in.originalpdffile == 'yes':
-            analysis.save_PDF(zfine2, BP0, Pars_in, path=path_r, filebase=filebase_r, num=num_r, multiple='yes',
-                              rank=rank)
-            del BP0
-        if Pars_in.sparserep == 'yes':
-            head['N_TOT'] = len(SPR)
-            analysis.save_PDF_sparse(zfine2, SPR, head, Pars_in, path=path_r, filebase=filebase_r, num=num_r,
-                                     multiple='yes', rank=rank)
-            del SPR
-    else:
-        if rank == 0:
-            utils_mlz.printpz()
-            utils_mlz.printpz('*************************************')
-            utils_mlz.printpz('** Collecting data from processors **')
-            utils_mlz.printpz('*************************************')
-            utils_mlz.printpz()
-        s0, s1 = utils_mlz.get_limits(Ng, Nproc, rank)
-        if Pars_in.originalpdffile == 'yes':
-            if rank == 0:
-                utils_mlz.printpz("Saving Original PDFs")
+
+    if Cmode == 'Reg' and Pars_in.writepdf == 'yes':
+        if Pars_in.multiplefiles == 'yes':
+            if rank == 0 and PLL == 'MPI':
                 utils_mlz.printpz()
-                BIGP = zeros((Ng, len(zfine2)))
-                BIGP[s0:s1, :] = BP0
-                for srank in xrange(1, Nproc):
-                    s0, s1 = utils_mlz.get_limits(Ng, Nproc, srank)
-                    size_dat = s1 - s0
-                    BPT = zeros((size_dat, len(zfine2)))
-                    if PLL == 'MPI': comm.Recv(BPT, source=srank, tag=srank * 2)
-                    BIGP[s0:s1, :] = BPT
-                    del BPT
-            else:
-                if PLL == 'MPI':
-                    comm.Send(BP0, dest=0, tag=rank * 2)
-                    del BP0
-            if PLL == 'MPI': comm.Barrier()
+                utils_mlz.printpz('************************************')
+                utils_mlz.printpz('** Writing multiple file for PDFs **')
+                utils_mlz.printpz('************************************')
+                utils_mlz.printpz()
+            if Pars_in.originalpdffile == 'yes':
+                analysis.save_PDF(zfine2, BP0, Pars_in, path=path_r, filebase=filebase_r, num=num_r, multiple='yes',
+                                  rank=rank)
+                if Pars_in.sparserep == 'no': del BP0
+            #if Pars_in.sparserep == 'yes':
+            #    head['N_TOT'] = len(SPR)
+            #    analysis.save_PDF_sparse(zfine2, SPR, head, Pars_in, path=path_r, filebase=filebase_r, num=num_r,
+            #                             multiple='yes', rank=rank)
+            #    del SPR
+        else:
             if rank == 0:
-                analysis.save_PDF(zfine2, BIGP, Pars_in, path=path_r, filebase=filebase_r, num=num_r)
-                del BIGP
+                utils_mlz.printpz()
+                utils_mlz.printpz('*************************************')
+                utils_mlz.printpz('** Collecting data from processors **')
+                utils_mlz.printpz('*************************************')
+                utils_mlz.printpz()
+            s0, s1 = utils_mlz.get_limits(Ng, Nproc, rank)
+            if Pars_in.originalpdffile == 'yes':
+                if rank == 0:
+                    utils_mlz.printpz("Saving Original PDFs")
+                    utils_mlz.printpz()
+                    BIGP = zeros((Ng, len(zfine2)))
+                    BIGP[s0:s1, :] = BP0
+                    for srank in xrange(1, Nproc):
+                        s0, s1 = utils_mlz.get_limits(Ng, Nproc, srank)
+                        size_dat = s1 - s0
+                        BPT = zeros((size_dat, len(zfine2)))
+                        if PLL == 'MPI': comm.Recv(BPT, source=srank, tag=srank * 2)
+                        BIGP[s0:s1, :] = BPT
+                        del BPT
+                else:
+                    if PLL == 'MPI':
+                        comm.Send(BP0, dest=0, tag=rank * 2)
+                        if Pars_in.sparserep == 'no': del BP0
+                if PLL == 'MPI': comm.Barrier()
+                if rank == 0:
+                    analysis.save_PDF(zfine2, BIGP, Pars_in, path=path_r, filebase=filebase_r, num=num_r)
+                    del BIGP
+
 
         if Pars_in.sparserep == 'yes':
-            s0, s1 = utils_mlz.get_limits(Ng, Nproc, rank)
             if rank == 0:
-                utils_mlz.printpz("Saving Sparse Represenation PDFs")
+                utils_mlz.printpz("Sparse Representation for PDFs...",yellow=True)
+                local_clock = utils_mlz.Stopwatch('no')
+            mu = [min(zfine2), max(zfine2)]
+            Nmu, Nsig, Nv = map(int, Pars_in.sparsedims)
+            Ncoef = int(Pars_in.numbercoef)
+            Nsparse = int(Pars_in.numberbases)
+            AA = linspace(0, 1, Ncoef)
+            dz_sp = zfine2[1] - zfine2[0]
+            Da = AA[1] - AA[0]
+            max_sig = (max(zfine2) - min(zfine2)) / 12.
+            min_sig = dz_sp / 6.
+            sig = [min_sig, max_sig]
+            NA = Nmu * Nsig * Nv
+
+            head = pf.Header()
+            head['N_MU'] = Nmu
+            head['N_SIGMA'] = Nsig
+            head['N_VOIGT'] = Nv
+            head['N_COEF'] = Ncoef
+            head['N_SPARSE'] = Nsparse
+            head['MU1'] = mu[0]
+            head['MU2'] = mu[1]
+            head['SIGMA1'] = sig[0]
+            head['SIGMA2'] = sig[1]
+
+            if rank == 0:
+                utils_mlz.printpz("Nmu, Nsigm Nv = [ ", Nmu, ", ", Nsig, ", ", Nv, " ]")
+                utils_mlz.printpz("Number of total bases in dictionary : ", NA)
+                utils_mlz.printpz("Number of bases sparse representation : ", Nsparse)
                 utils_mlz.printpz()
-                BIGP = zeros((Ng, Nsparse), dtype='int32')
-                BIGP[s0:s1, :] = SPR
-                for srank in xrange(1, Nproc):
-                    s0, s1 = utils_mlz.get_limits(Ng, Nproc, srank)
-                    size_dat = s1 - s0
-                    BPT = zeros((size_dat, Nsparse), dtype='int32')
-                    if PLL == 'MPI': comm.Recv(BPT, source=srank, tag=srank * 2)
-                    BIGP[s0:s1, :] = BPT
-                    del BPT
-            else:
-                if PLL == 'MPI':
-                    comm.Send(SPR, dest=0, tag=rank * 2)
-                    del SPR
+                utils_mlz.printpz("Creating Dictionary...")
+            AD = pdf_storage.create_voigt_dict(zfine2, mu, Nmu, sig, Nsig, Nv)
+            if rank == 0:
+                utils_mlz.printpz("Creating Sparse Representation...")
+            SPR = zeros((len(BP0), Nsparse), dtype='int32')
+            for ip in xrange(len(BP0)):
+                pdf0 = BP0[ip]
+                if sum(pdf0) > 0:
+                    pdf0 /= sum(pdf0)
+                else:
+                    continue
+                Dind, Dval = pdf_storage.sparse_basis(AD, pdf0, Nsparse)
+                if len(Dind) <= 1: continue
+                if max(Dval) > 0:
+                    Dvalm = Dval / max(Dval)
+                    indexm = array(map(round, (Dvalm / Da)), dtype='int')
+                else:
+                    indexm = zeros(len(Dind), dtype='int')
+                temp_int = array(map(pdf_storage.combine_int, indexm, Dind))
+                SPR[ip, 0:len(temp_int)] = temp_int
+                AD[:, [Dind]] = AD[:, [arange(len(Dind))]]
+                del temp_int, indexm, Dind, Dval, Dvalm
+            del BP0
             if PLL == 'MPI': comm.Barrier()
             if rank == 0:
-                head['N_TOT'] = int(Ng)
-                analysis.save_PDF_sparse(zfine2, BIGP, head, Pars_in, path=path_r, filebase=filebase_r, num=num_r)
-                del BIGP
+                utils_mlz.printpz()
+                utils_mlz.printpz('+-+-+-+-+-+-+-+-+-+-+-+-+')
+                utils_mlz.printpz(PLL, ' time Sparse Rep.   ')
+                utils_mlz.printpz('+-+-+-+-+-+-+-+-+-+-+-+-+')
+                local_clock.elapsed()
+
+
+        if Pars_in.multiplefiles == 'yes':
+            if Pars_in.sparserep == 'yes':
+                head['N_TOT'] = len(SPR)
+                analysis.save_PDF_sparse(zfine2, SPR, head, Pars_in, path=path_r, filebase=filebase_r, num=num_r,
+                                         multiple='yes', rank=rank)
+                del SPR
+        else:
+            if Pars_in.sparserep == 'yes':
+                s0, s1 = utils_mlz.get_limits(Ng, Nproc, rank)
+                if rank == 0:
+                    utils_mlz.printpz("Saving Sparse Represenation PDFs")
+                    utils_mlz.printpz()
+                    BIGP = zeros((Ng, Nsparse), dtype='int32')
+                    BIGP[s0:s1, :] = SPR
+                    for srank in xrange(1, Nproc):
+                        s0, s1 = utils_mlz.get_limits(Ng, Nproc, srank)
+                        size_dat = s1 - s0
+                        BPT = zeros((size_dat, Nsparse), dtype='int32')
+                        if PLL == 'MPI': comm.Recv(BPT, source=srank, tag=srank * 2)
+                        BIGP[s0:s1, :] = BPT
+                        del BPT
+                else:
+                    if PLL == 'MPI':
+                        comm.Send(SPR, dest=0, tag=rank * 2)
+                        del SPR
+                if PLL == 'MPI': comm.Barrier()
+                if rank == 0:
+                    head['N_TOT'] = int(Ng)
+                    analysis.save_PDF_sparse(zfine2, BIGP, head, Pars_in, path=path_r, filebase=filebase_r, num=num_r)
+                    del BIGP
+
+
+
 
 if rank == 0:
-    utils_mlz.printpz('+-+-+-+-+-+-+-+-+')
-    utils_mlz.printpz(PLL, ' TOTAL TIME')
-    utils_mlz.printpz('+-+-+-+-+-+-+-+-+')
+    utils_mlz.printpz('+-+-+-+-+-+-+-+-+',green=True)
+    utils_mlz.printpz(PLL, ' TOTAL TIME',green=True)
+    utils_mlz.printpz('+-+-+-+-+-+-+-+-+',green=True)
     clock_all.elapsed()
 if PLL == 'MPI': MPI.Finalize()
 

@@ -16,9 +16,9 @@ try:
 except:
     PLL = 'SERIAL'
 
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 # Read parameters from input file
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 def read_dt_pars(filein, verbose=True, myrank=0):
     """
     Read parameters to be used by the program and convert them into integers/float
@@ -82,8 +82,8 @@ def read_dt_pars(filein, verbose=True, myrank=0):
             self.minbin = 5
             self.repeatf = 'yes'
             self.treefraction = 0.9
-            self.dotrain   = 'yes'
-            self.dotest   = 'yes'
+            self.dotrain = 'yes'
+            self.dotest = 'yes'
             self.writepdf = 'yes'
             self.all_names = []
             self.all_values = []
@@ -107,7 +107,7 @@ def read_dt_pars(filein, verbose=True, myrank=0):
     DT_p.path_output_trees = DT_p.path_output + 'trees/'
     DT_p.path_output_maps = DT_p.path_output + 'maps/'
     if DT_p.importancefile[-1] == '/': DT_p.importancefile = DT_p.importancefile[:-1]
-    if DT_p.predictionmode != 'TPZ'  and DT_p.predictionmode != 'SOM' and DT_p.predictionmode != 'TPZ_C' and DT_p.predictionmode != 'BPZ':
+    if DT_p.predictionmode != 'TPZ' and DT_p.predictionmode != 'SOM' and DT_p.predictionmode != 'TPZ_C' and DT_p.predictionmode != 'BPZ':
         if myrank == 0:
             printpz_err("Key PredictionMode is wrong")
         sys.exit(0)
@@ -118,21 +118,51 @@ def read_dt_pars(filein, verbose=True, myrank=0):
     return DT_p
 
 
-def printpz(*args):
+class tcolor:
+    yellow = '\033[93m'
+    green = '\033[92m'
+    off = '\033[0m'
+    red = '\033[91m'
+    purple = '\033[95m'
+    blue = '\033[94m'
+    on_yellow = '\033[43m'
+
+
+def printpz(*args, **kwargs):
     title = '[MLZ]  '
+    verb = True
+    red = False
+    green = False
+    blue = False
+    yellow = False
+    if kwargs.has_key('verb'): verb = kwargs['verb']
+    if kwargs.has_key('red'): red = kwargs['red']
+    if kwargs.has_key('green'): green = kwargs['green']
+    if kwargs.has_key('blue'): blue = kwargs['blue']
+    if kwargs.has_key('yellow'): yellow = kwargs['yellow']
     if len(args) == 0:
-        print title
+        pass
     else:
         for stt in args:
             title += str(stt)
-        print title
+    if verb:
+        if red:
+            print tcolor.red + title + tcolor.off
+        elif green:
+            print tcolor.green + title + tcolor.off
+        elif blue:
+            print tcolor.blue + title + tcolor.off
+        elif yellow:
+            print tcolor.yellow + title + tcolor.off
+        else:
+            print title
 
 
 def printpz_err(*args):
     printpz()
-    printpz(''' ===================== ''')
-    printpz(''' *       ERROR       * ''')
-    printpz(''' ===================== ''')
+    printpz(''' ===================== ''',red=True)
+    printpz(''' *       ERROR       * ''',red=True)
+    printpz(''' ===================== ''',red=True)
     if len(args) != 0: arg2 = [i for i in args] + [" <<<"]
     printpz(">>> ", *arg2)
     printpz()
@@ -175,7 +205,8 @@ class bias:
     :param function d_z: function to be applied on z_phot and z_spec, default (z_phot-z_spec)
     :param bool verb: verbose?
     """
-    def __init__(self, zs, zb, name, zmin, zmax, nbins, mode=1, d_z = lambda x,y : x-y, verb = True):
+
+    def __init__(self, zs, zb, name, zmin, zmax, nbins, mode=1, d_z=lambda x, y: x - y, verb=True):
         zbins = numpy.linspace(zmin, zmax, nbins + 1)
         zmid = 0.5 * (zbins[1:] + zbins[:-1])
         self.bins = zmid
@@ -193,11 +224,11 @@ class bias:
         self.frac2 = numpy.zeros(len(zmid))
         self.frac3 = numpy.zeros(len(zmid))
         top = self.name + ' : %d galaxies' % len(zs)
-        if verb : printpz(top)
+        if verb: printpz(top)
         for i in xrange(len(zmid)):
             if mode == 0: wt = numpy.where((zs >= zbins[i]) & (zs < zbins[i + 1]))
             if mode == 1: wt = numpy.where((zb >= zbins[i]) & (zb < zbins[i + 1]))
-            deltaz = d_z(zb,zs)
+            deltaz = d_z(zb, zs)
             if numpy.shape(wt)[1] == 0: continue
             tempz = numpy.sort(deltaz[wt])
             self.sigma68[i] = 0.5 * (percentile(tempz, 0.84) - percentile(tempz, 0.16))
@@ -224,6 +255,7 @@ class conf:
     :param float zmax: Maximum redshift for binning
     :param int nbins: Number of bins used
     """
+
     def __init__(self, zconf, zb, zmin, zmax, nbins):
         zbins = numpy.linspace(zmin, zmax, nbins + 1)
         zmid = 0.5 * (zbins[1:] + zbins[:-1])
@@ -260,6 +292,7 @@ class Stopwatch:
 
     :param str verb: 'yes' or 'no' (verbose?)
     """
+
     def __init__(self, verb='yes'):
         verbin = True
         if verb == 'no': verbin = False
@@ -325,7 +358,11 @@ def print_dtpars(DTpars, outfile):
     for k in sname:
         w = numpy.where(names == k)[0]
         w = w[0]
-        line = "%-20s : %s \n" % (names[w], vals[w])
+        if type(vals[w]) == type([1, 2, 3]):
+            svals = ','.join(vals[w])
+        else:
+            svals = vals[w]
+        line = "%-20s : %s \n" % (names[w], svals)
         fo.write(line)
     fo.close()
 
@@ -365,7 +402,7 @@ def get_prob_Nz(z, pdf, zbins):
     dzo = z[1] - z[0]
     dz = 0.001
     Ndz = int((zbins[1] - zbins[0]) / dz)
-    Nzt = numpy. zeros(len(zbins) - 1)
+    Nzt = numpy.zeros(len(zbins) - 1)
     for j in xrange(len(Nzt)):
         for i in xrange(Ndz):
             Nzt[j] += dz * PP((zbins[j]) + dz / 2. + dz * i)
@@ -477,17 +514,17 @@ def get_limits(ntot, Nproc, rank):
 def print_welcome():
     bla = os.system('clear')
     print
-    printpz('''------------------------------------------------''')
-    printpz('''|      ____    ____    _____      ________     |''')
-    printpz('''|     |_   \  /   _|  |_   _|    |  __   _|    |''')
-    printpz('''|       |   \/   |      | |      |_/  / /      |''')
-    printpz('''|       | |\  /| |      | |   _     .'.' _     |''')
-    printpz('''|      _| |_\/_| |_    _| |__/ |  _/ /__/ |    |''')
-    printpz('''|     |_____||_____|  |________| |________|    |''')
-    printpz('''|                                              |''')
-    printpz('''|                                              |''')
-    printpz('''|      Machine   Learning   for   photo-Z      |''')
-    printpz('''|----------------------------------------------|''')
+    printpz('''------------------------------------------------''',blue=True)
+    printpz('''|      ____    ____    _____      ________     |''',blue=True)
+    printpz('''|     |_   \  /   _|  |_   _|    |  __   _|    |''',blue=True)
+    printpz('''|       |   \/   |      | |      |_/  / /      |''',blue=True)
+    printpz('''|       | |\  /| |      | |   _     .'.' _     |''',blue=True)
+    printpz('''|      _| |_\/_| |_    _| |__/ |  _/ /__/ |    |''',blue=True)
+    printpz('''|     |_____||_____|  |________| |________|    |''',blue=True)
+    printpz('''|                                              |''',blue=True)
+    printpz('''|                                              |''',blue=True)
+    printpz('''|      Machine   Learning   for   photo-Z      |''',blue=True)
+    printpz('''|----------------------------------------------|''',blue=True)
     printpz()
 
 
@@ -534,10 +571,11 @@ def usage():
     printpz()
     printpz('Usage :: ')
     printpz('------------------------------------------')
-    printpz('./runALL <inputs file>')
+    printpz('./runMLZ <inputs file>')
     printpz('------------------------------------------')
     printpz()
-    printpz('''See http://lcdm.astro.illinois.edu/static/code/mlz/MLZ-1.0/doc/html/index.html for more info''')
+    printpz('''See http://lcdm.astro.illinois.edu/static/code/mlz/MLZ-1.1/doc/html/index.html for more info''')
+
 
 def allkeys():
     keys_input = [ \

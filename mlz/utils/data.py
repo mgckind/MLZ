@@ -4,13 +4,14 @@
 """
 __author__ = 'Matias Carrasco Kind'
 import numpy
+import pyfits as pf
 import random
 import copy
 import utils_mlz
 import sys
 
 
-def read_catalog(filename, myrank=0, check='no'):
+def read_catalog(filename, myrank=0, check='no', get_ng='no', L_1=0, L_2=-1, A_T=''):
     """
     Read the catalog, either for training or testing
     currently accepting ascii tables, numpy tables
@@ -26,8 +27,35 @@ def read_catalog(filename, myrank=0, check='no'):
     """
     if filename[-3:] == 'npy':
         filein = numpy.load(filename)
+        if get_ng == 'yes': return len(filein)
+        if L_2 != -1: filein = filein[L_1:L_2]
+    elif filename[-4:] == 'fits':
+        GH = pf.open(filename)
+        if get_ng == 'yes':
+            ngt = GH[1].header['NAXIS2']  # it assumed is present, TODO: check automatically
+            GH.close()
+            return ngt
+        if L_2 != -1:
+            Ta = GH[1].data[L_1:L_2]
+            if A_T != '':
+                col = 0
+                klist = []
+                for k in A_T.keys():
+                    if A_T[k]['ind'] >= 0:
+                        col += 1
+                        klist.append(k)
+                filein = numpy.zeros((len(Ta), col))
+                for k in klist:
+                    T_temp = Ta.field(k)
+                    filein[:, A_T[k]['ind']] = T_temp
+            else:
+                filein = numpy.array(Ta.tolist())
+            GH.close()
+            del Ta, T_temp
     else:
         filein = numpy.loadtxt(filename)
+        if get_ng == 'yes': return len(filein)
+        if L_2 != -1: filein = filein[L_1:L_2]
     if check == 'yes':
         filein = filein[:50]
     return filein
@@ -82,7 +110,7 @@ def make_AT(cols, attributes, keyatt):
     AT = {}
     for nc in attributes:
         w = numpy.where(cols == nc)
-        AT[nc] = {'type': 'real' }
+        AT[nc] = {'type': 'real'}
     AT[keyatt] = {'type': 'real'}
     for c in AT.keys():
         j = numpy.where(cols == c)[0]
@@ -107,7 +135,7 @@ def bootstrap_index(N, SS):
     for i in xrange(N):
         index.append(random.randint(0, SS - 1))
     return numpy.array(index)
-    #return stat.randint.rvs(0,SS,size=N)
+    # return stat.randint.rvs(0,SS,size=N)
 
 
 class catalog():
@@ -119,25 +147,27 @@ class catalog():
     :param int L1: keep only entries between L1 and L2
     :param int L2: keep only entries between L1 and L2
     """
-    def __init__(self, Pars, cat_type='train', L1=0, L2=-1, rank =0):
+
+    def __init__(self, Pars, cat_type='train', L1=0, L2=-1, rank=0):
         self.Pars = Pars
         self.cat_type = cat_type
         if cat_type == 'train':
             self.filename = Pars.path_train + Pars.trainfile
             self.cols = numpy.array(Pars.columns)
             if not Pars.keyatt in Pars.columns:
-                if rank ==0: utils_mlz.printpz_err("Column ",Pars.keyatt," not found in traininf file, check inputs file")
+                if rank == 0: utils_mlz.printpz_err("Column ", Pars.keyatt,
+                                                    " not found in training file, check inputs file")
                 sys.exit(0)
         if cat_type == 'test':
             self.filename = Pars.path_test + Pars.testfile
             self.cols = numpy.array(Pars.columns_test)
-        self.cat = read_catalog(self.filename, check = Pars.checkonly)
-        if L2 != -1: self.cat = self.cat[L1:L2]
+        self.atts = Pars.att
+        self.AT = make_AT(self.cols, self.atts, Pars.keyatt)
+        self.cat = read_catalog(self.filename, check=Pars.checkonly, get_ng='no', L_1=L1, L_2=L2, A_T=self.AT)
+        # if L2 != -1: self.cat = self.cat[L1:L2]
         self.cat_or = copy.deepcopy(self.cat)
         self.nobj = len(self.cat)
-        self.atts = Pars.att
         self.ndim = len(self.atts)
-        self.AT = make_AT(self.cols, self.atts, Pars.keyatt)
         self.has_random = False
         self.oob = 'no'
 

@@ -70,7 +70,7 @@ class Qplot():
         M = M.item()
         M.plot_map(colbar=colbar, min_m=min_m, max_m=max_m)
 
-    def plot_importance(self, result_id=0, Nzb=10):
+    def plot_importance(self, result_id=0, Nzb=10, list_att=''):
         """
         Plot ranking of importance of attributes used during the training/testing process
 
@@ -153,9 +153,14 @@ class Qplot():
             del O_temp
 
         fig2, ax2 = plt.subplots()
-        ax2.plot(O_all.bins, (Im0[:, sk[0]] + Im1[:, sk[0]]) / 2., 'bo-', label=array(keys)[sk[0]])
-        ax2.plot(O_all.bins, (Im0[:, sk[1]] + Im1[:, sk[1]]) / 2., 'go-', label=array(keys)[sk[1]])
-        ax2.plot(O_all.bins, (Im0[:, sk[-1]] + Im1[:, sk[-1]]) / 2., 'ro-', label=array(keys)[sk[-1]])
+        if list_att=='':
+            ax2.plot(O_all.bins, (Im0[:, sk[0]] + Im1[:, sk[0]]) / 2., 'bo-', label=array(keys)[sk[0]])
+            ax2.plot(O_all.bins, (Im0[:, sk[1]] + Im1[:, sk[1]]) / 2., 'go-', label=array(keys)[sk[1]])
+            ax2.plot(O_all.bins, (Im0[:, sk[-1]] + Im1[:, sk[-1]]) / 2., 'ro-', label=array(keys)[sk[-1]])
+        else:
+            for katt in list_att:
+                wk=where(array(keys)==katt)[0]
+                ax2.plot(O_all.bins, (Im0[:, wk[0]] + Im1[:, wk[0]]) / 2., 'o-', label=array(keys)[wk[0]])
         ax2.set_xlabel('redshift', fontsize=16)
         ax2.set_ylabel('Importance', fontsize=16)
         plt.legend(loc=0)

@@ -24,7 +24,12 @@ if Narg > 2:
     it=int(sys.argv[2])
 else:
     it=0
+att=''
+if Narg > 3:
+    att=[]
+    for i in range(3,Narg):
+        att.append(sys.argv[i])
 Q = pl.Qplot(FilePars)
-Q.plot_importance(it)
+Q.plot_importance(it, Nzb=10, list_att=att)
 
 
