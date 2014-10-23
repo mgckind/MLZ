@@ -65,6 +65,7 @@ parser.add_argument("inputsfile", help="Inputs file with all parameters, check d
 parser.add_argument("--no_train", help="It skips the training stage assuming it was already done", action="store_true")
 parser.add_argument("--no_test", help="It skips the testing stage on test data", action="store_true")
 parser.add_argument("--no_pdfs", help="It doesn't write or produce photo-z PDFs", action="store_true")
+parser.add_argument("--check_only", help="Do a quick run to check everything is OK before a long run", action="store_true")
 
 args_in = parser.parse_args()
 
@@ -104,13 +105,15 @@ Pars_in = utils_mlz.read_dt_pars(FilePars, verbose=verbo)
 if args_in.no_train: Pars_in.dotrain = 'no'
 if args_in.no_test: Pars_in.dotest = 'no'
 if args_in.no_pdfs: Pars_in.writepdf = 'no'
+if args_in.check_only: Pars_in.checkonly = 'yes'
+
 if Pars_in.varimportance == 'yes': Pars_in.ooberror == 'yes'
 if Pars_in.checkonly == 'yes':
     if rank == 0:
         utils_mlz.printpz()
-        utils_mlz.printpz('********************************')
-        utils_mlz.printpz('* Check Mode only for testing  *')
-        utils_mlz.printpz('********************************')
+        utils_mlz.printpz('********************************',yellow=True)
+        utils_mlz.printpz('* Check Mode only for testing  *',yellow=True)
+        utils_mlz.printpz('********************************',yellow=True)
         utils_mlz.printpz()
 
 if rank == 0:

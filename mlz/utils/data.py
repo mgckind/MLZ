@@ -21,45 +21,56 @@ def read_catalog(filename, myrank=0, check='no', get_ng='no', L_1=0, L_2=-1, A_T
 
     :param str filename: Filename of the catalod
     :param int myrank: current processor id, for parallel reading (not implemented)
-    :param str check: To check the code, only uses 50 lines of catalog
+    :param str check: To check the code, only uses 200 lines of catalog
     :return: The whole catalog
     :rtype: float array
     """
     if filename[-3:] == 'npy':
         filein = numpy.load(filename)
+        if check=='yes' : filein=filein[0:200]
         if get_ng == 'yes': return len(filein)
         if L_2 != -1: filein = filein[L_1:L_2]
     elif filename[-4:] == 'fits':
         GH = pf.open(filename)
         if get_ng == 'yes':
+            if check=='yes':
+                GH.close()
+                return 200
             ngt = GH[1].header['NAXIS2']  # it assumed is present, TODO: check automatically
             GH.close()
             return ngt
         if L_2 != -1:
             Ta = GH[1].data[L_1:L_2]
         else:
-            Ta = GH[1].data
+            if check=='no' :
+		    Ta = GH[1].data
+            else: 
+		    Ta = GH[1].data[0:200]
         if A_T != '':
-            col = 0
+            col_index = []
             klist = []
             for k in A_T.keys():
                 if A_T[k]['ind'] >= 0:
-                    col += 1
+                    col_index.append(A_T[k]['ind'])
                     klist.append(k)
-            filein = numpy.zeros((len(Ta), col))
+                if A_T[k]['eind'] >= 0:
+			  col_index.append(A_T[k]['eind'])
+            filein = numpy.zeros((len(Ta), max(col_index)+1))
             for k in klist:
                 T_temp = Ta.field(k)
                 filein[:, A_T[k]['ind']] = T_temp
-            else:
-                filein = numpy.array(Ta.tolist())
-            GH.close()
-            del Ta, T_temp
+                if A_T[k]['eind'] >=0:
+                    T_temp = Ta.field('e'+k)
+                    filein[:,A_T[k]['eind']] = T_temp
+        else:
+            filein = numpy.array(Ta.tolist())
+        GH.close()
+        del Ta, T_temp
     else:
         filein = numpy.loadtxt(filename)
+        if check == 'yes' : filein = filein[0:200]
         if get_ng == 'yes': return len(filein)
         if L_2 != -1: filein = filein[L_1:L_2]
-    if check == 'yes':
-        filein = filein[:50]
     return filein
 
 
