@@ -68,16 +68,14 @@ def read_dt_pars(filein, verbose=True, myrank=0):
                 printpz_err("Key \'", key, "\' not found in input file")
             sys.exit(0)
     DTpars['sname'] = sortname
+    DTpars['tofloat'] = tofloat
 
     class parameters():
         def __init__(self, pars_dict):
-            self.randomcatname = 'Random_Cat_' + pars_dict['finalfilename']
-            self.treefilename = 'Altrees_' + pars_dict['finalfilename']
-            self.somfilename = 'SOM_' + pars_dict['finalfilename']
-            self.nbzfilename = 'NBZ_' + pars_dict['finalfilename']
-            self.treedictname = 'Tree_Dict_' + pars_dict['finalfilename']
-            self.randomvars = 'Ran_forest_' + pars_dict['finalfilename']
-            self.indexfile = 'Index_' + pars_dict['finalfilename']
+            #self.nbzfilename = 'NBZ_' + pars_dict['finalfilename']
+            #self.treedictname = 'Tree_Dict_' + pars_dict['finalfilename']
+            #self.randomvars = 'Ran_forest_' + pars_dict['finalfilename']
+            #self.indexfile = 'Index_' + pars_dict['finalfilename']
             self.oobfraction = 0.333333
             self.minbin = 5
             self.repeatf = 'yes'
@@ -88,15 +86,22 @@ def read_dt_pars(filein, verbose=True, myrank=0):
             self.all_names = []
             self.all_values = []
             self.sortname = pars_dict['sname']
+            self.tofloat = pars_dict['tofloat']
             for k in pars_dict.keys():
                 if k == 'sname': continue
+                if k == 'tofloat': continue
                 com = 'self.' + k + ' = pars_dict[k]'
                 self.all_names.append(k)
                 self.all_values.append(pars_dict[k])
                 exec com
             self.format2 = 'no'
+            self.output_names()
             #self.sigmafactor = self.sigmafactor
 
+        def output_names(self):
+            self.randomcatname = 'Random_Cat_' + self.finalfilename
+            self.treefilename = 'Altrees_' + self.finalfilename
+            self.somfilename = 'SOM_' + self.finalfilename
         def print_all(self):
             for name in self.all_names:
                 print '.' + name
@@ -135,11 +140,13 @@ def printpz(*args, **kwargs):
     green = False
     blue = False
     yellow = False
+    purple = False
     if kwargs.has_key('verb'): verb = kwargs['verb']
     if kwargs.has_key('red'): red = kwargs['red']
     if kwargs.has_key('green'): green = kwargs['green']
     if kwargs.has_key('blue'): blue = kwargs['blue']
     if kwargs.has_key('yellow'): yellow = kwargs['yellow']
+    if kwargs.has_key('purple'): purple = kwargs['purple']
     if len(args) == 0:
         pass
     else:
@@ -154,6 +161,8 @@ def printpz(*args, **kwargs):
             print tcolor.blue + title + tcolor.off
         elif yellow:
             print tcolor.yellow + title + tcolor.off
+        elif purple:
+            print tcolor.purple + title + tcolor.off
         else:
             print title
 
@@ -344,7 +353,7 @@ class Stopwatch:
             printpz()
 
 
-def print_dtpars(DTpars, outfile):
+def print_dtpars(DTpars, outfile, system=False):
     """
     Prints the values from class Pars to a file
 
@@ -354,7 +363,7 @@ def print_dtpars(DTpars, outfile):
     names = numpy.array(DTpars.all_names)
     vals = list(DTpars.all_values)
     sname = DTpars.sortname
-    fo = open(outfile, 'w')
+    if not system: fo = open(outfile, 'w')
     for k in sname:
         w = numpy.where(names == k)[0]
         w = w[0]
@@ -363,8 +372,11 @@ def print_dtpars(DTpars, outfile):
         else:
             svals = vals[w]
         line = "%-20s : %s \n" % (names[w], svals)
-        fo.write(line)
-    fo.close()
+        if system:
+            printpz(line.strip())
+        else:
+            fo.write(line)
+    if not system: fo.close()
 
 
 def get_area(z, pdf, z1, z2):

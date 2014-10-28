@@ -100,11 +100,12 @@ def geometry(top, Ntop, periodic='no'):
     :return: 2D array with distances pre computed between cells and total number of units
     :rtype: 2D float array, int
     """
-    try:
-        import healpy as hpx
-    except:
-        print 'Error: healpy module not found, use grid or hex topologies'
-        sys.exit(0)
+    if top == 'sphere':
+        try:
+            import healpy as hpx
+        except:
+            print 'Error: healpy module not found, use grid or hex topologies'
+            sys.exit(0)
     if top == 'sphere':
         nside = Ntop
         npix = 12 * nside ** 2
@@ -454,7 +455,8 @@ class SelfMap():
         import matplotlib.cm as cm
         from matplotlib import collections, transforms
         from matplotlib.colors import colorConverter
-        import healpy as H
+        
+        if self.top == 'sphere': import healpy as H
 
         if self.top == 'grid':
             M = numpy.zeros(self.npix) - 20.

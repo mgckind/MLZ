@@ -17,11 +17,14 @@ def read_catalog(filename, myrank=0, check='no', get_ng='no', L_1=0, L_2=-1, A_T
     currently accepting ascii tables, numpy tables
 
     .. todo::
-        Add fits table
+        HDF5 files
 
     :param str filename: Filename of the catalod
     :param int myrank: current processor id, for parallel reading (not implemented)
     :param str check: To check the code, only uses 200 lines of catalog
+    :param str get_ng: Just get the total number og galaxies in the catalog
+    :param int L_1: if passed get catalog between L_1 and L_2
+    :param int L_2: if passed get catalog between L_1 and L_2
     :return: The whole catalog
     :rtype: float array
     """
@@ -66,6 +69,11 @@ def read_catalog(filename, myrank=0, check='no', get_ng='no', L_1=0, L_2=-1, A_T
             filein = numpy.array(Ta.tolist())
         GH.close()
         del Ta, T_temp
+    elif filename[-3:] == 'csv':
+        filein = numpy.loadtxt(filename,delimiter=',')
+        if check == 'yes' : filein = filein[0:200]
+        if get_ng == 'yes': return len(filein)
+        if L_2 != -1: filein = filein[L_1:L_2]
     else:
         filein = numpy.loadtxt(filename)
         if check == 'yes' : filein = filein[0:200]

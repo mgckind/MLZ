@@ -44,7 +44,7 @@ else:
 
 class MyParser(argparse.ArgumentParser):
     def error(self, message):
-        if rank==0:
+        if rank == 0:
             print '\n**************************'
             sys.stderr.write('Error: %s\n' % message)
             print '**************************\n'
@@ -57,29 +57,27 @@ class MyParser(argparse.ArgumentParser):
         sys.exit(2)
 
 
-
 parser = MyParser(description='Compute photo-z using Machine Learning techniques, check full documentation at ' \
                               'http://lcdm.astro.illinois.edu/code/mlz.html or  ' \
-                              ' *Comments/questions: Matias Carrasco Kind mcarras2@illinois.edu*')
+                              ' *Comments/questions: Matias Carrasco Kind mcarras2@illinois.edu*',
+                  version="version: 1.1")
 parser.add_argument("inputsfile", help="Inputs file with all parameters, check documentation for more info")
 parser.add_argument("--no_train", help="It skips the training stage assuming it was already done", action="store_true")
 parser.add_argument("--no_test", help="It skips the testing stage on test data", action="store_true")
 parser.add_argument("--no_pdfs", help="It doesn't write or produce photo-z PDFs", action="store_true")
-parser.add_argument("--check_only", help="Do a quick run to check everything is OK before a long run", action="store_true")
+parser.add_argument("--check_only", "-co", help="Do a quick run to check everything is OK before a long run",
+                    action="store_true")
+parser.add_argument("--print_keys", "-pk", help="Print all the keys from inputs file", action="store_true")
+parser.add_argument("--modify", "-M", help="Modify a parameter from command line, e.g., --modify maxz=1.0 ntrees=2 \
+                        testfile=data.fits" ,nargs='+')
+parser.add_argument("--replace", "-r", help="Replace output filenames (trees, random catalogs, maps)", action="store_true")
 
 args_in = parser.parse_args()
-
 
 if rank == 0:
     utils_mlz.print_welcome()
     clock_all = utils_mlz.Stopwatch()
 Nproc = size  # number of processors
-#Narg = len(sys.argv)
-#if Narg != 2:
-#    if rank == 0: utils_mlz.usage()
-#    if PLL == 'MPI': MPI.Finalize()
-#    sys.exit(0)
-
 
 def join_oob(rank, rawA, PLL):
     if rank == 0:
@@ -97,7 +95,7 @@ def join_oob(rank, rawA, PLL):
         return 0.
 
 
-FilePars = args_in.inputsfile #sys.argv[1]  # inputs file name
+FilePars = args_in.inputsfile  #sys.argv[1]  # inputs file name
 # READ PARAMETERS
 verbo = False
 if rank == 0: verbo = True
@@ -107,13 +105,43 @@ if args_in.no_test: Pars_in.dotest = 'no'
 if args_in.no_pdfs: Pars_in.writepdf = 'no'
 if args_in.check_only: Pars_in.checkonly = 'yes'
 
+modify = args_in.modify
+if not modify == None:
+    for e in modify:
+        key, val = e.split('=')
+        key = key.lower()
+        allk = utils_mlz.allkeys()
+        if key in allk:
+            if key in Pars_in.tofloat: val = float(val)
+            com = 'Pars_in.' + key + '=val'
+            exec com
+            wkey = Pars_in.all_names.index(key)
+            Pars_in.all_values[wkey] = val
+        else:
+            if rank == 0:
+                utils_mlz.printpz()
+                utils_mlz.printpz("Passed key \'", key,
+                                  "\'  Not valid, try the option --print_keys to check valid keys", red=True)
+                utils_mlz.printpz()
+            if PLL == 'MPI': MPI.Finalize()
+            sys.exit(0)
+
+if args_in.replace: Pars_in.output_names()
+if args_in.print_keys:
+    if rank == 0:
+        utils_mlz.printpz()
+        utils_mlz.printpz('** Current parameters on inputs file **', red=True)
+        utils_mlz.print_dtpars(Pars_in, '', system=True)
+    if PLL == 'MPI': MPI.Finalize()
+    sys.exit(0)
+
 if Pars_in.varimportance == 'yes': Pars_in.ooberror == 'yes'
 if Pars_in.checkonly == 'yes':
     if rank == 0:
         utils_mlz.printpz()
-        utils_mlz.printpz('********************************',yellow=True)
-        utils_mlz.printpz('* Check Mode only for testing  *',yellow=True)
-        utils_mlz.printpz('********************************',yellow=True)
+        utils_mlz.printpz('********************************', yellow=True)
+        utils_mlz.printpz('* Check Mode only for testing  *', yellow=True)
+        utils_mlz.printpz('********************************', yellow=True)
         utils_mlz.printpz()
 
 if rank == 0:
@@ -130,11 +158,10 @@ Cmode = Pars_in.predictionclass
 if Pars_in.dotrain == 'no':
     if rank == 0:
         utils_mlz.printpz()
-        utils_mlz.printpz('********************************',red=True)
-        utils_mlz.printpz('*  No training  is performed   *',red=True)
-        utils_mlz.printpz('********************************',red=True)
+        utils_mlz.printpz('********************************', red=True)
+        utils_mlz.printpz('*  No training  is performed   *', red=True)
+        utils_mlz.printpz('********************************', red=True)
         utils_mlz.printpz()
-
 
 if Pars_in.dotrain == 'yes':
     Train = data.catalog(Pars_in, cat_type='train', rank=rank)
@@ -153,10 +180,10 @@ if Pars_in.dotrain == 'yes':
         utils_mlz.print_mode(Cmode)
         if not SF90 and Pmode == 'SOM':
             utils_mlz.printpz()
-            utils_mlz.printpz('******************************************************',red=True)
-            utils_mlz.printpz('* Fortran module somF not found, using python module *',red=True)
-            utils_mlz.printpz('*   try: f2py -c -m somF som.f90 to compile it       *',red=True)
-            utils_mlz.printpz('******************************************************',red=True)
+            utils_mlz.printpz('******************************************************', red=True)
+            utils_mlz.printpz('* Fortran module somF not found, using python module *', red=True)
+            utils_mlz.printpz('*   try: f2py -c -m somF som.f90 to compile it       *', red=True)
+            utils_mlz.printpz('******************************************************', red=True)
         utils_mlz.printpz()
 
     if Pars_in.importancefile == 'none':
@@ -348,9 +375,9 @@ if Pars_in.dotrain == 'yes':
 if Pars_in.dotest == 'no':
     if rank == 0:
         utils_mlz.printpz()
-        utils_mlz.printpz('********************************',red=True)
-        utils_mlz.printpz('*  No solution is performed    *',red=True)
-        utils_mlz.printpz('********************************',red=True)
+        utils_mlz.printpz('********************************', red=True)
+        utils_mlz.printpz('*  No solution is performed    *', red=True)
+        utils_mlz.printpz('********************************', red=True)
         utils_mlz.printpz()
         utils_mlz.printpz()
 
@@ -364,7 +391,7 @@ if Pars_in.dotest == 'yes':
     if rank == 0:
         local_clock = utils_mlz.Stopwatch('no')
         Ng_temp = data.read_catalog(Pars_in.path_test + Pars_in.testfile, check=Pars_in.checkonly, get_ng='yes')
-        Ng = array(Ng_temp ,'i')
+        Ng = array(Ng_temp, 'i')
         #Ng = array(len(cat_temp), 'i')
         #del cat_temp
     else:
@@ -473,8 +500,6 @@ if Pars_in.dotest == 'yes':
         analysis.save_single(BIGZ, Pars_in)
         del BIGZ
 
-
-
     if Cmode == 'Reg' and Pars_in.writepdf == 'no':
         if rank == 0 and PLL == 'MPI':
             utils_mlz.printpz()
@@ -495,11 +520,11 @@ if Pars_in.dotest == 'yes':
                 analysis.save_PDF(zfine2, BP0, Pars_in, path=path_r, filebase=filebase_r, num=num_r, multiple='yes',
                                   rank=rank)
                 if Pars_in.sparserep == 'no': del BP0
-            #if Pars_in.sparserep == 'yes':
-            #    head['N_TOT'] = len(SPR)
-            #    analysis.save_PDF_sparse(zfine2, SPR, head, Pars_in, path=path_r, filebase=filebase_r, num=num_r,
-            #                             multiple='yes', rank=rank)
-            #    del SPR
+                #if Pars_in.sparserep == 'yes':
+                #    head['N_TOT'] = len(SPR)
+                #    analysis.save_PDF_sparse(zfine2, SPR, head, Pars_in, path=path_r, filebase=filebase_r, num=num_r,
+                #                             multiple='yes', rank=rank)
+                #    del SPR
         else:
             if rank == 0:
                 utils_mlz.printpz()
@@ -530,10 +555,9 @@ if Pars_in.dotest == 'yes':
                     analysis.save_PDF(zfine2, BIGP, Pars_in, path=path_r, filebase=filebase_r, num=num_r)
                     del BIGP
 
-
         if Pars_in.sparserep == 'yes':
             if rank == 0:
-                utils_mlz.printpz("Sparse Representation for PDFs...",yellow=True)
+                utils_mlz.printpz("Sparse Representation for PDFs...", yellow=True)
                 local_clock = utils_mlz.Stopwatch('no')
             mu = [min(zfine2), max(zfine2)]
             Nmu, Nsig, Nv = map(int, Pars_in.sparsedims)
@@ -594,7 +618,6 @@ if Pars_in.dotest == 'yes':
                 utils_mlz.printpz('+-+-+-+-+-+-+-+-+-+-+-+-+')
                 local_clock.elapsed()
 
-
         if Pars_in.multiplefiles == 'yes':
             if Pars_in.sparserep == 'yes':
                 head['N_TOT'] = len(SPR)
@@ -626,13 +649,10 @@ if Pars_in.dotest == 'yes':
                     analysis.save_PDF_sparse(zfine2, BIGP, head, Pars_in, path=path_r, filebase=filebase_r, num=num_r)
                     del BIGP
 
-
-
-
 if rank == 0:
-    utils_mlz.printpz('+-+-+-+-+-+-+-+-+',green=True)
-    utils_mlz.printpz(PLL, ' TOTAL TIME',green=True)
-    utils_mlz.printpz('+-+-+-+-+-+-+-+-+',green=True)
+    utils_mlz.printpz('+-+-+-+-+-+-+-+-+', green=True)
+    utils_mlz.printpz(PLL, ' TOTAL TIME', green=True)
+    utils_mlz.printpz('+-+-+-+-+-+-+-+-+', green=True)
     clock_all.elapsed()
 if PLL == 'MPI': MPI.Finalize()
 
