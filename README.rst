@@ -24,6 +24,10 @@ or even::
 or go to the doc/ folder and start a web browser opening 
 doc/html/index.html
 
+For command line help use::
+
+	runMLZ --help
+
 Any comments, suggestion or question contact me at mcarras2@astro.illinois.edu
 
 
