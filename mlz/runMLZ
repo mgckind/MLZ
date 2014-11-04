@@ -195,12 +195,17 @@ if Pars_in.dotrain == 'yes':
 
     #TRAIN FIRST
     ntot = int(Pars_in.nrandom * Pars_in.ntrees)
-    if rank == 0: utils_mlz.printpz('Total trees (maps) : ', str(ntot))
+    if rank == 0:
+        utils_mlz.printpz('Total trees (maps) : ', str(ntot))
+        if ntot < Nproc: utils_mlz.printpz(' ** Note that the number of trees is less that number of processors... **', yellow=True)
     s0, s1 = utils_mlz.get_limits(ntot, Nproc, rank)
     if rank == 0:
         for i in xrange(Nproc):
             Xs_0, Xs_1 = utils_mlz.get_limits(ntot, Nproc, i)
-            utils_mlz.printpz(Xs_0, ' ', Xs_1, ' -------------> to core ', i)
+            if Xs_0==Xs_1 :
+                utils_mlz.printpz('idle...  -------------> to core ', i)
+            else  :
+                utils_mlz.printpz(Xs_0, ' ', Xs_1, ' -------------> to core ', i)
 
     zfine, zfine2, resz, resz2, wzin = analysis.get_zbins(Pars_in)
     zfine2 = zfine2[wzin]
@@ -292,7 +297,7 @@ if Pars_in.dotrain == 'yes':
                             OS1V[ij, 1, k_index] += sum(array(tempo) * array(tempo))
                             OS1V[ij, 2, k_index] += 1. * len(tempo)
 
-    del T
+        del T
     if PLL == 'MPI': comm.Barrier()
     del Train
 

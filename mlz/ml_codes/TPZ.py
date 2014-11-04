@@ -258,7 +258,7 @@ class Ctree():
         """
         if path == '':
             path = os.getcwd() + '/'
-        if not os.path.exists(path): os.system('mkdir ' + path)
+        if not os.path.exists(path): os.system('mkdir -p ' + path)
         if itn >= 0:
             ff = '_%04d' % itn
             fileout += ff
@@ -272,7 +272,7 @@ class Ctree():
 
         if path == '':
             path = os.getcwd() + '/'
-        if not os.path.exists(path): os.system('mkdir ' + path)
+        if not os.path.exists(path): os.system('mkdir -p ' + path)
         if itn >= 0:
             ff = '_%04d' % itn
             fileout += ff
@@ -469,7 +469,7 @@ class Rtree():
         """
         if path == '':
             path = os.getcwd() + '/'
-        if not os.path.exists(path): os.system('mkdir ' + path)
+        if not os.path.exists(path): os.system('mkdir -p ' + path)
         if itn >= 0:
             ff = '_%04d' % itn
             fileout += ff
@@ -489,7 +489,7 @@ class Rtree():
 
         if path == '':
             path = os.getcwd() + '/'
-        if not os.path.exists(path): os.system('mkdir ' + path)
+        if not os.path.exists(path): os.system('mkdir -p ' + path)
         if itn >= 0:
             ff = '_%04d' % itn
             fileout += ff
