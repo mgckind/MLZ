@@ -606,8 +606,11 @@ if Pars_in.dotest == 'yes':
                 Dind, Dval = pdf_storage.sparse_basis(AD, pdf0, Nsparse)
                 if len(Dind) <= 1: continue
                 if max(Dval) > 0:
+                    dval0=Dval[0]
                     Dvalm = Dval / max(Dval)
                     indexm = array(map(round, (Dvalm / Da)), dtype='int')
+                    index0=int(round(dval0/Da))
+                    indexm[0]=index0
                 else:
                     indexm = zeros(len(Dind), dtype='int')
                 temp_int = array(map(pdf_storage.combine_int, indexm, Dind))

@@ -20,11 +20,13 @@ v1.1, 2014-10-16 -- Read fits files as input (pyfits 3.3)
                  -- Added argument options (--no_train, --no_test, --no_pdfs)
                  -- do: ./runMLZ --help for more info
                  -- Added colored outputs
-v1.1, 2014-20-23 -- Added --check_only option to check the code before a big run
+v1.1, 2014-10-23 -- Added --check_only option to check the code before a big run
                     It only train and test on a subsample of the data
-v1.1, 2014-20-25 -- Added --print_keys (-pk) option to print current values of keys
+v1.1, 2014-10-25 -- Added --print_keys (-pk) option to print current values of keys
                  -- Added --modify (-M) to modify on the line command values of keys
                     e.g., name of the file and range of z, --modify minz=0.1 maxz=1.2
                     testfile=data.fits
                  -- csv catalogs supported
-v1.1, 2014-20-27 -- Added --replace (-r) option to replace additional output files
+v1.1, 2014-10-27 -- Added --replace (-r) option to replace additional output files
+v1.1, 2014-11-07 -- Change sparse representation storage, now first element stores the original amplitud
+                    instead of 1. (for block summations of PDFs, 2 steps are needed)
