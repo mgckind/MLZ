@@ -441,6 +441,9 @@ if Pars_in.dotest == 'yes':
         S2 = zeros(Test.nobj)
         Nv = zeros(Test.nobj)
 
+    if rank == 0:
+        utils_mlz.printpz('Loading ',str(ntot),' trees...')
+
     for k in xrange(ntot):
         ff = '_%04d' % k
         filec = path1 + fileb + ff + '.npy'
