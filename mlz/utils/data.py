@@ -30,25 +30,25 @@ def read_catalog(filename, myrank=0, check='no', get_ng='no', L_1=0, L_2=-1, A_T
     """
     if filename[-3:] == 'npy':
         filein = numpy.load(filename)
-        if check=='yes' : filein=filein[0:200]
+        if check == 'yes': filein = filein[0:200]
         if get_ng == 'yes': return len(filein)
         if L_2 != -1: filein = filein[L_1:L_2]
     elif filename[-4:] == 'fits':
-        GH = pf.open(filename)
+        GH = pf.open(filename, mode='readonly', memmap=False)
         if get_ng == 'yes':
-            if check=='yes':
+            if check == 'yes':
                 GH.close()
                 return 200
             ngt = GH[1].header['NAXIS2']  # it assumed is present, TODO: check automatically
             GH.close()
             return ngt
-        if L_2 != -1:
+        if L_2 > -1:
             Ta = GH[1].data[L_1:L_2]
         else:
-            if check=='no' :
-		    Ta = GH[1].data
-            else: 
-		    Ta = GH[1].data[0:200]
+            if check == 'no':
+                Ta = GH[1].data
+            else:
+                Ta = GH[1].data[0:200]
         if A_T != '':
             col_index = []
             klist = []
@@ -57,26 +57,30 @@ def read_catalog(filename, myrank=0, check='no', get_ng='no', L_1=0, L_2=-1, A_T
                     col_index.append(A_T[k]['ind'])
                     klist.append(k)
                 if A_T[k]['eind'] >= 0:
-			  col_index.append(A_T[k]['eind'])
-            filein = numpy.zeros((len(Ta), max(col_index)+1))
+                    col_index.append(A_T[k]['eind'])
+            filein = numpy.zeros((len(Ta), max(col_index) + 1))
             for k in klist:
                 T_temp = Ta.field(k)
                 filein[:, A_T[k]['ind']] = T_temp
-                if A_T[k]['eind'] >=0:
-                    T_temp = Ta.field('e'+k)
-                    filein[:,A_T[k]['eind']] = T_temp
+                if A_T[k]['eind'] >= 0:
+                    T_temp = Ta.field('e' + k)
+                    filein[:, A_T[k]['eind']] = T_temp
         else:
             filein = numpy.array(Ta.tolist())
         GH.close()
         del Ta, T_temp
+        try:
+            del GH[1].data
+        except:
+            pass
     elif filename[-3:] == 'csv':
-        filein = numpy.loadtxt(filename,delimiter=',')
-        if check == 'yes' : filein = filein[0:200]
+        filein = numpy.loadtxt(filename, delimiter=',')
+        if check == 'yes': filein = filein[0:200]
         if get_ng == 'yes': return len(filein)
         if L_2 != -1: filein = filein[L_1:L_2]
     else:
         filein = numpy.loadtxt(filename)
-        if check == 'yes' : filein = filein[0:200]
+        if check == 'yes': filein = filein[0:200]
         if get_ng == 'yes': return len(filein)
         if L_2 != -1: filein = filein[L_1:L_2]
     return filein

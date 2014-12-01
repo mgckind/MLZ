@@ -471,6 +471,9 @@ if Pars_in.dotest == 'yes':
         Z0[:, 3] = s_0
         del S1, S2, Nv
 
+
+    if PLL == 'MPI': comm.Barrier()
+
     if rank == 0:
         utils_mlz.printpz()
         utils_mlz.printpz('+-+-+-+-+-+-+-+-+-+-+-+-+')
@@ -478,7 +481,6 @@ if Pars_in.dotest == 'yes':
         utils_mlz.printpz('+-+-+-+-+-+-+-+-+-+-+-+-+')
         local_clock.elapsed()
 
-    if PLL == 'MPI': comm.Barrier()
     ####################################
 
 
