@@ -40,7 +40,7 @@ def read_dt_pars(filein, verbose=True, myrank=0):
         if myrank == 0:
             printpz_err("One of the Keys in the input file is missing the space between \':\' and its value")
         sys.exit(0)
-        #creates dictionary
+        # creates dictionary
     DTpars = {}
     sortname = []
     for i, n in enumerate(names):
@@ -72,8 +72,8 @@ def read_dt_pars(filein, verbose=True, myrank=0):
 
     class parameters():
         def __init__(self, pars_dict):
-            #self.nbzfilename = 'NBZ_' + pars_dict['finalfilename']
-            #self.treedictname = 'Tree_Dict_' + pars_dict['finalfilename']
+            # self.nbzfilename = 'NBZ_' + pars_dict['finalfilename']
+            # self.treedictname = 'Tree_Dict_' + pars_dict['finalfilename']
             #self.randomvars = 'Ran_forest_' + pars_dict['finalfilename']
             #self.indexfile = 'Index_' + pars_dict['finalfilename']
             self.oobfraction = 0.333333
@@ -102,6 +102,7 @@ def read_dt_pars(filein, verbose=True, myrank=0):
             self.randomcatname = 'Random_Cat_' + self.finalfilename
             self.treefilename = 'Altrees_' + self.finalfilename
             self.somfilename = 'SOM_' + self.finalfilename
+
         def print_all(self):
             for name in self.all_names:
                 print '.' + name
@@ -169,9 +170,9 @@ def printpz(*args, **kwargs):
 
 def printpz_err(*args):
     printpz()
-    printpz(''' ===================== ''',red=True)
-    printpz(''' *       ERROR       * ''',red=True)
-    printpz(''' ===================== ''',red=True)
+    printpz(''' ===================== ''', red=True)
+    printpz(''' *       ERROR       * ''', red=True)
+    printpz(''' ===================== ''', red=True)
     if len(args) != 0: arg2 = [i for i in args] + [" <<<"]
     printpz(">>> ", *arg2)
     printpz()
@@ -199,7 +200,7 @@ def percentile(Nvals, percent):
     return d0 + d1
 
 
-#------------------------------------------------------------------
+# ------------------------------------------------------------------
 class bias:
     """
     Creates a instance to compute some metrics for the photo-z calculation for quick analysis
@@ -484,6 +485,26 @@ def compute_error2(z, pdf, zv):
     return Lreturn
 
 
+def compute_error3(z, pdf, zv):
+    dz = z[1] - z[0]
+    ib = numpy.argmin(abs(zv - z))
+    area = pdf[ib]
+    nm = len(z) - 1
+    j = 0
+    i2 = ib + 1
+    i1 = ib
+    while area <= 0.68:
+        area1 = sum(pdf[i1:i2])
+        e681 = dz * (i2 - i1)
+        j += 1
+        i1 = max(0, ib - j)
+        i2 = min(nm, ib + j) + 1
+        area = sum(pdf[i1:i2])
+        e68 = dz * (i2 - i1)
+        ef = ((e68 - e681) / (area - area1)) * (0.68 - area1) + e681
+    return ef / 2.
+
+
 def compute_zConf(z, pdf, zv, sigma):
     """
     Computes the confidence level of the pdf with respect a reference value
@@ -500,6 +521,14 @@ def compute_zConf(z, pdf, zv, sigma):
     z1b = zv + sigma * (1. + zv)
     zC1 = get_area(z, pdf, z1a, z1b)
     return zC1
+
+
+def compute_zConf2(z, pdf, zv, sigma):
+    z1a = zv - sigma * (1. + zv)
+    z1b = zv + sigma * (1. + zv)
+    ib1 = numpy.argmin(abs(z1a - z))
+    ib2 = numpy.argmin(abs(z1b - z)) + 1
+    return sum(pdf[ib1:ib2])
 
 
 def get_limits(ntot, Nproc, rank):
@@ -526,17 +555,17 @@ def get_limits(ntot, Nproc, rank):
 def print_welcome():
     bla = os.system('clear')
     print
-    printpz('''------------------------------------------------''',blue=True)
-    printpz('''|      ____    ____    _____      ________     |''',blue=True)
-    printpz('''|     |_   \  /   _|  |_   _|    |  __   _|    |''',blue=True)
-    printpz('''|       |   \/   |      | |      |_/  / /      |''',blue=True)
-    printpz('''|       | |\  /| |      | |   _     .'.' _     |''',blue=True)
-    printpz('''|      _| |_\/_| |_    _| |__/ |  _/ /__/ |    |''',blue=True)
-    printpz('''|     |_____||_____|  |________| |________|    |''',blue=True)
-    printpz('''|                                              |''',blue=True)
-    printpz('''|                                              |''',blue=True)
-    printpz('''|      Machine   Learning   for   photo-Z      |''',blue=True)
-    printpz('''|----------------------------------------------|''',blue=True)
+    printpz('''------------------------------------------------''', blue=True)
+    printpz('''|      ____    ____    _____      ________     |''', blue=True)
+    printpz('''|     |_   \  /   _|  |_   _|    |  __   _|    |''', blue=True)
+    printpz('''|       |   \/   |      | |      |_/  / /      |''', blue=True)
+    printpz('''|       | |\  /| |      | |   _     .'.' _     |''', blue=True)
+    printpz('''|      _| |_\/_| |_    _| |__/ |  _/ /__/ |    |''', blue=True)
+    printpz('''|     |_____||_____|  |________| |________|    |''', blue=True)
+    printpz('''|                                              |''', blue=True)
+    printpz('''|                                              |''', blue=True)
+    printpz('''|      Machine   Learning   for   photo-Z      |''', blue=True)
+    printpz('''|----------------------------------------------|''', blue=True)
     printpz()
 
 

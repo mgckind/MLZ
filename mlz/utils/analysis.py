@@ -157,10 +157,10 @@ class GetPz_short():
         self.zs1 = sum(self.zfine2 * pdf2)
         self.zs1 = min(self.zs1, self.Pars.maxz)
         self.zs1 = max(self.zs1, self.Pars.minz)
-        self.err0 = utils_mlz.compute_error(self.zfine2, pdf2, self.zs0)
-        self.err1 = utils_mlz.compute_error(self.zfine2, pdf2, self.zs1)
-        self.zConf0 = utils_mlz.compute_zConf(self.zfine2, pdf2, self.zs0, self.Pars.rmsfactor)
-        self.zConf1 = utils_mlz.compute_zConf(self.zfine2, pdf2, self.zs1, self.Pars.rmsfactor)
+        self.err0 = utils_mlz.compute_error3(self.zfine2, pdf2, self.zs0)
+        self.err1 = utils_mlz.compute_error3(self.zfine2, pdf2, self.zs1)
+        self.zConf0 = utils_mlz.compute_zConf2(self.zfine2, pdf2, self.zs0, self.Pars.rmsfactor)
+        self.zConf1 = utils_mlz.compute_zConf2(self.zfine2, pdf2, self.zs1, self.Pars.rmsfactor)
         pdf2 = pdf2[self.wzin]
         if sum(pdf2) > 0.: pdf2 /= sum(pdf2)
         self.bigpdf2 = pdf2
