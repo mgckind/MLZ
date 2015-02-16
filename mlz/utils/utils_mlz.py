@@ -493,6 +493,7 @@ def compute_error3(z, pdf, zv):
     j = 0
     i2 = ib + 1
     i1 = ib
+    if sum(pdf) < 0.00001 : return 9.99
     while area <= 0.68:
         area1 = sum(pdf[i1:i2])
         e681 = dz * (i2 - i1)
