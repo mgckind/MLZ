@@ -34,6 +34,7 @@
 .highlight .nt { color: #88ccee } /* Name.Tag */
 .highlight .nv { color: #88ccee } /* Name.Variable */
 .highlight .ow { color: #eeeeee; font-weight: bold } /* Operator.Word */
+.highlight .mb { color: #eeeecc } /* Literal.Number.Bin */
 .highlight .mf { color: #eeeecc } /* Literal.Number.Float */
 .highlight .mh { color: #eeeecc } /* Literal.Number.Hex */
 .highlight .mi { color: #eeeecc } /* Literal.Number.Integer */

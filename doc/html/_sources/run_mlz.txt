@@ -49,11 +49,6 @@ Some hidden parameters
 
 
     *   :green:`oobfraction`: fraction of data used for cross-validation, default is 1/3
-    *   :green:`dotrain`: The training of the trees/maps is carried out, default is :blue:`yes`,
-        set it to :blue:`no` if want to use same trees or maps on a separate data set, it can save some time for large
-        training data
-    *   :green:`dotest`: The test phase is carried out, default is :blue:`yes`, set it to :blue:`no` if only training
-        is desired
     *   :green:`writepdf`: Write the PDF? default if :blue:`yes`, if not needed can be set to :blue:`no`
 
 
@@ -82,6 +77,47 @@ Run the code
     :green:`results` where the main results are stored as well as the parameters used. The .mlz file contains 7 columns
     (zspec, zmode, zmean, zconf_mode, zcond_mean, error_mode, error_mean) which summarizes the results if no PDF is
     further needed. The PDF for all the galaxies are also stored in the same folder.
+
+
+Optional arguments
+..................
+
+    Since version 1.2 there are some extra options from the command line at the moment of execution, these are::
+    
+        --help          --> Show list of optional commands and help
+
+        --version       --> Shows current MLZ version
+
+        --no_train      --> It skips the training stage assuming it was already done
+
+        --no_test       --> It skips the testing stage on test data (it only does training)
+
+        --no_pdfs       --> It doesn't write or produce photo-z PDFs only single point estimates
+
+        --check_only    --> Do a quick run to check everything is OK before a long run
+
+        --print_keys    --> Print all the keys from inputs file
+
+        --modify MODIFY --> Modify a parameter from command line, e.g., --modify maxz=1.0 ntrees=2 testfile=data.fits
+
+        --replace       --> Replace output filenames (trees, random catalogs,maps)
+
+
+    For example, if only a training is needed but with a modification of the number of trees it can be done with::
+
+        $ mpirun -n <cores> ./runMLZ <input file> --no_test --modify ntrees=10
+
+    Now, suppose we have trained and we want to apply the solution to a test file defined in the inputs file and we only want the single point
+    estimation (not the PDFs), we do::
+
+        $ mpirun -n <cores> ./runMLZ <input file> --no_train --no_pdfs
+
+    Let's assume we have a second test file and we want to apply the same solution but with PDFs this time, we can do::
+
+        $ mpirun -n <cores> ./runMLZ <input file> --no_train --modify testfile=<newfile> finalfilename=<new name>
+
+    The options --print_keys and --check_only are very useful for preparing and checking before a big job sumbission
+
 
 Machine learning approach
 .........................

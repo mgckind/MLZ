@@ -4,7 +4,7 @@ Installation
 
 Download
 .........
-    You can get the latest version of the code from: https://pypi.python.org/pypi/MLZ/1.1
+    You can get the latest version of the code from: https://pypi.python.org/pypi/MLZ/1.2
 
     The simplest way to get MLZ is using pip::
 
@@ -18,14 +18,14 @@ Download
 
         easy_install --user MLZ
 
-    which will install and copy all the files to a local directory which can be specified by using the ``--prefix=<path>`` flag.
+    which will install and copy all the files to a local directory which can be specified by using the :green:`--prefix=<path>` flag.
     Open python and check if the module is present::
 
         >>> import mlz
 
     The code can also be installed manually, by getting the tar file and then uncompress the file::
 
-        tar -zxf MLZ-1.0.tar.gz
+        tar -zxf MLZ-1.2.tar.gz
 
     and install using::
 
@@ -35,16 +35,22 @@ Download
     executable files will be copied to a local script folder (usually at :mono:`$HOME/.local/bin`). This also compiles automatically the fortran routines needed
     for better performance.
 
+    Another alternative is to get the latest version from github and clone it folmr there::
+
+        git clone https://github.com/mgckind/MLZ.git
+
+    and it can be run from the MLZ/ directory itself.
+
 Fortran routines
 ................
 
-    If the installation did not work via ``setup.py`` as shown, some fortran libraries will not be present,
+    If the installation did not work via :green:`setup.py` as shown, some fortran libraries will not be present,
     these can be manually compiled using the f2py_ wrapper. In the :mono:`mlz` folder, go to the :mono:`ml_codes` folder where
-    you will find the file ``som.f90`` in that folder::
+    you will find the file :green:`som.f90` in that folder::
 
         f2py -c -m somF som.f90
 
-    And the library ``somF.so`` will be created. The code still works even this step is not accomplished as these routines aid the code to run
+    And the library :green:`somF.so` will be created. The code still works even this step is not accomplished as these routines aid the code to run
     more efficiently.
 
 Release Note

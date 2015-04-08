@@ -24,20 +24,25 @@ References
 
     * Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"SOMz : photometric redshift PDFs with self organizing maps and random atlas"` , MNRAS, 438, 3409 (`Link <http://adsabs.harvard.edu/abs/2014MNRAS.438.3409C>`_)
 
-    * Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"Exhausting the Information: Novel Bayesian Combination of Photometric Redshift PDFs"`, MNRAS submitted (`Link <http://adsabs.harvard.edu/abs/2014arXiv1403.0044C>`_)
+    * Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"Exhausting the Information: Novel Bayesian Combination of Photometric Redshift PDFs"`, MNRAS, 442, 3380 (`Link <http://adsabs.harvard.edu/abs/2014MNRAS.442.3380C>`_)
 
-    * Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"Sparse Representation of Photometric Redshift PDFs: Preparing for Petascale Astronomy"`, MNRAS in press. (`Link <http://adsabs.harvard.edu/abs/2014arXiv1404.6442C>`_)
+    * Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"Sparse Representation of Photometric Redshift PDFs: Preparing for Petascale Astronomy"`, MNRAS, 441, 3550 (`Link <http://adsabs.harvard.edu/abs/2014MNRAS.441.3550C>`_)
 
 Contact
 ........
 
 `Here <https://sites.google.com/site/mgckind/>`_ you can find my contact information for questions or comments.
 
+Current Version
+...............
+
+:green:`Current version 1.2`  (Check `github <https://github.com/mgckind/MLZ>`_  page for update and changes)
 
 Now on GitHub
 .............
 
-We have uploaded MLZ to `GitHub <https://github.com/mgckind/MLZ>`_
+We have uploaded MLZ to `GitHub <https://github.com/mgckind/MLZ>`_ 
+Here you can get the latest MLZ version
 
 Contents
 ........

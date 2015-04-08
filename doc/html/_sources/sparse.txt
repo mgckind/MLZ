@@ -37,12 +37,17 @@ Sparse Representation (new!)
 
     The number of bases and parameters depend strongly on the data based used, the module :class:`pdf_storage` contains
     most of the functions used to make the representation, for more information check our `Sparse represenation paper
-    <http://adsabs.harvard.edu/abs/2014arXiv1404.6442C>`_
+    <http://adsabs.harvard.edu/abs/2014MNRAS.441.3550C>`_
 
 .. toctree::
    :maxdepth: 2
 
    sparse_mod
+
+Github Repo
+...........
+
+This implementation is an stand-alone program and here is the Github repo for more info (`Link <https://github.com/mgckind/SparsePz>`_)
 
 
 Example Case
@@ -71,4 +76,4 @@ Example Case
 
 **References**
 
-.. [1] Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"Sparse Representation of Photometric Redshift PDFs: Preparing for Petascale Astronomy"`, MNRAS in press. (`Link <http://adsabs.harvard.edu/abs/2014arXiv1404.6442C>`_)
+.. [1] Carrasco Kind, M., & Brunner, R. J., 2014, :blueit:`"Sparse Representation of Photometric Redshift PDFs: Preparing for Petascale Astronomy"`, MNRAS, 441, 3550 (`Link <http://adsabs.harvard.edu/abs/2014MNRAS.441.3550C>`_)

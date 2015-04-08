@@ -5,7 +5,7 @@ redshift PDFs using machine learning techniques,
 providing optional extra information.
 
 :Author: Matias Carrasco Kind
-:Version: 1.1
+:Version: 1.2
 
 For a more detailed documentation see: http://lcdm.astro.illinois.edu/static/code/mlz/MLZ-1.1/doc/html/index.html
 
@@ -20,6 +20,12 @@ or::
 or even::
 
 	easy_install --user MLZ
+
+you can also get the latest version from github::
+
+    git clone https://github.com/mgckind/MLZ.git
+
+and run it standalone (no need to install via pip)
 
 or go to the doc/ folder and start a web browser opening 
 doc/html/index.html

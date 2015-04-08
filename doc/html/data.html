@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,16 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Data module &mdash; MLZ 1.0 documentation</title>
+    <title>Data module &mdash; MLZ 1.2 documentation</title>
     
     <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '1.0',
+        URL_ROOT:    './',
+        VERSION:     '1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,10 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="/Users/Matias/Library/Enthought/Canopy_64bit/User/lib/python2.7/share/copybutton.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="top" title="MLZ 1.2 documentation" href="index.html" />
     <link rel="up" title="Other routines" href="others.html" />
     <link rel="next" title="Utils" href="utils.html" />
     <link rel="prev" title="Other routines" href="others.html" /> 
@@ -252,7 +248,7 @@ ex., A={u:{&#8216;ind&#8217;=1, &#8216;eind&#8217;=6}}</p>
 
 <dl class="function">
 <dt id="data.read_catalog">
-<tt class="descclassname">data.</tt><tt class="descname">read_catalog</tt><big>(</big><em>filename</em>, <em>myrank=0</em>, <em>check='no'</em><big>)</big><a class="headerlink" href="#data.read_catalog" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">data.</tt><tt class="descname">read_catalog</tt><big>(</big><em>filename</em>, <em>myrank=0</em>, <em>check='no'</em>, <em>get_ng='no'</em>, <em>L_1=0</em>, <em>L_2=-1</em>, <em>A_T=''</em><big>)</big><a class="headerlink" href="#data.read_catalog" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the catalog, either for training or testing
 currently accepting ascii tables, numpy tables</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -262,7 +258,10 @@ currently accepting ascii tables, numpy tables</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filename</strong> (<em>str</em>) &#8211; Filename of the catalod</li>
 <li><strong>myrank</strong> (<em>int</em>) &#8211; current processor id, for parallel reading (not implemented)</li>
-<li><strong>check</strong> (<em>str</em>) &#8211; To check the code, only uses 50 lines of catalog</li>
+<li><strong>check</strong> (<em>str</em>) &#8211; To check the code, only uses 200 lines of catalog</li>
+<li><strong>get_ng</strong> (<em>str</em>) &#8211; Just get the total number og galaxies in the catalog</li>
+<li><strong>L_1</strong> (<em>int</em>) &#8211; if passed get catalog between L_1 and L_2</li>
+<li><strong>L_2</strong> (<em>int</em>) &#8211; if passed get catalog between L_1 and L_2</li>
 </ul>
 </td>
 </tr>
@@ -293,8 +292,8 @@ currently accepting ascii tables, numpy tables</p>
       </div>
 
     <div class="footer">
-        &copy; Copyright 2014, Matias Carrasco Kind.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+        &copy; Copyright 2015, Matias Carrasco Kind.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

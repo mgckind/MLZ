@@ -24,6 +24,7 @@ TPZ: Trees for Photo-Z
 
 .. figure:: figures/example_tree.png
     :scale: 15 %
+    :figwidth: 15 %
     :align: center
 
 

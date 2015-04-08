@@ -11,7 +11,7 @@ Y = loadtxt('SDSS_MGS.train', unpack=True, usecols=(0,))
 
 
 #Calls the SOMZ mode
-M = SOMZ.SelfMap(X,Y,topology='hex',Ntop=15,iterations=100,periodic='yes')
+M = SOMZ.SelfMap(X,Y,Ntop=15,iterations=100,periodic='yes')
 #creates a map
 M.create_mapF()
 #evaluates it with the Y entered, or anyoher desired colum

@@ -37,6 +37,7 @@ Run on SDSS data
     in the folder :green:`mlz/test/results/` and the trees (or maps) are saved in :green:`tpz/test/trees/`. There are
     some :ref:`other <hidden-param>` parameters to control what phase to run or to manage the outputs.
 
+
 Preview of results
 ..................
 

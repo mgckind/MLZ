@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 __author__ = 'Matias Carrasco Kind'
 from numpy import *
+__version__ = '1.2'
 import copy
 import random as rn
 import os, sys
@@ -60,7 +61,7 @@ class MyParser(argparse.ArgumentParser):
 parser = MyParser(description='Compute photo-z using Machine Learning techniques, check full documentation at ' \
                               'http://lcdm.astro.illinois.edu/code/mlz.html or  ' \
                               ' *Comments/questions: Matias Carrasco Kind mcarras2@illinois.edu*',
-                  version="version: 1.1")
+                  version="version: "+__version__)
 parser.add_argument("inputsfile", help="Inputs file with all parameters, check documentation for more info")
 parser.add_argument("--no_train", help="It skips the training stage assuming it was already done", action="store_true")
 parser.add_argument("--no_test", help="It skips the testing stage on test data", action="store_true")

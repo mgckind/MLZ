@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,16 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Run MLZ &mdash; MLZ 1.0 documentation</title>
+    <title>Run MLZ &mdash; MLZ 1.2 documentation</title>
     
     <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '1.0',
+        URL_ROOT:    './',
+        VERSION:     '1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,10 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="/Users/Matias/Library/Enthought/Canopy_64bit/User/lib/python2.7/share/copybutton.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="top" title="MLZ 1.2 documentation" href="index.html" />
     <link rel="next" title="Running a test" href="run.html" />
     <link rel="prev" title="Plotting" href="plotting.html" /> 
   </head>
@@ -96,11 +92,6 @@ you can add or remove attributes but make sure they are present on the columns n
 file that are not frequently used and  can be manually modified, among the most important ones:</p>
 <ul class="simple">
 <li><span class="green">oobfraction</span>: fraction of data used for cross-validation, default is 1/3</li>
-<li><span class="green">dotrain</span>: The training of the trees/maps is carried out, default is <span class="blue">yes</span>,
-set it to <span class="blue">no</span> if want to use same trees or maps on a separate data set, it can save some time for large
-training data</li>
-<li><span class="green">dotest</span>: The test phase is carried out, default is <span class="blue">yes</span>, set it to <span class="blue">no</span> if only training
-is desired</li>
 <li><span class="green">writepdf</span>: Write the PDF? default if <span class="blue">yes</span>, if not needed can be set to <span class="blue">no</span></li>
 </ul>
 </div></blockquote>
@@ -110,20 +101,62 @@ is desired</li>
 <blockquote>
 <div><p>Check the <a class="reference internal" href="run.html"><em>Running a test</em></a> for a example use of the code on SDSS data including with the distribution.</p>
 <p>To run the code, if using <em>mpi4py</em> from the main folder type:</p>
-<div class="highlight-python"><pre>$ mpirun -n &lt;cores&gt; ./runMLZ &lt;input file&gt;</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ mpirun -n &lt;cores&gt; ./runMLZ &lt;input file&gt;
+</pre></div>
 </div>
 <p>Where &lt;cores&gt; is the number of processors desired to use and &lt;input file&gt; is the name of the <a class="reference internal" href="inputfile.html#input-file"><em>Input file template</em></a>.
 If not using <em>mpi4py</em>, type:</p>
-<div class="highlight-python"><pre>$ ./runMLZ &lt;input file&gt;</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ ./runMLZ &lt;input file&gt;
+</pre></div>
 </div>
 <p>Or if distribution is build or installed using pip, just type:</p>
-<div class="highlight-python"><pre>$ runMLZ &lt;input file&gt;</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ runMLZ &lt;input file&gt;
+</pre></div>
 </div>
 <p>This will create two folder on the output directory, one named <span class="green">trees</span> (or <span class="green">maps</span>) where several
 files for trees or maps are  stored for further analysis  and the other folder named
 <span class="green">results</span> where the main results are stored as well as the parameters used. The .mlz file contains 7 columns
 (zspec, zmode, zmean, zconf_mode, zcond_mean, error_mode, error_mean) which summarizes the results if no PDF is
 further needed. The PDF for all the galaxies are also stored in the same folder.</p>
+</div></blockquote>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Since version 1.2 there are some extra options from the command line at the moment of execution, these are:</p>
+<div class="highlight-python"><div class="highlight"><pre>--help          --&gt; Show list of optional commands and help
+
+--version       --&gt; Shows current MLZ version
+
+--no_train      --&gt; It skips the training stage assuming it was already done
+
+--no_test       --&gt; It skips the testing stage on test data (it only does training)
+
+--no_pdfs       --&gt; It doesn&#39;t write or produce photo-z PDFs only single point estimates
+
+--check_only    --&gt; Do a quick run to check everything is OK before a long run
+
+--print_keys    --&gt; Print all the keys from inputs file
+
+--modify MODIFY --&gt; Modify a parameter from command line, e.g., --modify maxz=1.0 ntrees=2 testfile=data.fits
+
+--replace       --&gt; Replace output filenames (trees, random catalogs,maps)
+</pre></div>
+</div>
+<p>For example, if only a training is needed but with a modification of the number of trees it can be done with:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ mpirun -n &lt;cores&gt; ./runMLZ &lt;input file&gt; --no_test --modify ntrees=10
+</pre></div>
+</div>
+<p>Now, suppose we have trained and we want to apply the solution to a test file defined in the inputs file and we only want the single point
+estimation (not the PDFs), we do:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ mpirun -n &lt;cores&gt; ./runMLZ &lt;input file&gt; --no_train --no_pdfs
+</pre></div>
+</div>
+<p>Let&#8217;s assume we have a second test file and we want to apply the same solution but with PDFs this time, we can do:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ mpirun -n &lt;cores&gt; ./runMLZ &lt;input file&gt; --no_train --modify testfile=&lt;newfile&gt; finalfilename=&lt;new name&gt;
+</pre></div>
+</div>
+<p>The options &#8211;print_keys and &#8211;check_only are very useful for preparing and checking before a big job sumbission</p>
 </div></blockquote>
 </div>
 <div class="section" id="machine-learning-approach">
@@ -160,8 +193,8 @@ and some examples of figures that can be created</div></blockquote>
       </div>
 
     <div class="footer">
-        &copy; Copyright 2014, Matias Carrasco Kind.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+        &copy; Copyright 2015, Matias Carrasco Kind.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

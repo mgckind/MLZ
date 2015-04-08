@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,16 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Running a test &mdash; MLZ 1.0 documentation</title>
+    <title>Running a test &mdash; MLZ 1.2 documentation</title>
     
     <link rel="stylesheet" href="_static/graphite.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '1.0',
+        URL_ROOT:    './',
+        VERSION:     '1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,10 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="/usr/local/lib/python2.7/dist-packages/share/copybutton.js"></script>
+    <script type="text/javascript" src="/Users/Matias/Library/Enthought/Canopy_64bit/User/lib/python2.7/share/copybutton.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="MLZ 1.0 documentation" href="index.html" />
+    <link rel="top" title="MLZ 1.2 documentation" href="index.html" />
     <link rel="next" title="Sparse Representation (new!)" href="sparse.html" />
     <link rel="prev" title="Run MLZ" href="run_mlz.html" /> 
   </head>
@@ -75,10 +71,12 @@ only few trees or maps are created for illustration, ideally hundreds of trees a
 </div>
 <blockquote class="pull-quote">
 <div><p>To run MLZ, type:</p>
-<div class="highlight-python"><pre>$ ./runMLZ test/SDSS_MGS.inputs</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ ./runMLZ test/SDSS_MGS.inputs
+</pre></div>
 </div>
 <p>To run this example you must be located at the tpz/ folder, if using <strong>mpi4py</strong> type:</p>
-<div class="highlight-python"><pre>$ mpirun -n &lt;cores&gt;  ./runMLZ test/SDSS_MGS.inputs</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ mpirun -n &lt;cores&gt;  ./runMLZ test/SDSS_MGS.inputs
+</pre></div>
 </div>
 <p>Make sure &lt;cores&gt; matches your system. A view of the input file is <a class="reference internal" href="inputfile.html#input-file"><em>here</em></a>. The results are located
 in the folder <span class="green">mlz/test/results/</span> and the trees (or maps) are saved in <span class="green">tpz/test/trees/</span>. There are
@@ -91,7 +89,8 @@ some <a class="reference internal" href="run_mlz.html#hidden-param"><em>other</e
 <div><p>MLZ comes with some plotting routines, check <a class="reference internal" href="plotting.html#module-plotting" title="plotting"><tt class="xref py py-class docutils literal"><span class="pre">plotting</span></tt></a> for some of them and their parameters. It includes
 an interactive
 routine to preview the results. Within the main folder type:</p>
-<div class="highlight-python"><pre>$ ./plot/plot_results test/SDSS_MGS.inputs 0 0</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ ./plot/plot_results test/SDSS_MGS.inputs 0 0
+</pre></div>
 </div>
 <p>The first argument is the run number (every time TPZ increase this number by one) and the second argument is the
 confidence level zConf (see these <a class="reference internal" href="index.html#refers"><em>references</em></a>) for more information on this parameter and here for
@@ -113,7 +112,7 @@ after the input file, it shows a comparison for the mode and the mean for those 
 <div>These figures have some user interaction as explained in the help window (shown below). For example by clicking
 different points in the zphot vs zspec figure is possible to visualize its PDF, or the colormap can be changed in
 figure 3, or change between zspec or zphot in the binning, etc...</div></blockquote>
-<div class="highlight-python"><pre>All figures:
+<div class="highlight-python"><div class="highlight"><pre>All figures:
 ------------
 * Q: close all figures
 * q: close current figure
@@ -135,7 +134,7 @@ Figure 2:
 Figure 3: 
 ---------
 * Click on points to see its PDF
-</pre>
+</pre></div>
 </div>
 </div>
 <div class="section" id="some-pdf-examples">
@@ -143,15 +142,18 @@ Figure 3:
 <blockquote>
 <div><p>Some examples on how to use the PDF to compute N(z) or a zphot vs zspec map there are some analysis routines for
 them, first we need to run some pre-analysis routine, if using <strong>mpi4py</strong> type:</p>
-<div class="highlight-python"><pre>$ mpirun -n &lt;cores&gt; ./utils/use_pdfs test/SDSS_MGS.inputs 0 0.1 30</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ mpirun -n &lt;cores&gt; ./utils/use_pdfs test/SDSS_MGS.inputs 0 0.1 30
+</pre></div>
 </div>
 <p>Making sure to enter the right number of cores, if using a serial version type:</p>
-<div class="highlight-python"><pre>$ ./utils/use_pdfs test/SDSS_MGS.inputs</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ ./utils/use_pdfs test/SDSS_MGS.inputs
+</pre></div>
 </div>
 <p>After this two extra files are created in the results folder with N(z) dist and a map,
 you can change the binning by changing the last argument in the command line , by default is 30. To plot these you can
 check <a class="reference internal" href="plotting.html#plotting.Qplot.plot_pdf_use" title="plotting.Qplot.plot_pdf_use"><tt class="xref py py-class docutils literal"><span class="pre">plotting.Qplot.plot_pdf_use</span></tt></a> and type:</p>
-<div class="highlight-python"><pre>$ ./plot/plot_pdf_use test/SDSS_MGS.inputs</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ ./plot/plot_pdf_use test/SDSS_MGS.inputs
+</pre></div>
 </div>
 <p>And then you will see two figures like the following:</p>
 </div></blockquote>
@@ -162,10 +164,12 @@ check <a class="reference internal" href="plotting.html#plotting.Qplot.plot_pdf_
 <h2>Plotting a tree or a map<a class="headerlink" href="#plotting-a-tree-or-a-map" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>You can plot one of the created tree during the process in order to visualize how would it look like:</p>
-<div class="highlight-python"><pre>$ ./plot/plot_tree test/SDSS_MGS.inputs 0</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ ./plot/plot_tree test/SDSS_MGS.inputs 0
+</pre></div>
 </div>
 <p>Or if you used SOMz instead you can also plot a map using the following:</p>
-<div class="highlight-python"><pre>$ ./plot/plot_map test/SDSS_MGS.inputs 0</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ ./plot/plot_map test/SDSS_MGS.inputs 0
+</pre></div>
 </div>
 <p>Check <a class="reference internal" href="plotting.html#plotting.Qplot.plot_tree" title="plotting.Qplot.plot_tree"><tt class="xref py py-class docutils literal"><span class="pre">plotting.Qplot.plot_tree</span></tt></a> and <a class="reference internal" href="plotting.html#plotting.Qplot.plot_map" title="plotting.Qplot.plot_map"><tt class="xref py py-class docutils literal"><span class="pre">plotting.Qplot.plot_map</span></tt></a> for information. The previous
 commands will generate figures like the following:</p>
@@ -181,7 +185,8 @@ commands will generate figures like the following:</p>
 only <tt class="docutils literal"><span class="pre">OobError</span></tt> to <span class="blue">yes</span> is always recommended as is a unbiased version of the performance on the same
 training set which serves a s a cross-validation and can be very useful. To plot the importance check first
 <a class="reference internal" href="plotting.html#plotting.Qplot.plot_importance" title="plotting.Qplot.plot_importance"><tt class="xref py py-class docutils literal"><span class="pre">plotting.Qplot.plot_importance</span></tt></a> and type within the main folder:</p>
-<div class="highlight-python"><pre>$ ./plot/plot_importance test/SDSS_MGS.inputs</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ ./plot/plot_importance test/SDSS_MGS.inputs
+</pre></div>
 </div>
 <p>Which generated two plots like the following:</p>
 </div></blockquote>
@@ -215,8 +220,8 @@ attributes. Email me at mcarras2 at illinois.edu for questions or comments</div>
       </div>
 
     <div class="footer">
-        &copy; Copyright 2014, Matias Carrasco Kind.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+        &copy; Copyright 2015, Matias Carrasco Kind.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

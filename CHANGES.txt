@@ -30,3 +30,6 @@ v1.1, 2014-10-25 -- Added --print_keys (-pk) option to print current values of k
 v1.1, 2014-10-27 -- Added --replace (-r) option to replace additional output files
 v1.1, 2014-11-07 -- Change sparse representation storage, now first element stores the original amplitud
                     instead of 1. (for block summations of PDFs, 2 steps are needed)
+----------------
+v1.2, 2015-04-08 -- v1.2 release, faster than previous versions, fixed several issues
+                    See previous changes
