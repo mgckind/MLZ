@@ -15,8 +15,8 @@ def get_zbins(Pars):
     Nbins = int(Pars.nzbins)
     zfine = linspace(Pars.minz, Pars.maxz, Nbins + 1)
     resz = zfine[1] - zfine[0]
-    resz2 = resz / 2.
-    zfine2 = arange(Pars.minz - resz2 * 20., Pars.maxz + resz2 * 20., resz2)
+    resz2 = resz / 1.
+    zfine2 = arange(Pars.minz - resz2 * 20.-resz2/2., Pars.maxz + resz2 * 20., resz2)
     wzin = where((zfine2 >= Pars.minz) & (zfine2 <= Pars.maxz))[0]
     return zfine, zfine2, resz, resz2, wzin
 
@@ -72,7 +72,7 @@ class GetPz():
                         self.bigpdf[mybin] += 1.
                     pdf = self.bigpdf
                     pdf2 = interp(self.zfine2, self.zbins, pdf)
-                    pdf2 = where(greater(pdf2, max(pdf2) * 0.20), pdf2, 0.)
+                    pdf2 = where(greater(pdf2, max(pdf2) * 0.01), pdf2, 0.)
                     pdf2 = convolve(pdf2, self.gaus2, 1)
                     pdf2 = where(greater(pdf2, max(pdf2) * 0.005), pdf2, 0.)
                     if sum(pdf2) > 0.: pdf2 /= sum(pdf2)
@@ -113,6 +113,11 @@ class GetPz():
 
 class GetPz_short():
     """
+    Computes PDF and general results given a set of predicted values for each object in a dictionary format
+
+    :param dict dict_zp: Dictionary with predicted values, keys are object index
+    :param int nobj: Number of objetcs
+    :param class Pars: class Pars with information taken from the :ref:`input-file`
     """
 
     def __init__(self, Pars):
