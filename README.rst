@@ -7,7 +7,7 @@ providing optional extra information.
 :Author: Matias Carrasco Kind
 :Version: 1.2
 
-For a more detailed documentation see: http://lcdm.astro.illinois.edu/static/code/mlz/MLZ-1.2/doc/html/index.html
+For a more detailed documentation see: http://matias-ck.com/mlz/
 
 *MLZ* is also on pypi and the simplest way to get MLZ is using pip::
 
